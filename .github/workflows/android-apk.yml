@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-apk:
-    name: Build debug APK
+    name: Build release APK
     runs-on: ubuntu-latest
 
     steps:
@@ -35,13 +35,13 @@ jobs:
       - name: Make Gradle executable
         run: chmod +x android/gradlew
 
-      - name: Build debug APK
+      - name: Build release APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleRelease --no-daemon
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cath-edtech-debug-apk
-          path: android/app/build/outputs/apk/debug/*.apk
+          name: cath-edtech-release-apk
+          path: android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
