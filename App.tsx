@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Alert, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {Alert, Pressable, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {ApiConnectionBanner} from './src/components/ApiConnectionBanner';
 import {InstructorDashboardScreen} from './src/screens/instructor/InstructorDashboardScreen';
 import {CoursesScreen} from './src/screens/instructor/CoursesScreen';
@@ -11,7 +11,6 @@ import {TabBar, type TabItem} from './src/components/Catalog';
 import {EmptyState} from './src/components/States';
 import {sampleCourses, sampleModules} from './src/data/catalog';
 import {defaultBrowse, type Browse} from './src/screens/public/browse';
-import {CourseCurriculumScreen} from './src/screens/public/CourseCurriculumScreen';
 import {CourseScreen} from './src/screens/public/CourseScreen';
 import {ExploreScreen} from './src/screens/public/ExploreScreen';
 import {LandingScreen} from './src/screens/public/LandingScreen';
@@ -21,12 +20,13 @@ import {PaymentCheckoutScreen} from './src/screens/public/PaymentCheckoutScreen'
 import {PaymentReceivedScreen} from './src/screens/public/PaymentReceivedScreen';
 import {cartTotals, createOrder, type Order} from './src/screens/public/cart';
 import {useScreenCapturePolicy, type CapturePolicy} from './src/native/screenSecurity';
+import {initialWindowMetrics, SafeAreaProvider, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {colors} from './src/theme/tokens';
 import {LaunchIntro} from './src/components/LaunchIntro';
 
 const C = {bg: '#FBFBF9', blue50: '#EFF5FC', blue100: '#DFEBF9', blue600: '#4F8BCD', blue700: '#2F6DB5', blue900: '#17335A', ink: '#242A36', muted: '#6F7785', line: '#E6E7E5', white: '#FFFFFF', yellow: '#F0B74A'};
 type Tab = 'Dashboard' | 'Courses' | 'Students' | 'Messages' | 'More';
-type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'CourseCurriculum' | 'LessonPreview' | 'Cart' | 'Login' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding';
+type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'LessonPreview' | 'Cart' | 'Login' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding';
 type Role = 'Guest' | 'Instructor' | 'Student' | 'Administrator';
 const tabs: Array<{label: Tab; icon: string}> = [{label: 'Dashboard', icon: 'D'}, {label: 'Courses', icon: 'C'}, {label: 'Students', icon: 'S'}, {label: 'Messages', icon: 'M'}, {label: 'More', icon: '...'}];
 
@@ -70,6 +70,14 @@ function Pending({title, message, actionLabel, onAction}: {title: string; messag
 const capturePolicies: Partial<Record<Page, CapturePolicy>> = {Onboarding: 'allow', Landing: 'allow', Explore: 'allow', Cart: 'allow', Checkout: 'warn'};
 
 export default function App() {
+  return <SafeAreaProvider initialMetrics={initialWindowMetrics}><AppContent /></SafeAreaProvider>;
+}
+
+// Screens with a pinned bottom bar; the bottom inset takes the bar colour so it reads as one surface.
+const barPages: Page[] = ['Course', 'Cart', 'Checkout'];
+
+function AppContent() {
+  const insets = useSafeAreaInsets();
   const [page, setPage] = useState<Page>('Onboarding');
   const [role, setRole] = useState<Role>('Guest');
   const [browse, setBrowse] = useState<Browse>(defaultBrowse);
@@ -98,10 +106,9 @@ export default function App() {
   const publicScreen = page === 'Onboarding' ? <OnboardingScreen onBrowse={() => nav('Landing')} onLogin={() => nav('Login')} />
     : page === 'Landing' ? <LandingScreen courses={sampleCourses} onLogin={() => nav('Login')} onSearch={query => explore({query})} onCategory={category => explore({category})} onSeeAll={() => explore({})} onCourse={openCourse} />
     : page === 'Explore' ? <ExploreScreen courses={sampleCourses} browse={browse} onBrowse={setBrowse} onCourse={openCourse} />
-    : page === 'Course' ? <CourseScreen course={course} saved={isSaved} onBack={() => nav(courseFrom)} onToggleSave={toggleSave} onCurriculum={() => nav('CourseCurriculum')} onEnrol={enrol} />
-    : page === 'CourseCurriculum' ? <CourseCurriculumScreen course={course} modules={sampleModules} saved={isSaved} onBack={() => nav('Course')} onToggleSave={toggleSave} onPreview={() => nav('LessonPreview')} onEnrol={enrol} />
+    : page === 'Course' ? <CourseScreen key={course.id} course={course} modules={sampleModules} saved={isSaved} onBack={() => nav(courseFrom)} onToggleSave={toggleSave} onPreview={() => nav('LessonPreview')} onEnrol={enrol} />
     : page === 'Cart' ? <CartScreen items={cartItems} savedForLater={savedForLater} promo={promo} onPromo={setPromo} onRemove={c => setCart(list => list.filter(id => id !== c.id))} onCourse={openCourse} onCheckout={() => nav(role === 'Guest' ? 'Login' : 'Checkout')} onBrowse={() => nav('Explore')} onBack={role === 'Guest' ? undefined : () => nav(cartFrom)} />
-    : page === 'LessonPreview' ? <Pending title="Free preview" message="The preview lesson player is waiting on its design." actionLabel="Back to curriculum" onAction={() => nav('CourseCurriculum')} />
+    : page === 'LessonPreview' ? <Pending title="Free preview" message="The preview lesson player is waiting on its design." actionLabel="Back to course" onAction={() => nav('Course')} />
     : undefined;
   const screen = publicScreen ? publicScreen
     : role === 'Guest' ? <Pending title="Log in" message="The log in screen is waiting on its design. You can continue as a demo student for now." actionLabel="Continue as student" onAction={signIn} />
@@ -112,7 +119,12 @@ export default function App() {
   const isPublic = publicTabs !== undefined;
   const showPublicTabs = publicTabs?.some(t => t.key === page);
   const tab = tabs.some(x => x.label === page);
-  return <LaunchIntro><SafeAreaView style={page === 'Onboarding' ? [s.safe, s.safeOnboarding] : isPublic ? [s.safe, s.safePublic] : s.safe}><StatusBar barStyle={page === 'Onboarding' ? 'light-content' : 'dark-content'} /><View style={isPublic ? [s.app, s.safePublic] : s.app}>{screen}{showPublicTabs && publicTabs && <TabBar items={publicTabs} active={page} onSelect={nav} />}{tab && role === 'Instructor' && <View style={s.tabBar}>{tabs.map(t => {const active = page === t.label; return <Pressable key={t.label} style={s.tab} onPress={() => nav(t.label)}><View style={[s.tabIcon, active && s.tabIconActive]}><Text style={[s.tabIconText, active && s.tabIconTextActive]}>{t.icon}</Text></View><Text style={[s.tabLabel, active && s.tabLabelActive]}>{t.label}</Text></Pressable>;})}</View>}</View></SafeAreaView></LaunchIntro>;
+  // Edge-to-edge is on, so the app pads itself with the device insets. Each inset takes the colour of what it touches.
+  const pageBg = page === 'Onboarding' ? colors.sky : isPublic ? colors.cream : C.bg;
+  const topBg = page === 'Course' ? colors.sky : pageBg;
+  const hasBar = barPages.includes(page) && !(page === 'Cart' && cartItems.length === 0);
+  const bottomBg = showPublicTabs ? colors.cream : tab && role === 'Instructor' ? colors.white : hasBar ? colors.barBg : pageBg;
+  return <LaunchIntro><View style={[s.safe, {backgroundColor: pageBg, paddingLeft: insets.left, paddingRight: insets.right}]}><View style={{height: insets.top, backgroundColor: topBg}} /><StatusBar barStyle={page === 'Onboarding' || page === 'Course' ? 'light-content' : 'dark-content'} /><View style={isPublic ? [s.app, s.safePublic] : s.app}>{screen}{showPublicTabs && publicTabs && <TabBar items={publicTabs} active={page} onSelect={nav} />}{tab && role === 'Instructor' && <View style={s.tabBar}>{tabs.map(t => {const active = page === t.label; return <Pressable key={t.label} style={s.tab} onPress={() => nav(t.label)}><View style={[s.tabIcon, active && s.tabIconActive]}><Text style={[s.tabIconText, active && s.tabIconTextActive]}>{t.icon}</Text></View><Text style={[s.tabLabel, active && s.tabLabelActive]}>{t.label}</Text></Pressable>;})}</View>}</View><View style={{height: insets.bottom, backgroundColor: bottomBg}} /></View></LaunchIntro>;
 }
 
 const s = StyleSheet.create({
