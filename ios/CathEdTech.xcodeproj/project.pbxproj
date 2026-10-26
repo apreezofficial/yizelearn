@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AA1234567890000000000001 /* Allura-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA1234567890000000000002 /* Allura-Regular.ttf */; };
+		AA1234567890000000000001 /* Charmonman-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA1234567890000000000002 /* Charmonman-Regular.ttf */; };
 		0C80B921A6F3F58F76C31292 /* libPods-CathEdTech.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-CathEdTech.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
@@ -16,7 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AA1234567890000000000002 /* Allura-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Allura-Regular.ttf; path = CathEdTech/Fonts/Allura-Regular.ttf; sourceTree = "<group>"; };
+		AA1234567890000000000002 /* Charmonman-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Charmonman-Regular.ttf; path = CathEdTech/Fonts/Charmonman-Regular.ttf; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* CathEdTech.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CathEdTech.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = CathEdTech/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = CathEdTech/Info.plist; sourceTree = "<group>"; };
@@ -46,7 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
-				AA1234567890000000000002 /* Allura-Regular.ttf */,
+				AA1234567890000000000002 /* Charmonman-Regular.ttf */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				761780EE2CA45674006654EF /* SceneDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -165,7 +165,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				AA1234567890000000000001 /* Allura-Regular.ttf in Resources */,
+				AA1234567890000000000001 /* Charmonman-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

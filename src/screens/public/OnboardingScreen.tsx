@@ -10,42 +10,73 @@ const slides: Slide[] = [
 ];
 const ART_RATIO = 1024 / 1536; // the illustrations' own aspect ratio
 
+// The slider loops: a copy of the last slide sits before the first and a copy of the first after the last.
+// When a swipe lands on a copy, the list jumps without animation to the real slide, so it never ends.
+const loop = [slides[slides.length - 1], ...slides, slides[0]];
+const realIndex = (v: number) => (v - 1 + slides.length) % slides.length;
+const AUTOPLAY_MS = 4500;
+
 export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onLogin: () => void}) {
   const {width, height} = useWindowDimensions();
-  const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollX = useRef(new Animated.Value(width)).current;
   const float = useRef(new Animated.Value(0)).current;
   const [index, setIndex] = useState(0);
+  const [reduced, setReduced] = useState(false);
   const list = useRef<FlatList<Slide>>(null);
+  const position = useRef(1);
+  const dragging = useRef(false);
+  const lastTouch = useRef(0);
   const artWidth = Math.min(width - 40, 420);
+
+  useEffect(() => { AccessibilityInfo.isReduceMotionEnabled().then(setReduced, () => undefined); }, []);
 
   // A slow, continuous bob so the illustration feels alive without pulling focus.
   useEffect(() => {
-    let loop: Animated.CompositeAnimation | undefined;
-    AccessibilityInfo.isReduceMotionEnabled().then(reduced => {
-      if (reduced) return;
-      loop = Animated.loop(Animated.sequence([
-        Animated.timing(float, {toValue: 1, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
-        Animated.timing(float, {toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
-      ]));
-      loop.start();
-    }, () => undefined);
-    return () => loop?.stop();
-  }, [float]);
+    if (reduced) return;
+    const bob = Animated.loop(Animated.sequence([
+      Animated.timing(float, {toValue: 1, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
+      Animated.timing(float, {toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
+    ]));
+    bob.start();
+    return () => bob.stop();
+  }, [float, reduced]);
 
-  const goTo = (i: number) => { setIndex(i); list.current?.scrollToOffset({offset: i * width, animated: true}); };
-  const range = (i: number) => [(i - 1) * width, i * width, (i + 1) * width];
+  // Gently advance on its own, but never while someone is swiping or just after they did.
+  useEffect(() => {
+    if (reduced) return;
+    const timer = setInterval(() => {
+      if (dragging.current || Date.now() - lastTouch.current < AUTOPLAY_MS) return;
+      list.current?.scrollToOffset({offset: (position.current + 1) * width, animated: true});
+    }, AUTOPLAY_MS);
+    return () => clearInterval(timer);
+  }, [width, reduced]);
+
+  const settle = (x: number) => {
+    const v = Math.round(x / width);
+    position.current = v;
+    if (Math.abs(x - v * width) > 1) return; // still between slides
+    if (v === 0) { position.current = slides.length; list.current?.scrollToOffset({offset: slides.length * width, animated: false}); }
+    if (v === loop.length - 1) { position.current = 1; list.current?.scrollToOffset({offset: width, animated: false}); }
+    setIndex(realIndex(v));
+  };
+  const goTo = (i: number) => { lastTouch.current = Date.now(); list.current?.scrollToOffset({offset: (i + 1) * width, animated: true}); };
+  const range = (v: number) => [(v - 1) * width, v * width, (v + 1) * width];
+  // Interpolation across every loop position, so copies animate exactly like the slides they mirror.
+  const perSlide = (values: number[]) => scrollX.interpolate({inputRange: loop.map((_, v) => v * width), outputRange: loop.map((_, v) => values[realIndex(v)]), extrapolate: 'clamp'});
 
   return <View style={styles.screen}>
     {/* Soft brand circles that drift against the swipe for depth. */}
-    <Animated.View pointerEvents="none" style={[styles.glow, styles.glowTop, {transform: [{translateX: scrollX.interpolate({inputRange: [0, width * 2], outputRange: [0, -60]})}]}]} />
-    <Animated.View pointerEvents="none" style={[styles.glow, styles.glowBottom, {transform: [{translateX: scrollX.interpolate({inputRange: [0, width * 2], outputRange: [0, 50]})}]}]} />
+    <Animated.View pointerEvents="none" style={[styles.glow, styles.glowTop, {transform: [{translateX: perSlide([0, -30, -60])}]}]} />
+    <Animated.View pointerEvents="none" style={[styles.glow, styles.glowBottom, {transform: [{translateX: perSlide([0, 25, 50])}]}]} />
 
-    <FlatList ref={list} data={slides} horizontal pagingEnabled bounces={false} showsHorizontalScrollIndicator={false} keyExtractor={s => s.key}
-      getItemLayout={(_, i) => ({length: width, offset: width * i, index: i})}
-      onScroll={Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {useNativeDriver: false})} scrollEventThrottle={16}
-      onMomentumScrollEnd={e => setIndex(Math.round(e.nativeEvent.contentOffset.x / width))}
-      renderItem={({item, index: i}) => {
-        const r = range(i);
+    <FlatList ref={list} data={loop} horizontal pagingEnabled bounces={false} showsHorizontalScrollIndicator={false} keyExtractor={(s, v) => `${s.key}-${v}`}
+      initialScrollIndex={1} getItemLayout={(_, i) => ({length: width, offset: width * i, index: i})}
+      onScroll={Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {useNativeDriver: false, listener: e => { if (!dragging.current) settle(e.nativeEvent.contentOffset.x); }})} scrollEventThrottle={16}
+      onScrollBeginDrag={() => { dragging.current = true; lastTouch.current = Date.now(); }}
+      onScrollEndDrag={() => { dragging.current = false; lastTouch.current = Date.now(); }}
+      onMomentumScrollEnd={e => settle(e.nativeEvent.contentOffset.x)}
+      renderItem={({item, index: v}) => {
+        const r = range(v);
         return <View style={[styles.slide, {width, paddingTop: height * 0.16}]}>
           {/* The illustrations have a white background, so they sit on a matching card. */}
           <Animated.View style={[styles.card, {width: artWidth, height: artWidth * ART_RATIO,
@@ -69,11 +100,11 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
 
     <View style={styles.footer}>
       <View style={styles.dots}>{slides.map((s, i) => {
-        const r = range(i);
+        const on = slides.map((_, j) => (j === i ? 1 : 0));
         return <Pressable key={s.key} onPress={() => goTo(i)} hitSlop={10} accessibilityRole="button" accessibilityLabel={`Slide ${i + 1} of ${slides.length}`} accessibilityState={{selected: i === index}}>
           <Animated.View style={[styles.dot, {
-            width: scrollX.interpolate({inputRange: r, outputRange: [12, 32, 12], extrapolate: 'clamp'}),
-            opacity: scrollX.interpolate({inputRange: r, outputRange: [0.45, 1, 0.45], extrapolate: 'clamp'}),
+            width: perSlide(on.map(x => 12 + 20 * x)),
+            opacity: perSlide(on.map(x => 0.45 + 0.55 * x)),
           }]} />
         </Pressable>;
       })}</View>

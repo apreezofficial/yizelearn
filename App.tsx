@@ -23,6 +23,7 @@ import {useScreenCapturePolicy, type CapturePolicy} from './src/native/screenSec
 import {initialWindowMetrics, SafeAreaProvider, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {colors} from './src/theme/tokens';
 import {LaunchIntro} from './src/components/LaunchIntro';
+import {ScreenTransition} from './src/components/ScreenTransition';
 
 const C = {bg: '#FBFBF9', blue50: '#EFF5FC', blue100: '#DFEBF9', blue600: '#4F8BCD', blue700: '#2F6DB5', blue900: '#17335A', ink: '#242A36', muted: '#6F7785', line: '#E6E7E5', white: '#FFFFFF', yellow: '#F0B74A'};
 type Tab = 'Dashboard' | 'Courses' | 'Students' | 'Messages' | 'More';
@@ -124,7 +125,7 @@ function AppContent() {
   const topBg = page === 'Course' ? colors.sky : pageBg;
   const hasBar = barPages.includes(page) && !(page === 'Cart' && cartItems.length === 0);
   const bottomBg = showPublicTabs ? colors.cream : tab && role === 'Instructor' ? colors.white : hasBar ? colors.barBg : pageBg;
-  return <LaunchIntro><View style={[s.safe, {backgroundColor: pageBg, paddingLeft: insets.left, paddingRight: insets.right}]}><View style={{height: insets.top, backgroundColor: topBg}} /><StatusBar barStyle={page === 'Onboarding' || page === 'Course' ? 'light-content' : 'dark-content'} /><View style={isPublic ? [s.app, s.safePublic] : s.app}>{screen}{showPublicTabs && publicTabs && <TabBar items={publicTabs} active={page} onSelect={nav} />}{tab && role === 'Instructor' && <View style={s.tabBar}>{tabs.map(t => {const active = page === t.label; return <Pressable key={t.label} style={s.tab} onPress={() => nav(t.label)}><View style={[s.tabIcon, active && s.tabIconActive]}><Text style={[s.tabIconText, active && s.tabIconTextActive]}>{t.icon}</Text></View><Text style={[s.tabLabel, active && s.tabLabelActive]}>{t.label}</Text></Pressable>;})}</View>}</View><View style={{height: insets.bottom, backgroundColor: bottomBg}} /></View></LaunchIntro>;
+  return <LaunchIntro><View style={[s.safe, {backgroundColor: pageBg, paddingLeft: insets.left, paddingRight: insets.right}]}><View style={{height: insets.top, backgroundColor: topBg}} /><StatusBar barStyle={page === 'Onboarding' || page === 'Course' ? 'light-content' : 'dark-content'} /><View style={isPublic ? [s.app, s.safePublic] : s.app}><ScreenTransition key={`${role}-${page}`}>{screen}</ScreenTransition>{showPublicTabs && publicTabs && <TabBar items={publicTabs} active={page} onSelect={nav} />}{tab && role === 'Instructor' && <View style={s.tabBar}>{tabs.map(t => {const active = page === t.label; return <Pressable key={t.label} style={s.tab} onPress={() => nav(t.label)}><View style={[s.tabIcon, active && s.tabIconActive]}><Text style={[s.tabIconText, active && s.tabIconTextActive]}>{t.icon}</Text></View><Text style={[s.tabLabel, active && s.tabLabelActive]}>{t.label}</Text></Pressable>;})}</View>}</View><View style={{height: insets.bottom, backgroundColor: bottomBg}} /></View></LaunchIntro>;
 }
 
 const s = StyleSheet.create({
