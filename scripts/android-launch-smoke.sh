@@ -2,7 +2,7 @@
 set -euo pipefail
 mkdir -p smoke-results
 trap 'adb logcat -d > smoke-results/logcat.txt' EXIT
-adb install apks/app-x86_64-release.apk
+adb install apks/app-release.apk
 adb logcat -c
 adb shell am start -W -n com.cathedtech/.MainActivity
 # Allow the animated intro to finish, including its 5.5-second safety timeout.

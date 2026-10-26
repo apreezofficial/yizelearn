@@ -106,15 +106,6 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
-    // One APK per CPU architecture instead of a single APK carrying all four.
-    splits {
-        abi {
-            reset()
-            enable true
-            universalApk false
-            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-        }
-    }
 }
 
 dependencies {
