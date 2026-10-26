@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View, type LayoutRectangle} from 'react-native';
+import {Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View, type LayoutRectangle, type ScrollViewInstance} from 'react-native';
 import type {Course, Lesson, Module} from '../../api/types';
 import {EnrolBar, Rating, RoundButton, Stars} from '../../components/Catalog';
 import {Icon, type IconName} from '../../components/Icon';
@@ -18,7 +18,7 @@ export function CourseScreen({course, modules, saved, onBack, onToggleSave, onPr
   const indicator = useRef({x: new Animated.Value(0), w: new Animated.Value(0)}).current;
   const content = useRef(new Animated.Value(1)).current;
   const hero = useRef(new Animated.Value(0)).current;
-  const scroll = useRef<ScrollView>(null);
+  const scroll = useRef<ScrollViewInstance>(null);
   const tabsY = useRef(0);
   const initials = (course.instructorName || '?').split(' ').map(p => p[0]).join('').slice(0, 2);
   const lessons = modules.reduce((n, m) => n + m.lessons.length, 0);

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {AccessibilityInfo, Animated, Easing, Image, Pressable, StyleSheet, Text, useWindowDimensions, View, type ImageSourcePropType} from 'react-native';
+import {AccessibilityInfo, Animated, Easing, FlatList, Image, Pressable, StyleSheet, Text, useWindowDimensions, View, type ImageSourcePropType} from 'react-native';
 import {colors, fonts, radius, type} from '../../theme/tokens';
 
 type Slide = {key: string; title: string; body: string; image: ImageSourcePropType};
@@ -15,7 +15,7 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
   const scrollX = useRef(new Animated.Value(0)).current;
   const float = useRef(new Animated.Value(0)).current;
   const [index, setIndex] = useState(0);
-  const list = useRef<Animated.FlatList<Slide>>(null);
+  const list = useRef<FlatList<Slide>>(null);
   const artWidth = Math.min(width - 40, 420);
 
   // A slow, continuous bob so the illustration feels alive without pulling focus.
@@ -40,7 +40,7 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
     <Animated.View pointerEvents="none" style={[styles.glow, styles.glowTop, {transform: [{translateX: scrollX.interpolate({inputRange: [0, width * 2], outputRange: [0, -60]})}]}]} />
     <Animated.View pointerEvents="none" style={[styles.glow, styles.glowBottom, {transform: [{translateX: scrollX.interpolate({inputRange: [0, width * 2], outputRange: [0, 50]})}]}]} />
 
-    <Animated.FlatList ref={list} data={slides} horizontal pagingEnabled bounces={false} showsHorizontalScrollIndicator={false} keyExtractor={s => s.key}
+    <FlatList ref={list} data={slides} horizontal pagingEnabled bounces={false} showsHorizontalScrollIndicator={false} keyExtractor={s => s.key}
       getItemLayout={(_, i) => ({length: width, offset: width * i, index: i})}
       onScroll={Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {useNativeDriver: false})} scrollEventThrottle={16}
       onMomentumScrollEnd={e => setIndex(Math.round(e.nativeEvent.contentOffset.x / width))}
