@@ -58,7 +58,7 @@ export function LaunchIntro({children}: {children: React.ReactNode}) {
         ]),
         Animated.parallel([
           Animated.timing(exit, {toValue: 1, duration: 850, easing: Easing.bezier(0.65, 0, 0.2, 1), useNativeDriver: true}),
-          Animated.timing(curve, {toValue: 1, duration: 850, easing: Easing.bezier(0.65, 0, 0.2, 1), useNativeDriver: false}),
+          Animated.timing(curve, {toValue: 1, duration: 850, easing: Easing.bezier(0.65, 0, 0.2, 1), useNativeDriver: true}),
           Animated.timing(entrance, {toValue: 1, duration: 850, easing: Easing.bezier(0.16, 1, 0.3, 1), useNativeDriver: true}),
         ]),
       ]);
