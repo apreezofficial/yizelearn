@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {AccessibilityInfo, Animated, Easing, FlatList, Image, Pressable, StyleSheet, Text, useWindowDimensions, View, type ImageSourcePropType} from 'react-native';
+import {AccessibilityInfo, Animated, Easing, FlatList, Image, Pressable, StyleSheet, Text, useWindowDimensions, View, type ImageSourcePropType, type NativeScrollEvent, type NativeSyntheticEvent} from 'react-native';
 import {colors, fonts, radius, type} from '../../theme/tokens';
 
 type Slide = {key: string; title: string; body: string; image: ImageSourcePropType};
@@ -71,7 +71,7 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
 
     <FlatList ref={list} data={loop} horizontal pagingEnabled bounces={false} showsHorizontalScrollIndicator={false} keyExtractor={(s, v) => `${s.key}-${v}`}
       initialScrollIndex={1} getItemLayout={(_, i) => ({length: width, offset: width * i, index: i})}
-      onScroll={Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {useNativeDriver: false, listener: e => { if (!dragging.current) settle(e.nativeEvent.contentOffset.x); }})} scrollEventThrottle={16}
+      onScroll={Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {useNativeDriver: false, listener: (e: NativeSyntheticEvent<NativeScrollEvent>) => { if (!dragging.current) settle(e.nativeEvent.contentOffset.x); }})} scrollEventThrottle={16}
       onScrollBeginDrag={() => { dragging.current = true; lastTouch.current = Date.now(); }}
       onScrollEndDrag={() => { dragging.current = false; lastTouch.current = Date.now(); }}
       onMomentumScrollEnd={e => settle(e.nativeEvent.contentOffset.x)}
