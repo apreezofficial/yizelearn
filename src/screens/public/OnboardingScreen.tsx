@@ -28,7 +28,12 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
   const lastTouch = useRef(0);
   const artWidth = Math.min(width - 40, 420);
 
-  useEffect(() => { AccessibilityInfo.isReduceMotionEnabled().then(setReduced, () => undefined); }, []);
+  // Follow the system setting live, so turning animations off stops the loops straight away.
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduced, () => undefined);
+    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduced);
+    return () => sub.remove();
+  }, []);
 
   // A slow, continuous bob so the illustration feels alive without pulling focus.
   // It runs on the native driver so it never wakes JavaScript or keeps the UI from going idle.
@@ -39,7 +44,7 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
       Animated.timing(float, {toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: true}),
     ]));
     bob.start();
-    return () => bob.stop();
+    return () => { bob.stop(); float.setValue(0); };
   }, [float, reduced]);
 
   // Gently advance on its own, but never while someone is swiping or just after they did.

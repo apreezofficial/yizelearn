@@ -8,6 +8,12 @@ adb shell am start -W -n com.cathedtech/.MainActivity
 # Allow the animated intro to finish, including its 5.5-second safety timeout.
 sleep 8
 adb shell pidof com.cathedtech
+# The intro has played. Onboarding loops its animations forever, so uiautomator would never see an idle UI.
+# Turning system animations off now makes the app treat it as reduce motion and stop those loops.
+adb shell settings put global animator_duration_scale 0
+adb shell settings put global transition_animation_scale 0
+adb shell settings put global window_animation_scale 0
+sleep 2
 capture() {
   # uiautomator waits for the UI to go idle; retry so one busy frame does not fail the run.
   local attempt
