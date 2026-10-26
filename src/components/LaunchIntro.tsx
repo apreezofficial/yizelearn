@@ -90,7 +90,7 @@ export function LaunchIntro({children}: {children: React.ReactNode}) {
       </Animated.View>
       {visible && (
         <Animated.View
-          accessibilityLabel="jizelearn is opening"
+          accessibilityLabel="yizelearn is opening"
           accessibilityRole="text"
           style={[styles.curtain, {
             transform: [{translateY: exit.interpolate({inputRange: [0, 1], outputRange: [0, -height * 1.12]})}],
@@ -100,7 +100,7 @@ export function LaunchIntro({children}: {children: React.ReactNode}) {
           <StatusBar barStyle="light-content" />
           <Animated.View style={[styles.signature, {transform: [{scale: pulse}]}]} accessible={false}>
             <Animated.View style={[styles.reveal, {width: reveal.interpolate({inputRange: [0, 1], outputRange: [0, WORDMARK_WIDTH]})}]}>
-              <Text allowFontScaling={false} style={styles.wordmark}>jizelearn</Text>
+              <Text allowFontScaling={false} style={styles.wordmark}>yizelearn</Text>
             </Animated.View>
           </Animated.View>
         </Animated.View>
