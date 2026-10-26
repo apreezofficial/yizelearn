@@ -31,11 +31,12 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
   useEffect(() => { AccessibilityInfo.isReduceMotionEnabled().then(setReduced, () => undefined); }, []);
 
   // A slow, continuous bob so the illustration feels alive without pulling focus.
+  // It runs on the native driver so it never wakes JavaScript or keeps the UI from going idle.
   useEffect(() => {
     if (reduced) return;
     const bob = Animated.loop(Animated.sequence([
-      Animated.timing(float, {toValue: 1, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
-      Animated.timing(float, {toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
+      Animated.timing(float, {toValue: 1, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: true}),
+      Animated.timing(float, {toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: true}),
     ]));
     bob.start();
     return () => bob.stop();
@@ -79,14 +80,16 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
         const r = range(v);
         return <View style={[styles.slide, {width, paddingTop: height * 0.16}]}>
           {/* The illustrations have a white background, so they sit on a matching card. */}
+          {/* Outer view floats on the native driver; inner card follows the swipe on the JS driver. */}
+          <Animated.View style={{transform: [{translateY: float.interpolate({inputRange: [0, 1], outputRange: [0, -10]})}]}}>
           <Animated.View style={[styles.card, {width: artWidth, height: artWidth * ART_RATIO,
             opacity: scrollX.interpolate({inputRange: r, outputRange: [0, 1, 0], extrapolate: 'clamp'}),
             transform: [
               {translateX: scrollX.interpolate({inputRange: r, outputRange: [width * 0.45, 0, -width * 0.45], extrapolate: 'clamp'})},
-              {translateY: float.interpolate({inputRange: [0, 1], outputRange: [0, -10]})},
               {scale: scrollX.interpolate({inputRange: r, outputRange: [0.82, 1, 0.82], extrapolate: 'clamp'})},
             ]}]}>
             <Image source={item.image} resizeMode="cover" accessibilityIgnoresInvertColors style={styles.art} />
+          </Animated.View>
           </Animated.View>
           <Animated.View style={[styles.copy, {
             opacity: scrollX.interpolate({inputRange: r, outputRange: [0, 1, 0], extrapolate: 'clamp'}),

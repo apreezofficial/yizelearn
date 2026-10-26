@@ -9,7 +9,14 @@ adb shell am start -W -n com.cathedtech/.MainActivity
 sleep 8
 adb shell pidof com.cathedtech
 capture() {
-  adb shell uiautomator dump /sdcard/window.xml
+  # uiautomator waits for the UI to go idle; retry so one busy frame does not fail the run.
+  local attempt
+  for attempt in 1 2 3 4 5; do
+    adb shell rm -f /sdcard/window.xml
+    adb shell uiautomator dump /sdcard/window.xml && adb shell ls /sdcard/window.xml > /dev/null 2>&1 && break
+    echo "uiautomator dump attempt $attempt failed, retrying" >&2
+    sleep 2
+  done
   adb pull /sdcard/window.xml "smoke-results/$1.xml"
   adb exec-out screencap -p > "smoke-results/$1.png"
 }
@@ -27,7 +34,8 @@ is_secure() {
 }
 # Onboarding comes first after the intro.
 capture onboarding
-grep -q 'Learn at your own pace' smoke-results/onboarding.xml
+# The slider auto-advances, so any slide may be showing.
+grep -qE 'Learn at your own pace|Take live courses|Gain real-life skills' smoke-results/onboarding.xml
 tap_text Browse onboarding
 # Assert actual rendered home content, not just a living process or launch activity.
 capture home
