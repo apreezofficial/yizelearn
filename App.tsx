@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
-import {Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {Alert, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {ApiConnectionBanner} from './src/components/ApiConnectionBanner';
 import {InstructorDashboardScreen} from './src/screens/instructor/InstructorDashboardScreen';
 import {CoursesScreen} from './src/screens/instructor/CoursesScreen';
 import {StudentHomeScreen} from './src/screens/student/StudentHomeScreen';
 import {AdminDashboardScreen} from './src/screens/admin/AdminDashboardScreen';
-import {CheckoutScreen, CurriculumScreen, GradingScreen, NotificationsScreen, QuizScreen} from './src/screens/flows/CoreFlowScreens';
+import {CurriculumScreen, GradingScreen, NotificationsScreen, QuizScreen} from './src/screens/flows/CoreFlowScreens';
 import type {Course} from './src/api/types';
 import {TabBar, type TabItem} from './src/components/Catalog';
 import {EmptyState} from './src/components/States';
@@ -16,6 +16,11 @@ import {CourseScreen} from './src/screens/public/CourseScreen';
 import {ExploreScreen} from './src/screens/public/ExploreScreen';
 import {LandingScreen} from './src/screens/public/LandingScreen';
 import {OnboardingScreen} from './src/screens/public/OnboardingScreen';
+import {CartScreen} from './src/screens/public/CartScreen';
+import {PaymentCheckoutScreen} from './src/screens/public/PaymentCheckoutScreen';
+import {PaymentReceivedScreen} from './src/screens/public/PaymentReceivedScreen';
+import {cartTotals, createOrder, type Order} from './src/screens/public/cart';
+import {useScreenCapturePolicy, type CapturePolicy} from './src/native/screenSecurity';
 import {colors} from './src/theme/tokens';
 import {LaunchIntro} from './src/components/LaunchIntro';
 
@@ -60,6 +65,10 @@ const studentTabs: TabItem<Page>[] = [{key: 'Dashboard', label: 'Home', icon: 'h
 
 function Pending({title, message, actionLabel, onAction}: {title: string; message: string; actionLabel?: string; onAction?: () => void}) { return <View style={s.pending}><EmptyState title={title} message={message} actionLabel={actionLabel} onAction={onAction} /></View>; }
 
+// Screens people may screenshot or record. Checkout is allowed but warns, because it shows card details.
+// Every other screen blocks capture. Onboarding is the screen behind the splash, so it stays capturable too.
+const capturePolicies: Partial<Record<Page, CapturePolicy>> = {Onboarding: 'allow', Landing: 'allow', Explore: 'allow', Cart: 'allow', Checkout: 'warn'};
+
 export default function App() {
   const [page, setPage] = useState<Page>('Onboarding');
   const [role, setRole] = useState<Role>('Guest');
@@ -67,13 +76,23 @@ export default function App() {
   const [courseId, setCourseId] = useState(sampleCourses[0].id);
   const [courseFrom, setCourseFrom] = useState<Page>('Explore');
   const [saved, setSaved] = useState<string[]>([]);
+  const [cart, setCart] = useState<string[]>([]);
+  const [cartFrom, setCartFrom] = useState<Page>('Course');
+  const [promo, setPromo] = useState<string>();
+  const [order, setOrder] = useState<Order>();
   const nav = (p: Page) => setPage(p);
+  useScreenCapturePolicy(capturePolicies[page] || 'block', () => Alert.alert('Screenshot taken', 'This screen can show sensitive payment details, like your card number. Keep the screenshot private, or delete it if you do not need it.'));
   const course = sampleCourses.find(c => c.id === courseId) || sampleCourses[0];
   const isSaved = saved.includes(course.id);
   const toggleSave = () => setSaved(list => (isSaved ? list.filter(id => id !== course.id) : [...list, course.id]));
   const openCourse = (c: Course) => { setCourseId(c.id); setCourseFrom(page); nav('Course'); };
   const explore = (patch: Partial<Browse>) => { setBrowse({...defaultBrowse, ...patch}); nav('Explore'); };
-  const enrol = () => nav(role === 'Guest' ? 'Login' : 'Checkout');
+  const cartItems = sampleCourses.filter(c => cart.includes(c.id));
+  const savedForLater = sampleCourses.filter(c => saved.includes(c.id) && !cart.includes(c.id));
+  const totals = cartTotals(cartItems, promo);
+  // Flow A1: buying needs an account, so guests sign in first; signed-in learners add to cart.
+  const enrol = () => { if (role === 'Guest') { nav('Login'); return; } setCart(list => (list.includes(course.id) ? list : [...list, course.id])); setCartFrom(page); nav('Cart'); };
+  const pay = (method: Parameters<typeof createOrder>[2], cardNumber: string) => { setOrder(createOrder(cartItems, totals.total, method, cardNumber)); setCart([]); setPromo(undefined); nav('Receipt'); };
   const signIn = () => { setRole('Student'); nav('Dashboard'); };
   const signOut = () => { setRole('Guest'); nav('Landing'); };
   const publicScreen = page === 'Onboarding' ? <OnboardingScreen onBrowse={() => nav('Landing')} onLogin={() => nav('Login')} />
@@ -81,11 +100,12 @@ export default function App() {
     : page === 'Explore' ? <ExploreScreen courses={sampleCourses} browse={browse} onBrowse={setBrowse} onCourse={openCourse} />
     : page === 'Course' ? <CourseScreen course={course} saved={isSaved} onBack={() => nav(courseFrom)} onToggleSave={toggleSave} onCurriculum={() => nav('CourseCurriculum')} onEnrol={enrol} />
     : page === 'CourseCurriculum' ? <CourseCurriculumScreen course={course} modules={sampleModules} saved={isSaved} onBack={() => nav('Course')} onToggleSave={toggleSave} onPreview={() => nav('LessonPreview')} onEnrol={enrol} />
+    : page === 'Cart' ? <CartScreen items={cartItems} savedForLater={savedForLater} promo={promo} onPromo={setPromo} onRemove={c => setCart(list => list.filter(id => id !== c.id))} onCourse={openCourse} onCheckout={() => nav(role === 'Guest' ? 'Login' : 'Checkout')} onBrowse={() => nav('Explore')} onBack={role === 'Guest' ? undefined : () => nav(cartFrom)} />
     : page === 'LessonPreview' ? <Pending title="Free preview" message="The preview lesson player is waiting on its design." actionLabel="Back to curriculum" onAction={() => nav('CourseCurriculum')} />
     : undefined;
   const screen = publicScreen ? publicScreen
-    : role === 'Guest' ? page === 'Cart' ? <Pending title="Cart" message="The cart is waiting on its design." actionLabel="Browse courses" onAction={() => nav('Explore')} /> : <Pending title="Log in" message="The log in screen is waiting on its design. You can continue as a demo student for now." actionLabel="Continue as student" onAction={signIn} />
-    : role === 'Student' ? page === 'Quiz' ? <QuizScreen onBack={() => nav('Dashboard')} onResult={() => nav('Result')} /> : page === 'Checkout' ? <CheckoutScreen onReceipt={() => nav('Receipt')} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => nav('Dashboard')} /> : page === 'Player' ? <Player onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} /> : page === 'Result' ? <Result onBack={() => nav('Quiz')} onCheckout={() => nav('Checkout')} /> : page === 'Receipt' ? <Receipt onHome={() => nav('Dashboard')} /> : page === 'Certificates' ? <Certificates onBack={() => nav('Dashboard')} /> : page === 'Learning' ? <Pending title="My learning" message="This screen is waiting on its design." /> : page === 'Inbox' ? <Pending title="Messages" message="This screen is waiting on its design." /> : page === 'Account' ? <Pending title="Account" message="This screen is waiting on its design." actionLabel="Log out" onAction={signOut} /> : <StudentHomeScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} onPlayer={() => nav('Player')} />
+    : role === 'Guest' ? <Pending title="Log in" message="The log in screen is waiting on its design. You can continue as a demo student for now." actionLabel="Continue as student" onAction={signIn} />
+    : role === 'Student' ? page === 'Quiz' ? <QuizScreen onBack={() => nav('Dashboard')} onResult={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => nav('Dashboard')} /> : page === 'Player' ? <Player onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} /> : page === 'Result' ? <Result onBack={() => nav('Quiz')} onCheckout={() => nav('Player')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <Certificates onBack={() => nav('Dashboard')} /> : page === 'Learning' ? <Pending title="My learning" message="This screen is waiting on its design." /> : page === 'Inbox' ? <Pending title="Messages" message="This screen is waiting on its design." /> : page === 'Account' ? <Pending title="Account" message="This screen is waiting on its design." actionLabel="Log out" onAction={signOut} /> : <StudentHomeScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} onPlayer={() => nav('Player')} />
     : role === 'Administrator' ? <AdminDashboardScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} />
     : page === 'Grading' ? <GradingScreen onBack={() => nav('Dashboard')} onGrade={() => nav('Grade')} /> : page === 'Grade' ? <Grade onBack={() => nav('Grading')} /> : page === 'Courses' ? <CoursesScreen onSetup={() => nav('Setup')} /> : page === 'Students' ? <Students /> : page === 'Messages' ? <Messages /> : page === 'More' ? <More onStudent={() => {setRole('Student'); nav('Dashboard');}} onAdmin={() => {setRole('Administrator'); nav('Dashboard');}} /> : page === 'Setup' ? <Setup onBack={() => nav('Courses')} onCurriculum={() => nav('Curriculum')} /> : page === 'Curriculum' ? <CurriculumScreen onBack={() => nav('Setup')} onLesson={() => nav('Lesson')} /> : page === 'Lesson' ? <Lesson onBack={() => nav('Curriculum')} /> : <InstructorDashboardScreen onOpenGrading={() => nav('Grading')} />;
   const publicTabs = role === 'Guest' ? guestTabs : role === 'Student' ? studentTabs : undefined;

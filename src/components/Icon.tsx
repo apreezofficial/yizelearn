@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {colors} from '../theme/tokens';
 
-export type IconName = 'search' | 'filter' | 'back' | 'down' | 'up' | 'heart' | 'heartFilled' | 'check' | 'play' | 'lock' | 'home' | 'book' | 'cart' | 'user' | 'message';
+export type IconName = 'search' | 'filter' | 'back' | 'down' | 'up' | 'heart' | 'heartFilled' | 'check' | 'play' | 'lock' | 'home' | 'book' | 'cart' | 'user' | 'message' | 'close';
 
 // Line icons drawn with plain views, so the app needs no native icon dependency.
 export function Icon({name, size = 22, color = colors.ink}: {name: IconName; size?: number; color?: string}) {
@@ -17,6 +17,7 @@ export function Icon({name, size = 22, color = colors.ink}: {name: IconName; siz
       return <View style={[box, styles.center]}><View style={[shift, {width: s * 0.42, height: s * 0.42, borderLeftWidth: w, borderBottomWidth: w, borderColor: color, transform: [{rotate}]}]} /></View>;
     }
     case 'heart': case 'heartFilled': return <View style={[box, styles.center]}><Text style={{fontSize: s, lineHeight: s * 1.15, color, includeFontPadding: false}}>{name === 'heart' ? '♡' : '♥'}</Text></View>;
+    case 'close': return <View style={[box, styles.center]}>{['45deg', '-45deg'].map(rotate => <View key={rotate} style={{position: 'absolute', width: s * 0.7, height: w, borderRadius: w, backgroundColor: color, transform: [{rotate}]}} />)}</View>;
     case 'check': return <View style={[box, styles.center]}><View style={{width: s * 0.55, height: s * 0.3, marginTop: -s * 0.12, borderLeftWidth: w, borderBottomWidth: w, borderColor: color, transform: [{rotate: '-45deg'}]}} /></View>;
     case 'play': return <View style={[box, styles.center]}><View style={{marginLeft: s * 0.1, width: 0, height: 0, borderTopWidth: s * 0.28, borderBottomWidth: s * 0.28, borderLeftWidth: s * 0.44, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: color}} /></View>;
     case 'lock': return <View style={[box, styles.center]}><View style={[line, {width: s * 0.46, height: s * 0.36, borderBottomWidth: 0, borderTopLeftRadius: s, borderTopRightRadius: s, marginBottom: -w}]} /><View style={[line, {width: s * 0.66, height: s * 0.44, borderRadius: w}]} /></View>;
