@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   bottom: {paddingHorizontal: spacing.screen, paddingVertical: 14, backgroundColor: colors.barBg, borderTopWidth: 1, borderTopColor: colors.line},
   button: {height: spacing.button, borderRadius: radius.button, backgroundColor: colors.sky, alignItems: 'center', justifyContent: 'center'},
   dim: {opacity: 0.7},
-  buttonText: {fontSize: type.subheading, color: colors.white, fontWeight: '700'},
+  buttonText: {fontSize: type.subheading, color: colors.onSky, fontWeight: '700'},
   action: {height: spacing.button, borderRadius: radius.button, backgroundColor: colors.sky, alignItems: 'center', justifyContent: 'center', marginTop: 14},
   outline: {backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sandLine},
   outlineText: {color: colors.ink},

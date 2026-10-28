@@ -73,7 +73,7 @@ export function CourseScreen({course, modules, saved, onBack, onToggleSave, onPr
       <Animated.View style={[styles.body, {opacity: content, transform: [{translateY: content.interpolate({inputRange: [0, 1], outputRange: [14, 0]})}]}]}>
         {tab === 'Overview' && <>
           <Text style={[styles.heading, font]}>What you will learn</Text>
-          {(course.outcomes || []).map(o => <View key={o} style={styles.outcome}><View style={styles.tick}><Icon name="check" size={14} color={colors.white} /></View><Text style={[styles.outcomeText, font]}>{o}</Text></View>)}
+          {(course.outcomes || []).map(o => <View key={o} style={styles.outcome}><View style={styles.tick}><Icon name="check" size={14} color={colors.onSky} /></View><Text style={[styles.outcomeText, font]}>{o}</Text></View>)}
           <Text style={[styles.heading, styles.gap, font]}>This course includes</Text>
           <View style={styles.includes}>
             <Include icon="play" label={`${formatDuration(course.durationMinutes)} of video`} />

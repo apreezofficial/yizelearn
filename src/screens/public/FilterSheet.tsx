@@ -29,7 +29,7 @@ export function FilterSheet({visible, courses, browse, onApply, onClose}: Props)
       <Text style={[styles.label, font]}>Rating</Text>
       <View style={styles.pills}>{ratings.map(r => <Pressable key={r.label} onPress={() => setDraft(d => ({...d, rating: r.value}))} style={[styles.pill, draft.rating === r.value && styles.pillActive]}><Text style={[styles.pillText, font, draft.rating === r.value && styles.pillTextActive]}>{r.label}</Text></Pressable>)}</View>
       <Text style={[styles.label, font]}>Level</Text>
-      {levels.map(level => { const on = draft.levels.includes(level); return <Pressable key={level} onPress={() => toggleLevel(level)} style={styles.checkRow} accessibilityRole="checkbox" accessibilityState={{checked: on}}><View style={[styles.box, on && styles.boxOn]}>{on && <Icon name="check" size={18} color={colors.white} />}</View><Text style={[styles.checkText, font]}>{level} ({formatNumber(levelCount(level))})</Text></Pressable>; })}
+      {levels.map(level => { const on = draft.levels.includes(level); return <Pressable key={level} onPress={() => toggleLevel(level)} style={styles.checkRow} accessibilityRole="checkbox" accessibilityState={{checked: on}}><View style={[styles.box, on && styles.boxOn]}>{on && <Icon name="check" size={18} color={colors.onSky} />}</View><Text style={[styles.checkText, font]}>{level} ({formatNumber(levelCount(level))})</Text></Pressable>; })}
       <View style={styles.priceRow}><Text style={[styles.label, font]}>Price</Text><Text style={[styles.priceValue, font]}>{formatNaira(draft.price[0])} to {formatNaira(draft.price[1])}</Text></View>
       <RangeSlider min={PRICE_BOUNDS[0]} max={PRICE_BOUNDS[1]} step={1000} value={draft.price} onChange={price => setDraft(d => ({...d, price}))} />
       <View style={styles.footer}><Pressable onPress={() => setDraft(defaultFilters)} style={({pressed}) => [styles.reset, pressed && styles.pressed]}><Text style={[styles.resetText, font]}>Reset</Text></Pressable><Pressable onPress={() => onApply(draft)} style={({pressed}) => [styles.show, pressed && styles.pressed]}><Text style={[styles.showText, font]}>Show {formatNumber(matches)} {matches === 1 ? 'course' : 'courses'}</Text></Pressable></View>
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   pill: {height: 46, minWidth: 76, paddingHorizontal: 20, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center'},
   pillActive: {backgroundColor: colors.sky, borderColor: colors.sky},
   pillText: {fontSize: type.label, color: colors.ink, fontWeight: '600'},
-  pillTextActive: {color: colors.white},
+  pillTextActive: {color: colors.onSky},
   checkRow: {flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 48},
   box: {width: 26, height: 26, borderRadius: 7, borderWidth: 1.5, borderColor: colors.muted, alignItems: 'center', justifyContent: 'center'},
   boxOn: {backgroundColor: colors.sky, borderColor: colors.sky},
@@ -92,5 +92,5 @@ const styles = StyleSheet.create({
   reset: {flex: 0.8, height: spacing.button, borderRadius: radius.button, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center'},
   resetText: {fontSize: type.body, color: colors.ink, fontWeight: '700'},
   show: {flex: 1.4, height: spacing.button, borderRadius: radius.button, backgroundColor: colors.sky, alignItems: 'center', justifyContent: 'center'},
-  showText: {fontSize: type.body, color: colors.white, fontWeight: '700'},
+  showText: {fontSize: type.body, color: colors.onSky, fontWeight: '700'},
 });

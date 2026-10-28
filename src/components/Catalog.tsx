@@ -17,7 +17,7 @@ export function CategoryChips({items, active, onSelect}: {items: readonly string
 
 export function Stars({value = 0, size = 15}: {value?: number; size?: number}) {
   const full = Math.round(value);
-  return <View style={styles.stars}>{[0, 1, 2, 3, 4].map(i => <Icon key={i} name={i < full ? 'starFilled' : 'star'} size={size} color={colors.marigold} />)}</View>;
+  return <View style={styles.stars}>{[0, 1, 2, 3, 4].map(i => <Icon key={i} name={i < full ? 'starFilled' : 'star'} size={size} color={colors.star} />)}</View>;
 }
 
 export function Rating({value = 0, count, size = 15}: {value?: number; count?: number; size?: number}) {
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   chip: {height: 44, paddingHorizontal: 20, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, justifyContent: 'center'},
   chipActive: {backgroundColor: colors.sky, borderColor: colors.sky},
   chipText: {fontSize: type.label, color: colors.ink, fontWeight: '600'},
-  chipTextActive: {color: colors.white},
+  chipTextActive: {color: colors.onSky},
   stars: {flexDirection: 'row', gap: 1},
   rating: {flexDirection: 'row', alignItems: 'center', gap: 6},
   ratingValue: {color: colors.ink, fontWeight: '700'},
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   enrolLabel: {fontSize: type.caption, color: colors.muted},
   enrolPrice: {fontSize: type.title, color: colors.ink, fontWeight: '800'},
   enrolButton: {flex: 1, height: spacing.button, borderRadius: radius.button, backgroundColor: colors.sky, alignItems: 'center', justifyContent: 'center'},
-  enrolText: {fontSize: type.subheading, color: colors.white, fontWeight: '700'},
+  enrolText: {fontSize: type.subheading, color: colors.onSky, fontWeight: '700'},
   tabBar: {flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.cream, borderTopWidth: 1, borderTopColor: colors.line, paddingTop: 8, paddingBottom: 8},
   tab: {alignItems: 'center', minWidth: 64, gap: 4},
   tabIcon: {width: 56, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center'},

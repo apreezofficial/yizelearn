@@ -95,7 +95,7 @@ export function SignUpScreen({onBack, onLogin, onSent}: SignUpProps) {
       <Field label="Full name" value={name} onChangeText={setName} placeholder="Your full name" autoCapitalize="words" autoComplete="name" textContentType="name" />
       <Field label="Email" value={email} onChangeText={setEmail} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
       <Pressable onPress={() => setAgreed(v => !v)} style={styles.check} accessibilityRole="checkbox" accessibilityState={{checked: agreed}}>
-        <View style={[styles.box, agreed && styles.boxOn]}>{agreed && <Icon name="check" size={16} color={colors.white} />}</View>
+        <View style={[styles.box, agreed && styles.boxOn]}>{agreed && <Icon name="check" size={16} color={colors.onSky} />}</View>
         <Text style={[styles.checkText, font]}>I agree to the Terms and Privacy policy</Text>
       </Pressable>
       {!!error && <Text style={[styles.error, font]}>{error}</Text>}
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   input: {height: 58, borderRadius: radius.field, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, paddingHorizontal: 18, fontSize: type.body, color: colors.ink},
   error: {fontSize: type.caption, color: colors.danger, marginBottom: 10, textAlign: 'center'},
   primary: {height: spacing.button, borderRadius: radius.button, backgroundColor: colors.sky, alignItems: 'center', justifyContent: 'center', marginTop: 4},
-  primaryText: {fontSize: type.subheading, color: colors.white, fontWeight: '700'},
+  primaryText: {fontSize: type.subheading, color: colors.onSky, fontWeight: '700'},
   dim: {opacity: 0.5},
   pressed: {opacity: 0.8},
   divider: {flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 26},

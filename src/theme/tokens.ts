@@ -12,12 +12,16 @@ export const colors = {
   navy: '#24508F',
   blue900: '#17335A',
   ink: '#242A36',
-  muted: '#6F7785',
+  muted: '#5C6472',
   line: '#E6E7E5',
   white: '#FFFFFF',
   heroText: '#FBF1E1',
   marigold: '#F0B74A',
-  danger: '#C94A4A',
+  // Stars need 3:1 against cream; the bright marigold only reached 1.7:1.
+  star: '#B7791F',
+  // Text and icons on the light blue. White on sky was 2.5:1; navy is 5:1.
+  onSky: '#17335A',
+  danger: '#B53A3A',
   success: '#2E8B67',
 } as const;
 
