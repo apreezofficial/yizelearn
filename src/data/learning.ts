@@ -96,3 +96,15 @@ export const threads: Record<string, {from: 'them' | 'me'; text: string; time: s
     {from: 'them', text: 'Great, good luck!', time: '9:36'},
   ],
 };
+
+export type NotificationKind = 'learning' | 'messages' | 'other';
+export type Notice = {id: string; title: string; time: string; unread: boolean; kind: NotificationKind};
+export const notices: Notice[] = [
+  {id: 'n1', title: 'Assignment 1 was graded', time: '2 hours ago', unread: true, kind: 'learning'},
+  {id: 'n2', title: 'New lesson in Data analysis in Excel', time: '5 hours ago', unread: true, kind: 'learning'},
+  {id: 'n3', title: 'Adaeze replied to your question', time: 'Yesterday', unread: false, kind: 'messages'},
+  {id: 'n4', title: 'Your certificate is ready', time: '2 days ago', unread: false, kind: 'learning'},
+  {id: 'n5', title: 'Payment received', time: '3 days ago', unread: false, kind: 'other'},
+];
+
+export const helpArticles = ['How do I get my certificate?', 'Can I get a refund?', 'How do I reset my password?'];

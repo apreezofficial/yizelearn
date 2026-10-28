@@ -5,7 +5,7 @@ import {InstructorDashboardScreen} from './src/screens/instructor/InstructorDash
 import {CoursesScreen} from './src/screens/instructor/CoursesScreen';
 import {StudentHomeScreen} from './src/screens/student/StudentHomeScreen';
 import {AdminDashboardScreen} from './src/screens/admin/AdminDashboardScreen';
-import {CurriculumScreen, GradingScreen, NotificationsScreen} from './src/screens/flows/CoreFlowScreens';
+import {CurriculumScreen, GradingScreen} from './src/screens/flows/CoreFlowScreens';
 import type {Course} from './src/api/types';
 import {TabBar, type TabItem} from './src/components/Catalog';
 import {EmptyState} from './src/components/States';
@@ -25,6 +25,8 @@ import {CertificatesScreen} from './src/screens/student/CertificatesScreen';
 import {MessagesScreen} from './src/screens/student/MessagesScreen';
 import {ConversationScreen} from './src/screens/student/ConversationScreen';
 import {AccountScreen} from './src/screens/student/AccountScreen';
+import {NotificationsScreen} from './src/screens/student/NotificationsScreen';
+import {HelpCentreScreen} from './src/screens/student/HelpCentreScreen';
 import {OnboardingScreen} from './src/screens/public/OnboardingScreen';
 import {CartScreen} from './src/screens/public/CartScreen';
 import {PaymentCheckoutScreen} from './src/screens/public/PaymentCheckoutScreen';
@@ -38,7 +40,7 @@ import {ScreenTransition} from './src/components/ScreenTransition';
 
 const C = {bg: '#FBFBF9', blue50: '#EFF5FC', blue100: '#DFEBF9', blue600: '#4F8BCD', blue700: '#2F6DB5', blue900: '#17335A', ink: '#242A36', muted: '#6F7785', line: '#E6E7E5', white: '#FFFFFF', yellow: '#F0B74A'};
 type Tab = 'Dashboard' | 'Courses' | 'Students' | 'Messages' | 'More';
-type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'LessonPreview' | 'Cart' | 'Login' | 'SignUp' | 'Verify' | 'Sso' | 'Assessment' | 'Grades' | 'Conversation' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding';
+type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'LessonPreview' | 'Cart' | 'Login' | 'SignUp' | 'Verify' | 'Sso' | 'Assessment' | 'Grades' | 'Conversation' | 'Help' | 'Soon' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding';
 type Role = 'Guest' | 'Instructor' | 'Student' | 'Administrator';
 const tabs: Array<{label: Tab; icon: string}> = [{label: 'Dashboard', icon: 'D'}, {label: 'Courses', icon: 'C'}, {label: 'Students', icon: 'S'}, {label: 'Messages', icon: 'M'}, {label: 'More', icon: '...'}];
 
@@ -99,6 +101,7 @@ function AppContent() {
   const [afterAuth, setAfterAuth] = useState<Page>('Dashboard');
   const [pending, setPending] = useState<{email: string; name?: string}>({email: ''});
   const [thread, setThread] = useState('sn');
+  const [soonTitle, setSoonTitle] = useState('');
   const nav = (p: Page) => setPage(p);
   useScreenCapturePolicy(capturePolicies[page] || 'block', () => Alert.alert('Screenshot taken', 'This screen can show sensitive payment details, like your card number. Keep the screenshot private, or delete it if you do not need it.'));
   const course = sampleCourses.find(c => c.id === courseId) || sampleCourses[0];
@@ -129,7 +132,7 @@ function AppContent() {
     : undefined;
   const screen = publicScreen ? publicScreen
     : role === 'Guest' ? <Pending title="Log in to continue" message="Log in with your email to keep going." actionLabel="Log in" onAction={() => needSignIn('Dashboard')} />
-    : role === 'Student' ? page === 'Grades' ? <GradesScreen onBack={() => nav('Account')} onAssessment={() => nav('Assessment')} /> : page === 'Assessment' ? <AssessmentScreen onBack={() => nav('Grades')} /> : page === 'Conversation' ? <ConversationScreen conversationId={thread} onBack={() => nav('Inbox')} /> : page === 'Quiz' ? <QuizQuestionScreen onBack={() => nav('Player')} onNext={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => nav('Dashboard')} /> : page === 'Player' ? <CoursePlayerScreen onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} /> : page === 'Result' ? <ResultScreen onBack={() => nav('Dashboard')} onContinue={() => nav('Player')} onReview={() => nav('Quiz')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <CertificatesScreen onBack={() => nav('Account')} /> : page === 'Learning' ? <MyCourseScreen saved={saved} onOpen={() => nav('Player')} /> : page === 'Inbox' ? <MessagesScreen onOpen={id => { setThread(id); nav('Conversation'); }} /> : page === 'Account' ? <AccountScreen onGrades={() => nav('Grades')} onCertificates={() => nav('Certificates')} onNotifications={() => nav('Notifications')} onLogout={signOut} /> : <StudentHomeScreen onResume={() => nav('Player')} onCourse={() => nav('Player')} onNotifications={() => nav('Notifications')} />
+    : role === 'Student' ? page === 'Help' ? <HelpCentreScreen onBack={() => nav('Account')} /> : page === 'Soon' ? <Pending title={soonTitle} message="This section is waiting on its design." actionLabel="Back to account" onAction={() => nav('Account')} /> : page === 'Grades' ? <GradesScreen onBack={() => nav('Account')} onAssessment={() => nav('Assessment')} /> : page === 'Assessment' ? <AssessmentScreen onBack={() => nav('Grades')} /> : page === 'Conversation' ? <ConversationScreen conversationId={thread} onBack={() => nav('Inbox')} /> : page === 'Quiz' ? <QuizQuestionScreen onBack={() => nav('Player')} onNext={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => nav('Dashboard')} /> : page === 'Player' ? <CoursePlayerScreen onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} /> : page === 'Result' ? <ResultScreen onBack={() => nav('Dashboard')} onContinue={() => nav('Player')} onReview={() => nav('Quiz')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <CertificatesScreen onBack={() => nav('Account')} /> : page === 'Learning' ? <MyCourseScreen saved={saved} onOpen={() => nav('Player')} /> : page === 'Inbox' ? <MessagesScreen onOpen={id => { setThread(id); nav('Conversation'); }} /> : page === 'Account' ? <AccountScreen onGrades={() => nav('Grades')} onCertificates={() => nav('Certificates')} onNotifications={() => nav('Notifications')} onHelp={() => nav('Help')} onSoon={title => { setSoonTitle(title); nav('Soon'); }} onLogout={signOut} /> : <StudentHomeScreen onResume={() => nav('Player')} onCourse={() => nav('Player')} onNotifications={() => nav('Notifications')} />
     : role === 'Administrator' ? <AdminDashboardScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} />
     : page === 'Grading' ? <GradingScreen onBack={() => nav('Dashboard')} onGrade={() => nav('Grade')} /> : page === 'Grade' ? <Grade onBack={() => nav('Grading')} /> : page === 'Courses' ? <CoursesScreen onSetup={() => nav('Setup')} /> : page === 'Students' ? <Students /> : page === 'Messages' ? <Messages /> : page === 'More' ? <More onStudent={() => {setRole('Student'); nav('Dashboard');}} onAdmin={() => {setRole('Administrator'); nav('Dashboard');}} /> : page === 'Setup' ? <Setup onBack={() => nav('Courses')} onCurriculum={() => nav('Curriculum')} /> : page === 'Curriculum' ? <CurriculumScreen onBack={() => nav('Setup')} onLesson={() => nav('Lesson')} /> : page === 'Lesson' ? <Lesson onBack={() => nav('Curriculum')} /> : <InstructorDashboardScreen onOpenGrading={() => nav('Grading')} />;
   const publicTabs = role === 'Guest' ? guestTabs : role === 'Student' ? studentTabs : undefined;
