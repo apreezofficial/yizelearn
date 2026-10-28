@@ -15,8 +15,8 @@ export function BottomButton({label, onPress, disabled, busy}: {label: string; o
   return <View style={styles.bottom}><Pressable onPress={onPress} disabled={disabled || busy} style={({pressed}) => [styles.button, (disabled || pressed) && styles.dim]} accessibilityRole="button" accessibilityState={{disabled: disabled || busy, busy}}>{busy ? <ActivityIndicator color={colors.white} /> : <Text style={[styles.buttonText, font]}>{label}</Text>}</Pressable></View>;
 }
 
-export function PrimaryAction({label, onPress, outline}: {label: string; onPress?: () => void; outline?: boolean}) {
-  return <Pressable onPress={onPress} style={({pressed}) => [styles.action, outline && styles.outline, pressed && styles.dim]} accessibilityRole="button"><Text style={[styles.buttonText, font, outline && styles.outlineText]}>{label}</Text></Pressable>;
+export function PrimaryAction({label, onPress, outline, disabled}: {label: string; onPress?: () => void; outline?: boolean; disabled?: boolean}) {
+  return <Pressable onPress={onPress} disabled={disabled} accessibilityState={{disabled}} style={({pressed}) => [styles.action, outline && styles.outline, (disabled || pressed) && styles.dim]} accessibilityRole="button"><Text style={[styles.buttonText, font, outline && styles.outlineText]}>{label}</Text></Pressable>;
 }
 
 const styles = StyleSheet.create({
