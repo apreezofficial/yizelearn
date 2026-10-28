@@ -110,10 +110,7 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
       <View style={styles.dots}>{slides.map((s, i) => {
         const on = slides.map((_, j) => (j === i ? 1 : 0));
         return <Pressable key={s.key} onPress={() => goTo(i)} hitSlop={10} accessibilityRole="button" accessibilityLabel={`Slide ${i + 1} of ${slides.length}`} accessibilityState={{selected: i === index}}>
-          <Animated.View style={[styles.dot, {
-            width: perSlide(on.map(x => 12 + 20 * x)),
-            opacity: perSlide(on.map(x => 0.45 + 0.55 * x)),
-          }]} />
+          <Animated.View style={[styles.dot, {opacity: perSlide(on.map(x => 0.4 + 0.6 * x))}]} />
         </Pressable>;
       })}</View>
       <ActionBar onBrowse={onBrowse} onLogin={onLogin} />
@@ -142,8 +139,8 @@ const styles = StyleSheet.create({
   title: {fontSize: type.title, color: colors.heroText, fontWeight: '600', textAlign: 'center', marginBottom: 10},
   body: {fontSize: type.body, lineHeight: 23, color: colors.white, textAlign: 'center', maxWidth: 320, opacity: 0.95},
   footer: {paddingHorizontal: 20, paddingBottom: 24},
-  dots: {flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 44},
-  dot: {height: 12, borderRadius: 6, backgroundColor: colors.white},
+  dots: {flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginBottom: 44},
+  dot: {width: 16, height: 16, borderRadius: 8, backgroundColor: colors.white},
   bar: {flexDirection: 'row', alignItems: 'center', height: 60, borderRadius: radius.button, backgroundColor: 'rgba(255, 255, 255, 0.28)', overflow: 'hidden'},
   action: {flex: 1, height: '100%', justifyContent: 'center', paddingHorizontal: 20},
   actionEnd: {alignItems: 'flex-end'},
