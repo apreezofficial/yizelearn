@@ -21,6 +21,9 @@ export const colors = {
   star: '#B7791F',
   // Text and icons on the light blue. White on sky was 2.5:1; navy is 5:1.
   onSky: '#17335A',
+  // The chalkboard panels used for the continue, player and quiz cards.
+  chalk: '#273531',
+  chalkText: '#FEF9F2',
   danger: '#B53A3A',
   success: '#2E8B67',
 } as const;

@@ -12,6 +12,7 @@ import {
   CreditCardIcon,
   FavouriteIcon,
   AppleIcon,
+  Notification01Icon,
   FilterHorizontalIcon,
   GoogleIcon,
   Home01Icon,
@@ -54,6 +55,7 @@ const icons = {
   bank: {icon: BankIcon},
   google: {icon: GoogleIcon},
   apple: {icon: AppleIcon},
+  bell: {icon: Notification01Icon},
 } as const;
 
 export type IconName = keyof typeof icons;
