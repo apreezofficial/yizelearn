@@ -1,8 +1,10 @@
 import {request} from './client';
 import type {AssignmentSubmission, Course, DashboardSummary, Lesson, Module, Paginated, Payment, User} from './types';
 
+// Sign-in and sign-up are one flow: the user enters an email, gets a 6-digit code, and enters it. No passwords.
 export const authApi = {
-  login: (email: string, password: string) => request<{token: string; user: User}>('/auth/login', {method: 'POST', body: {email, password}}),
+  requestCode: (email: string, name?: string) => request<void>('/auth/code/request', {method: 'POST', body: {email, name}}),
+  verifyCode: (email: string, code: string) => request<{token: string; user: User}>('/auth/code/verify', {method: 'POST', body: {email, code}}),
   me: () => request<User>('/auth/me'),
   logout: () => request<void>('/auth/logout', {method: 'POST'}),
 };

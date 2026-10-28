@@ -51,7 +51,7 @@ grep -q 'Explore' smoke-results/home.xml
 if is_secure; then echo 'Home screen should allow screenshots.' >&2; exit 1; fi
 tap_text 'Log in' home
 capture login
-grep -q 'Continue as student' smoke-results/login.xml
+grep -q 'Welcome back' smoke-results/login.xml
 if ! is_secure; then echo 'Log in screen should block screenshots.' >&2; exit 1; fi
 if adb logcat -d -s AndroidRuntime:E ReactNativeJS:E | grep -E 'FATAL EXCEPTION|JavascriptException|ReactNativeJS:.*Error:'; then
   echo 'App reported a runtime error during launch.' >&2

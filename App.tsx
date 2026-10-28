@@ -14,6 +14,7 @@ import {defaultBrowse, type Browse} from './src/screens/public/browse';
 import {CourseScreen} from './src/screens/public/CourseScreen';
 import {ExploreScreen} from './src/screens/public/ExploreScreen';
 import {LandingScreen} from './src/screens/public/LandingScreen';
+import {LoginScreen, SignUpScreen, VerifyCodeScreen} from './src/screens/auth/AuthScreens';
 import {OnboardingScreen} from './src/screens/public/OnboardingScreen';
 import {CartScreen} from './src/screens/public/CartScreen';
 import {PaymentCheckoutScreen} from './src/screens/public/PaymentCheckoutScreen';
@@ -27,7 +28,7 @@ import {ScreenTransition} from './src/components/ScreenTransition';
 
 const C = {bg: '#FBFBF9', blue50: '#EFF5FC', blue100: '#DFEBF9', blue600: '#4F8BCD', blue700: '#2F6DB5', blue900: '#17335A', ink: '#242A36', muted: '#6F7785', line: '#E6E7E5', white: '#FFFFFF', yellow: '#F0B74A'};
 type Tab = 'Dashboard' | 'Courses' | 'Students' | 'Messages' | 'More';
-type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'LessonPreview' | 'Cart' | 'Login' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding';
+type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'LessonPreview' | 'Cart' | 'Login' | 'SignUp' | 'Verify' | 'Sso' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding';
 type Role = 'Guest' | 'Instructor' | 'Student' | 'Administrator';
 const tabs: Array<{label: Tab; icon: string}> = [{label: 'Dashboard', icon: 'D'}, {label: 'Courses', icon: 'C'}, {label: 'Students', icon: 'S'}, {label: 'Messages', icon: 'M'}, {label: 'More', icon: '...'}];
 
@@ -89,6 +90,9 @@ function AppContent() {
   const [cartFrom, setCartFrom] = useState<Page>('Course');
   const [promo, setPromo] = useState<string>();
   const [order, setOrder] = useState<Order>();
+  // Guests sign in by email code; afterAuth is where they land once verified.
+  const [afterAuth, setAfterAuth] = useState<Page>('Dashboard');
+  const [pending, setPending] = useState<{email: string; name?: string}>({email: ''});
   const nav = (p: Page) => setPage(p);
   useScreenCapturePolicy(capturePolicies[page] || 'block', () => Alert.alert('Screenshot taken', 'This screen can show sensitive payment details, like your card number. Keep the screenshot private, or delete it if you do not need it.'));
   const course = sampleCourses.find(c => c.id === courseId) || sampleCourses[0];
@@ -100,25 +104,31 @@ function AppContent() {
   const savedForLater = sampleCourses.filter(c => saved.includes(c.id) && !cart.includes(c.id));
   const totals = cartTotals(cartItems, promo);
   // Flow A1: buying needs an account, so guests sign in first; signed-in learners add to cart.
-  const enrol = () => { if (role === 'Guest') { nav('Login'); return; } setCart(list => (list.includes(course.id) ? list : [...list, course.id])); setCartFrom(page); nav('Cart'); };
+  // Buying needs an account. Guests add to the cart first, then sign in and come back to it.
+  const enrol = () => { setCart(list => (list.includes(course.id) ? list : [...list, course.id])); setCartFrom(page); if (role === 'Guest') { needSignIn('Cart'); return; } nav('Cart'); };
   const pay = (method: Parameters<typeof createOrder>[2], cardNumber: string) => { setOrder(createOrder(cartItems, totals.total, method, cardNumber)); setCart([]); setPromo(undefined); nav('Receipt'); };
-  const signIn = () => { setRole('Student'); nav('Dashboard'); };
+  const needSignIn = (next: Page) => { setAfterAuth(next); nav('Login'); };
+  const signedIn = () => { setRole('Student'); nav(afterAuth); };
   const signOut = () => { setRole('Guest'); nav('Landing'); };
-  const publicScreen = page === 'Onboarding' ? <OnboardingScreen onBrowse={() => nav('Landing')} onLogin={() => nav('Login')} />
-    : page === 'Landing' ? <LandingScreen courses={sampleCourses} onLogin={() => nav('Login')} onSearch={query => explore({query})} onCategory={category => explore({category})} onSeeAll={() => explore({})} onCourse={openCourse} />
+  const publicScreen = page === 'Onboarding' ? <OnboardingScreen onBrowse={() => nav('Landing')} onLogin={() => needSignIn('Dashboard')} />
+    : page === 'Landing' ? <LandingScreen courses={sampleCourses} onLogin={() => needSignIn('Dashboard')} onSearch={query => explore({query})} onCategory={category => explore({category})} onSeeAll={() => explore({})} onCourse={openCourse} />
     : page === 'Explore' ? <ExploreScreen courses={sampleCourses} browse={browse} onBrowse={setBrowse} onCourse={openCourse} />
     : page === 'Course' ? <CourseScreen key={course.id} course={course} modules={sampleModules} saved={isSaved} onBack={() => nav(courseFrom)} onToggleSave={toggleSave} onPreview={() => nav('LessonPreview')} onEnrol={enrol} />
-    : page === 'Cart' ? <CartScreen items={cartItems} savedForLater={savedForLater} promo={promo} onPromo={setPromo} onRemove={c => setCart(list => list.filter(id => id !== c.id))} onCourse={openCourse} onCheckout={() => nav(role === 'Guest' ? 'Login' : 'Checkout')} onBrowse={() => nav('Explore')} onBack={role === 'Guest' ? undefined : () => nav(cartFrom)} />
+    : page === 'Cart' ? <CartScreen items={cartItems} savedForLater={savedForLater} promo={promo} onPromo={setPromo} onRemove={c => setCart(list => list.filter(id => id !== c.id))} onCourse={openCourse} onCheckout={() => (role === 'Guest' ? needSignIn('Checkout') : nav('Checkout'))} onBrowse={() => nav('Explore')} onBack={role === 'Guest' ? undefined : () => nav(cartFrom)} />
+      : page === 'Login' ? <LoginScreen onBack={() => nav(afterAuth === 'Dashboard' ? 'Landing' : 'Cart')} onSignUp={() => nav('SignUp')} onSso={() => nav('Sso')} onSent={email => { setPending({email}); nav('Verify'); }} />
+    : page === 'SignUp' ? <SignUpScreen onBack={() => nav('Login')} onLogin={() => nav('Login')} onSent={(email, name) => { setPending({email, name}); nav('Verify'); }} />
+    : page === 'Verify' ? <VerifyCodeScreen key={pending.email} email={pending.email} name={pending.name} onBack={() => nav(pending.name ? 'SignUp' : 'Login')} onVerified={signedIn} />
+    : page === 'Sso' ? <Pending title="Organisation login" message="School and work sign-in is waiting on its design." actionLabel="Back to log in" onAction={() => nav('Login')} />
     : page === 'LessonPreview' ? <Pending title="Free preview" message="The preview lesson player is waiting on its design." actionLabel="Back to course" onAction={() => nav('Course')} />
     : undefined;
   const screen = publicScreen ? publicScreen
-    : role === 'Guest' ? <Pending title="Log in" message="The log in screen is waiting on its design. You can continue as a demo student for now." actionLabel="Continue as student" onAction={signIn} />
+    : role === 'Guest' ? <Pending title="Log in to continue" message="Log in with your email to keep going." actionLabel="Log in" onAction={() => needSignIn('Dashboard')} />
     : role === 'Student' ? page === 'Quiz' ? <QuizScreen onBack={() => nav('Dashboard')} onResult={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => nav('Dashboard')} /> : page === 'Player' ? <Player onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} /> : page === 'Result' ? <Result onBack={() => nav('Quiz')} onCheckout={() => nav('Player')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <Certificates onBack={() => nav('Dashboard')} /> : page === 'Learning' ? <Pending title="My learning" message="This screen is waiting on its design." /> : page === 'Inbox' ? <Pending title="Messages" message="This screen is waiting on its design." /> : page === 'Account' ? <Pending title="Account" message="This screen is waiting on its design." actionLabel="Log out" onAction={signOut} /> : <StudentHomeScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} onPlayer={() => nav('Player')} />
     : role === 'Administrator' ? <AdminDashboardScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} />
     : page === 'Grading' ? <GradingScreen onBack={() => nav('Dashboard')} onGrade={() => nav('Grade')} /> : page === 'Grade' ? <Grade onBack={() => nav('Grading')} /> : page === 'Courses' ? <CoursesScreen onSetup={() => nav('Setup')} /> : page === 'Students' ? <Students /> : page === 'Messages' ? <Messages /> : page === 'More' ? <More onStudent={() => {setRole('Student'); nav('Dashboard');}} onAdmin={() => {setRole('Administrator'); nav('Dashboard');}} /> : page === 'Setup' ? <Setup onBack={() => nav('Courses')} onCurriculum={() => nav('Curriculum')} /> : page === 'Curriculum' ? <CurriculumScreen onBack={() => nav('Setup')} onLesson={() => nav('Lesson')} /> : page === 'Lesson' ? <Lesson onBack={() => nav('Curriculum')} /> : <InstructorDashboardScreen onOpenGrading={() => nav('Grading')} />;
   const publicTabs = role === 'Guest' ? guestTabs : role === 'Student' ? studentTabs : undefined;
   const isPublic = publicTabs !== undefined;
-  const showPublicTabs = publicTabs?.some(t => t.key === page);
+  const showPublicTabs = !(['Login', 'SignUp', 'Verify', 'Sso'] as Page[]).includes(page) && publicTabs?.some(t => t.key === page);
   const tab = tabs.some(x => x.label === page);
   // Edge-to-edge is on, so the app pads itself with the device insets. Each inset takes the colour of what it touches.
   const pageBg = page === 'Onboarding' ? colors.sky : isPublic ? colors.cream : C.bg;
