@@ -30,7 +30,7 @@ class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate
     #endif
     
     reactNativeFactory?.startReactNative(
-      withModuleName: "CathEdTech",
+      withModuleName: "Yizelearn",
       in: window,
       connectionOptions: connectionOptions
     )

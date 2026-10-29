@@ -1,4 +1,4 @@
-package com.cathedtech
+package com.yizelearn
 
 import android.app.Activity
 import android.os.Build

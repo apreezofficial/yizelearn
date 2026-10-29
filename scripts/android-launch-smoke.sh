@@ -4,10 +4,10 @@ mkdir -p smoke-results
 trap 'adb logcat -d > smoke-results/logcat.txt' EXIT
 adb install apks/app-release.apk
 adb logcat -c
-adb shell am start -W -n com.cathedtech/.MainActivity
+adb shell am start -W -n com.yizelearn/.MainActivity
 # Allow the animated intro to finish, including its 5.5-second safety timeout.
 sleep 8
-adb shell pidof com.cathedtech
+adb shell pidof com.yizelearn
 # The intro has played. Onboarding loops its animations forever, so uiautomator would never see an idle UI.
 # Turning system animations off now makes the app treat it as reduce motion and stop those loops.
 adb shell settings put global animator_duration_scale 0
@@ -36,7 +36,7 @@ tap_text() {
 }
 # True when the app window has FLAG_SECURE, i.e. screenshots and recordings are blocked.
 is_secure() {
-  adb shell dumpsys window windows | awk '/Window #.*com\.cathedtech\/com\.cathedtech\.MainActivity/ {found=1} found && /fl=/ {print; exit}' | grep -qw SECURE
+  adb shell dumpsys window windows | awk '/Window #.*com\.yizelearn\/com\.yizelearn\.MainActivity/ {found=1} found && /fl=/ {print; exit}' | grep -qw SECURE
 }
 # Onboarding comes first after the intro.
 capture onboarding

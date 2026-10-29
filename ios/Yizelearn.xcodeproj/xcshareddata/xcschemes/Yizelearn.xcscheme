@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "CathEdTech.app"
-               BlueprintName = "CathEdTech"
-               ReferencedContainer = "container:CathEdTech.xcodeproj">
+               BuildableName = "Yizelearn.app"
+               BlueprintName = "Yizelearn"
+               ReferencedContainer = "container:Yizelearn.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "CathEdTechTests.xctest"
-               BlueprintName = "CathEdTechTests"
-               ReferencedContainer = "container:CathEdTech.xcodeproj">
+               BuildableName = "YizelearnTests.xctest"
+               BlueprintName = "YizelearnTests"
+               ReferencedContainer = "container:Yizelearn.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "CathEdTech.app"
-            BlueprintName = "CathEdTech"
-            ReferencedContainer = "container:CathEdTech.xcodeproj">
+            BuildableName = "Yizelearn.app"
+            BlueprintName = "Yizelearn"
+            ReferencedContainer = "container:Yizelearn.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "CathEdTech.app"
-            BlueprintName = "CathEdTech"
-            ReferencedContainer = "container:CathEdTech.xcodeproj">
+            BuildableName = "Yizelearn.app"
+            BlueprintName = "Yizelearn"
+            ReferencedContainer = "container:Yizelearn.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
