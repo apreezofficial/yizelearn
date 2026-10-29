@@ -4,7 +4,8 @@ import {ApiError, auth} from '../../api/client';
 import {authApi} from '../../api/endpoints';
 import type {User} from '../../api/types';
 import {RoundButton} from '../../components/Catalog';
-import {Icon, type IconName} from '../../components/Icon';
+import {Icon} from '../../components/Icon';
+import {AppleLogo, GoogleLogo} from '../../components/BrandLogos';
 import {TitleBar} from '../../components/Layout';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
@@ -54,8 +55,8 @@ export function LoginScreen({onBack, onSignUp, onSso, onSent}: LoginProps) {
 
     <Divider label="or continue with" />
     <View style={styles.social}>
-      <SocialButton label="Google" icon="google" onPress={() => notConnected('Google')} />
-      {Platform.OS === 'ios' && <SocialButton label="Apple" icon="apple" onPress={() => notConnected('Apple')} />}
+      <SocialButton label="Google" logo={<GoogleLogo />} onPress={() => notConnected('Google')} />
+      {Platform.OS === 'ios' && <SocialButton label="Apple" logo={<AppleLogo color={colors.ink} />} onPress={() => notConnected('Apple')} />}
     </View>
 
     <Pressable onPress={onSso} style={({pressed}) => [styles.sso, pressed && styles.pressed]} accessibilityRole="button">
@@ -103,8 +104,8 @@ export function SignUpScreen({onBack, onLogin, onSent}: SignUpProps) {
 
       <Divider label="or sign up with" />
       <View style={styles.social}>
-        <SocialButton label="Google" icon="google" onPress={() => notConnected('Google')} />
-        {Platform.OS === 'ios' && <SocialButton label="Apple" icon="apple" onPress={() => notConnected('Apple')} />}
+        <SocialButton label="Google" logo={<GoogleLogo />} onPress={() => notConnected('Google')} />
+        {Platform.OS === 'ios' && <SocialButton label="Apple" logo={<AppleLogo color={colors.ink} />} onPress={() => notConnected('Apple')} />}
       </View>
 
       <Text style={[styles.footer, font]}>Already have an account? <Text onPress={onLogin} style={styles.link}>Log in</Text></Text>
@@ -193,9 +194,9 @@ function Primary({label, onPress, disabled, busy}: {label: string; onPress: () =
   </Pressable>;
 }
 
-function SocialButton({label, icon, onPress}: {label: string; icon: IconName; onPress: () => void}) {
+function SocialButton({label, logo, onPress}: {label: string; logo: React.ReactNode; onPress: () => void}) {
   return <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`Continue with ${label}`} style={({pressed}) => [styles.socialButton, pressed && styles.pressed]}>
-    <Icon name={icon} size={22} color={colors.ink} />
+    {logo}
     <Text style={[styles.socialText, font]}>{label}</Text>
   </Pressable>;
 }

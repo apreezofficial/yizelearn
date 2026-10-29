@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import type {Course} from '../../api/types';
 import {CategoryChips, CourseCard, SearchField} from '../../components/Catalog';
 import {categories} from '../../data/catalog';
@@ -17,7 +17,7 @@ export function LandingScreen({courses, onLogin, onSearch, onCategory, onSeeAll,
 
   return <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
     <View style={styles.top}>
-      <View style={styles.logo}><Text style={styles.logoText}>yizelearn</Text></View>
+      <Image source={require('../../assets/brand/logo.png')} style={styles.logo} resizeMode="contain" accessibilityLabel="yizelearn" />
       <Pressable onPress={onLogin} style={({pressed}) => [styles.login, pressed && styles.pressed]} accessibilityRole="button"><Text style={[styles.loginText, font]}>Log in</Text></Pressable>
     </View>
     <View style={styles.hero}>
@@ -39,8 +39,7 @@ const styles = StyleSheet.create({
   screen: {flex: 1, backgroundColor: colors.cream},
   content: {paddingHorizontal: spacing.screen, paddingTop: 12, paddingBottom: 28},
   top: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20},
-  logo: {height: 60, justifyContent: 'center'},
-  logoText: {fontFamily: 'Charmonman-Regular', fontSize: 38, lineHeight: 60, color: colors.blue700, includeFontPadding: false},
+  logo: {width: 154, height: 48},
   login: {height: 48, paddingHorizontal: 24, borderRadius: radius.button, borderWidth: 1.5, borderColor: colors.sky, justifyContent: 'center'},
   loginText: {fontSize: type.body, color: colors.blue700, fontWeight: '700'},
   pressed: {opacity: 0.75},
