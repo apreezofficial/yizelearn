@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Alert, Pressable, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Alert, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {ApiConnectionBanner} from './src/components/ApiConnectionBanner';
 import {InstructorDashboardScreen} from './src/screens/instructor/InstructorDashboardScreen';
 import {CoursesScreen} from './src/screens/instructor/CoursesScreen';
@@ -9,12 +9,13 @@ import {CurriculumScreen, GradingScreen} from './src/screens/flows/CoreFlowScree
 import type {Course} from './src/api/types';
 import {TabBar, type TabItem} from './src/components/Catalog';
 import {EmptyState} from './src/components/States';
+import {TitleBar} from './src/components/Layout';
 import {sampleCourses, sampleModules} from './src/data/catalog';
 import {defaultBrowse, type Browse} from './src/screens/public/browse';
 import {CourseScreen} from './src/screens/public/CourseScreen';
 import {ExploreScreen} from './src/screens/public/ExploreScreen';
 import {LandingScreen} from './src/screens/public/LandingScreen';
-import {LoginScreen, SignUpScreen, VerifyCodeScreen} from './src/screens/auth/AuthScreens';
+import {LoginScreen, SsoScreen, SignUpScreen, VerifyCodeScreen} from './src/screens/auth/AuthScreens';
 import {MyCourseScreen} from './src/screens/student/MyCourseScreen';
 import {CoursePlayerScreen} from './src/screens/student/CoursePlayerScreen';
 import {QuizQuestionScreen} from './src/screens/student/QuizQuestionScreen';
@@ -72,7 +73,7 @@ function More({onStudent, onAdmin}: {onStudent: () => void; onAdmin: () => void}
 const guestTabs: TabItem<Page>[] = [{key: 'Landing', label: 'Home', icon: 'home'}, {key: 'Explore', label: 'Explore', icon: 'search'}, {key: 'Cart', label: 'Cart', icon: 'cart'}, {key: 'Login', label: 'Log in', icon: 'user'}];
 const studentTabs: TabItem<Page>[] = [{key: 'Dashboard', label: 'Home', icon: 'home'}, {key: 'Learning', label: 'Learning', icon: 'book'}, {key: 'Explore', label: 'Explore', icon: 'search'}, {key: 'Inbox', label: 'Messages', icon: 'message'}, {key: 'Account', label: 'Account', icon: 'user'}];
 
-function Pending({title, message, actionLabel, onAction}: {title: string; message: string; actionLabel?: string; onAction?: () => void}) { return <View style={s.pending}><EmptyState title={title} message={message} actionLabel={actionLabel} onAction={onAction} /></View>; }
+function Pending({title, message, actionLabel, onAction, onBack}: {title: string; message: string; actionLabel?: string; onAction?: () => void; onBack?: () => void}) { return <View style={s.pending}>{onBack && <TitleBar title="" onBack={onBack} />}<EmptyState title={title} message={message} actionLabel={actionLabel} onAction={onAction} /></View>; }
 
 // Screens people may screenshot or record. Checkout is allowed but warns, because it shows card details.
 // Every other screen blocks capture. Onboarding is the screen behind the splash, so it stays capturable too.
@@ -102,7 +103,15 @@ function AppContent() {
   const [pending, setPending] = useState<{email: string; name?: string}>({email: ''});
   const [thread, setThread] = useState('sn');
   const [soonTitle, setSoonTitle] = useState('');
-  const nav = (p: Page) => setPage(p);
+  // Pages visited since the last tab or fresh start, so Android's back button retraces them.
+  const history = useRef<Page[]>([]);
+  const isTab = (p: Page) => (role === 'Guest' ? guestTabs : role === 'Student' ? studentTabs : []).some(t => t.key === p) || p === 'Onboarding';
+  const nav = (p: Page) => {
+    if (p === page) return;
+    history.current = isTab(p) ? [] : [...history.current.filter(h => h !== p), page];
+    setPage(p);
+  };
+  const reset = (p: Page) => { history.current = []; setPage(p); };
   useScreenCapturePolicy(capturePolicies[page] || 'block', () => Alert.alert('Screenshot taken', 'This screen can show sensitive payment details, like your card number. Keep the screenshot private, or delete it if you do not need it.'));
   const course = sampleCourses.find(c => c.id === courseId) || sampleCourses[0];
   const isSaved = saved.includes(course.id);
@@ -117,8 +126,20 @@ function AppContent() {
   const enrol = () => { setCart(list => (list.includes(course.id) ? list : [...list, course.id])); setCartFrom(page); if (role === 'Guest') { needSignIn('Cart'); return; } nav('Cart'); };
   const pay = (method: Parameters<typeof createOrder>[2], cardNumber: string) => { setOrder(createOrder(cartItems, totals.total, method, cardNumber)); setCart([]); setPromo(undefined); nav('Receipt'); };
   const needSignIn = (next: Page) => { setAfterAuth(next); nav('Login'); };
-  const signedIn = () => { setRole('Student'); nav(afterAuth); };
-  const signOut = () => { setRole('Guest'); nav('Landing'); };
+  const signedIn = () => { setRole('Student'); reset(afterAuth); };
+  const signOut = () => { setRole('Guest'); reset('Landing'); };
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      // After paying, back closes the receipt instead of returning to the payment form.
+      if (page === 'Receipt') { reset('Dashboard'); return true; }
+      const prev = history.current.pop();
+      if (prev) { setPage(prev); return true; }
+      if (role === 'Student' && page !== 'Dashboard') { setPage('Dashboard'); return true; }
+      return false;
+    });
+    return () => sub.remove();
+  });
   const publicScreen = page === 'Onboarding' ? <OnboardingScreen onBrowse={() => nav('Landing')} onLogin={() => needSignIn('Dashboard')} />
     : page === 'Landing' ? <LandingScreen courses={sampleCourses} onLogin={() => needSignIn('Dashboard')} onSearch={query => explore({query})} onCategory={category => explore({category})} onSeeAll={() => explore({})} onCourse={openCourse} />
     : page === 'Explore' ? <ExploreScreen courses={sampleCourses} browse={browse} onBrowse={setBrowse} onCourse={openCourse} />
@@ -127,12 +148,12 @@ function AppContent() {
       : page === 'Login' ? <LoginScreen onBack={() => nav(afterAuth === 'Dashboard' ? 'Landing' : 'Cart')} onSignUp={() => nav('SignUp')} onSso={() => nav('Sso')} onSent={email => { setPending({email}); nav('Verify'); }} />
     : page === 'SignUp' ? <SignUpScreen onBack={() => nav('Login')} onLogin={() => nav('Login')} onSent={(email, name) => { setPending({email, name}); nav('Verify'); }} />
     : page === 'Verify' ? <VerifyCodeScreen key={pending.email} email={pending.email} name={pending.name} onBack={() => nav(pending.name ? 'SignUp' : 'Login')} onVerified={signedIn} />
-    : page === 'Sso' ? <Pending title="Organisation login" message="School and work sign-in is waiting on its design." actionLabel="Back to log in" onAction={() => nav('Login')} />
-    : page === 'LessonPreview' ? <Pending title="Free preview" message="The preview lesson player is waiting on its design." actionLabel="Back to course" onAction={() => nav('Course')} />
+    : page === 'Sso' ? <SsoScreen onBack={() => nav('Login')} onEmailLogin={() => nav('Login')} onSignedIn={signedIn} />
+    : page === 'LessonPreview' ? <Pending title="Free preview" message="The preview lesson player is waiting on its design." actionLabel="Back to course" onAction={() => nav('Course')} onBack={() => nav('Course')} />
     : undefined;
   const screen = publicScreen ? publicScreen
     : role === 'Guest' ? <Pending title="Log in to continue" message="Log in with your email to keep going." actionLabel="Log in" onAction={() => needSignIn('Dashboard')} />
-    : role === 'Student' ? page === 'Help' ? <HelpCentreScreen onBack={() => nav('Account')} /> : page === 'Soon' ? <Pending title={soonTitle} message="This section is waiting on its design." actionLabel="Back to account" onAction={() => nav('Account')} /> : page === 'Grades' ? <GradesScreen onBack={() => nav('Account')} onAssessment={() => nav('Assessment')} /> : page === 'Assessment' ? <AssessmentScreen onBack={() => nav('Grades')} /> : page === 'Conversation' ? <ConversationScreen conversationId={thread} onBack={() => nav('Inbox')} /> : page === 'Quiz' ? <QuizQuestionScreen onBack={() => nav('Player')} onNext={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => nav('Dashboard')} /> : page === 'Player' ? <CoursePlayerScreen onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} /> : page === 'Result' ? <ResultScreen onBack={() => nav('Dashboard')} onContinue={() => nav('Player')} onReview={() => nav('Quiz')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <CertificatesScreen onBack={() => nav('Account')} /> : page === 'Learning' ? <MyCourseScreen saved={saved} onOpen={() => nav('Player')} onExplore={() => nav('Explore')} /> : page === 'Inbox' ? <MessagesScreen onOpen={id => { setThread(id); nav('Conversation'); }} onExplore={() => nav('Explore')} /> : page === 'Account' ? <AccountScreen onGrades={() => nav('Grades')} onCertificates={() => nav('Certificates')} onNotifications={() => nav('Notifications')} onHelp={() => nav('Help')} onSoon={title => { setSoonTitle(title); nav('Soon'); }} onLogout={signOut} /> : <StudentHomeScreen onResume={() => nav('Player')} onCourse={() => nav('Player')} onNotifications={() => nav('Notifications')} />
+    : role === 'Student' ? page === 'Help' ? <HelpCentreScreen onBack={() => nav('Account')} /> : page === 'Soon' ? <Pending title={soonTitle} message="This section is waiting on its design." actionLabel="Back to account" onAction={() => nav('Account')} onBack={() => nav('Account')} /> : page === 'Grades' ? <GradesScreen onBack={() => nav('Account')} onAssessment={() => nav('Assessment')} /> : page === 'Assessment' ? <AssessmentScreen onBack={() => nav('Grades')} /> : page === 'Conversation' ? <ConversationScreen conversationId={thread} onBack={() => nav('Inbox')} /> : page === 'Quiz' ? <QuizQuestionScreen onBack={() => nav('Player')} onNext={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => nav('Dashboard')} /> : page === 'Player' ? <CoursePlayerScreen onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} /> : page === 'Result' ? <ResultScreen onBack={() => nav('Dashboard')} onContinue={() => nav('Player')} onReview={() => nav('Quiz')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <CertificatesScreen onBack={() => nav('Account')} /> : page === 'Learning' ? <MyCourseScreen saved={saved} onOpen={() => nav('Player')} onExplore={() => nav('Explore')} /> : page === 'Inbox' ? <MessagesScreen onOpen={id => { setThread(id); nav('Conversation'); }} onExplore={() => nav('Explore')} /> : page === 'Account' ? <AccountScreen onGrades={() => nav('Grades')} onCertificates={() => nav('Certificates')} onNotifications={() => nav('Notifications')} onHelp={() => nav('Help')} onSoon={title => { setSoonTitle(title); nav('Soon'); }} onLogout={signOut} /> : <StudentHomeScreen onResume={() => nav('Player')} onCourse={() => nav('Player')} onNotifications={() => nav('Notifications')} />
     : role === 'Administrator' ? <AdminDashboardScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} />
     : page === 'Grading' ? <GradingScreen onBack={() => nav('Dashboard')} onGrade={() => nav('Grade')} /> : page === 'Grade' ? <Grade onBack={() => nav('Grading')} /> : page === 'Courses' ? <CoursesScreen onSetup={() => nav('Setup')} /> : page === 'Students' ? <Students /> : page === 'Messages' ? <Messages /> : page === 'More' ? <More onStudent={() => {setRole('Student'); nav('Dashboard');}} onAdmin={() => {setRole('Administrator'); nav('Dashboard');}} /> : page === 'Setup' ? <Setup onBack={() => nav('Courses')} onCurriculum={() => nav('Curriculum')} /> : page === 'Curriculum' ? <CurriculumScreen onBack={() => nav('Setup')} onLesson={() => nav('Lesson')} /> : page === 'Lesson' ? <Lesson onBack={() => nav('Curriculum')} /> : <InstructorDashboardScreen onOpenGrading={() => nav('Grading')} />;
   const publicTabs = role === 'Guest' ? guestTabs : role === 'Student' ? studentTabs : undefined;

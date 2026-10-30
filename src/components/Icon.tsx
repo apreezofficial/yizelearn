@@ -35,6 +35,9 @@ import Message01Icon from '@hugeicons/core-free-icons/Message01Icon';
 import PlayIcon from '@hugeicons/core-free-icons/PlayIcon';
 import Search01Icon from '@hugeicons/core-free-icons/Search01Icon';
 import MoreHorizontalIcon from '@hugeicons/core-free-icons/MoreHorizontalIcon';
+import SecurityCheckIcon from '@hugeicons/core-free-icons/SecurityCheckIcon';
+import Building03Icon from '@hugeicons/core-free-icons/Building03Icon';
+import School01Icon from '@hugeicons/core-free-icons/School01Icon';
 import CheckmarkBadge01Icon from '@hugeicons/core-free-icons/CheckmarkBadge01Icon';
 import ShoppingCart01Icon from '@hugeicons/core-free-icons/ShoppingCart01Icon';
 import SquareLock02Icon from '@hugeicons/core-free-icons/SquareLock02Icon';
@@ -47,6 +50,9 @@ import {colors} from '../theme/tokens';
 const icons = {
   search: {icon: Search01Icon},
   more: {icon: MoreHorizontalIcon},
+  shield: {icon: SecurityCheckIcon},
+  building: {icon: Building03Icon},
+  school: {icon: School01Icon},
   verified: {icon: CheckmarkBadge01Icon},
   filter: {icon: FilterHorizontalIcon},
   sort: {icon: ArrowUpDownIcon},
