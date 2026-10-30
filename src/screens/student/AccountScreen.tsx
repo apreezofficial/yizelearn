@@ -13,9 +13,10 @@ type Props = {
   onHelp: () => void;
   onSoon: (title: string) => void;
   onLogout: () => void;
+  onReport: () => void;
 };
 
-export function AccountScreen({onGrades, onCertificates, onNotifications, onHelp, onSoon, onLogout}: Props) {
+export function AccountScreen({onGrades, onCertificates, onNotifications, onHelp, onSoon, onLogout, onReport}: Props) {
   const initials = `${learnerName.slice(0, 1)}N`;
   // Grades and certificates are shown in the design's list order; the rest open sections not built yet.
   const rows: {label: string; onPress: () => void}[] = [
@@ -27,6 +28,7 @@ export function AccountScreen({onGrades, onCertificates, onNotifications, onHelp
     {label: 'Privacy and data', onPress: () => onSoon('Privacy and data')},
     {label: 'Connected accounts', onPress: () => onSoon('Connected accounts')},
     {label: 'Help centre', onPress: onHelp},
+    {label: 'Report a problem', onPress: onReport},
   ];
   return <View style={styles.screen}>
     <Text style={[styles.title, font]}>Account</Text>

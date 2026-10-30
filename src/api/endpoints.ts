@@ -43,6 +43,14 @@ function mockOrganisation(email: string): Promise<Organisation> {
   }, 900));
 }
 
+// Bug reports from the in-app "Report app issue" sheet. Dev builds without the backend pretend to send.
+export type IssueReport = {message: string; screenshot?: string; page: string};
+export const supportApi = {
+  reportIssue: (report: IssueReport) => (MOCK_AUTH
+    ? new Promise<void>(resolve => setTimeout(resolve, 1000))
+    : request<void>('/support/issues', {method: 'POST', body: report})),
+};
+
 export const dashboardApi = { instructor: () => request<DashboardSummary>('/instructor/dashboard'), administrator: () => request<DashboardSummary>('/administrator/dashboard') };
 
 export const coursesApi = {

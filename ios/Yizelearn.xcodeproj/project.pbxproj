@@ -29,7 +29,7 @@
 		761780EE2CA45674006654EF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = Yizelearn/SceneDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Yizelearn/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AA1234567890000000000002 /* Charmonman-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Charmonman-Regular.ttf"; path = "Yizelearn/Fonts/Charmonman-Regular.ttf"; sourceTree = "<group>"; };
-		AA1234567890000000000004 /* Caveat.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Caveat.ttf"; path = "Yizelearn/Fonts/Caveat.ttf"; sourceTree = "<group>"; };
+		AA1234567890000000000004 /* Caveat.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Caveat.ttf; path = Yizelearn/Fonts/Caveat.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
