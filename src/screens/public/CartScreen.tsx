@@ -19,7 +19,7 @@ export function CartScreen({items, savedForLater, promo, onPromo, onRemove, onCo
   return <View style={styles.screen}>
     <TitleBar title={items.length ? `Cart (${items.length})` : 'Cart'} onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      {items.length === 0 ? <EmptyState title="Your cart is empty" message="Courses you choose to enrol in will show here." actionLabel="Browse courses" onAction={onBrowse} /> : <>
+      {items.length === 0 ? <EmptyState icon="cart" title="Your cart is empty" message="Courses you add will wait here until you check out." actionLabel="Browse courses" onAction={onBrowse} /> : <>
         {items.map(course => <CartItem key={course.id} course={course} onPress={() => onCourse(course)} onRemove={() => onRemove(course)} />)}
         {promo ? <View style={[styles.promo, styles.promoApplied]}><Text style={[styles.promoAppliedText, font]}>{promo} applied</Text><Pressable onPress={() => onPromo(undefined)} hitSlop={8}><Text style={[styles.promoRemove, font]}>Remove</Text></Pressable></View>
           : <View style={styles.promo}><TextInput value={code} onChangeText={text => { setCode(text); setPromoError(''); }} onSubmitEditing={apply} placeholder="Promo code" placeholderTextColor={colors.muted} autoCapitalize="characters" autoCorrect={false} style={[styles.promoInput, font]} /><Pressable onPress={apply} style={styles.apply}><Text style={[styles.applyText, font]}>Apply</Text></Pressable></View>}

@@ -1,10 +1,17 @@
-import {request} from './client';
+import {API_BASE_URL, request} from './client';
 import type {AssignmentSubmission, Course, DashboardSummary, Lesson, Module, Paginated, Payment, User} from './types';
 
 // Sign-in and sign-up are one flow: the user enters an email, gets a 6-digit code, and enters it. No passwords.
+// Until the backend is live (the base URL is still the placeholder), dev builds sign in without it:
+// any email "sends" a code and any 6 digits log you in.
+const MOCK_AUTH = __DEV__ && API_BASE_URL.includes('example.com');
+const mockUser = (email: string, name?: string): User => ({id: 'mock-user', name: name || email.split('@')[0], email, role: 'student'});
+
 export const authApi = {
-  requestCode: (email: string, name?: string) => request<void>('/auth/code/request', {method: 'POST', body: {email, name}}),
-  verifyCode: (email: string, code: string) => request<{token: string; user: User}>('/auth/code/verify', {method: 'POST', body: {email, code}}),
+  requestCode: (email: string, name?: string) => (MOCK_AUTH ? Promise.resolve() : request<void>('/auth/code/request', {method: 'POST', body: {email, name}})),
+  verifyCode: (email: string, code: string) => (MOCK_AUTH
+    ? Promise.resolve({token: 'mock-token', user: mockUser(email)})
+    : request<{token: string; user: User}>('/auth/code/verify', {method: 'POST', body: {email, code}})),
   me: () => request<User>('/auth/me'),
   logout: () => request<void>('/auth/logout', {method: 'POST'}),
 };

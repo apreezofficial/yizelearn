@@ -12,9 +12,9 @@ type Tab = 'In progress' | 'Completed' | 'Wishlist';
 const tabs: Tab[] = ['In progress', 'Completed', 'Wishlist'];
 const font = {fontFamily: fonts.family};
 
-type Props = {saved: string[]; onOpen: (course: Course) => void};
+type Props = {saved: string[]; onOpen: (course: Course) => void; onExplore: () => void};
 
-export function MyCourseScreen({saved, onOpen}: Props) {
+export function MyCourseScreen({saved, onOpen, onExplore}: Props) {
   const [tab, setTab] = useState<Tab>('In progress');
   const rows = useMemo(() => {
     const byId = (id: string) => sampleCourses.find(c => c.id === id);
@@ -31,7 +31,11 @@ export function MyCourseScreen({saved, onOpen}: Props) {
       </Pressable>)}
     </View>
     <FlatList data={rows} keyExtractor={r => r.course.id} contentContainerStyle={styles.list}
-      ListEmptyComponent={<EmptyState title={tab === 'Wishlist' ? 'Nothing saved yet' : `No ${tab.toLowerCase()} courses`} message={tab === 'Wishlist' ? 'Tap the heart on a course to save it here.' : 'Courses you enrol in will show here.'} />}
+      ListEmptyComponent={tab === 'Wishlist'
+        ? <EmptyState key={tab} icon="heart" title="Nothing saved yet" message="Tap the heart on any course to save it for later." actionLabel="Explore courses" onAction={onExplore} />
+        : tab === 'In progress'
+          ? <EmptyState key={tab} icon="book" title="Start your first course" message={'Pick something short and practical.\nYour progress will show up here.'} actionLabel="Explore courses" onAction={onExplore} />
+          : <EmptyState key={tab} icon="award" title="No finished courses yet" message="Courses you complete, with their certificates, will show up here." actionLabel="Explore courses" onAction={onExplore} />}
       renderItem={({item, index}) => <Pressable onPress={() => onOpen(item.course)} style={({pressed}) => [styles.row, pressed && styles.pressed]} accessibilityRole="button">
         <CourseArt index={index} size={84} />
         <View style={styles.copy}>

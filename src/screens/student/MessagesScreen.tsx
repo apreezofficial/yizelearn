@@ -1,19 +1,24 @@
 import React, {useMemo, useState} from 'react';
 import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import {SearchField} from '../../components/Catalog';
+import {EmptyState} from '../../components/States';
+import {Icon} from '../../components/Icon';
 import {conversations, type Conversation} from '../../data/learning';
 import {colors, fonts, spacing, type} from '../../theme/tokens';
 
 const font = {fontFamily: fonts.family};
 
-export function MessagesScreen({onOpen}: {onOpen: (id: string) => void}) {
+export function MessagesScreen({onOpen, onExplore}: {onOpen: (id: string) => void; onExplore: () => void}) {
   const [query, setQuery] = useState('');
   const rows = useMemo(() => conversations.filter(c => c.name.toLowerCase().includes(query.trim().toLowerCase())), [query]);
   return <View style={styles.screen}>
     <Text style={[styles.title, font]}>Messages</Text>
     <View style={styles.search}><SearchField value={query} onChangeText={setQuery} placeholder="Search messages" /></View>
     <FlatList data={rows} keyExtractor={c => c.id} contentContainerStyle={styles.list}
-      renderItem={({item}) => <Row conversation={item} onPress={() => onOpen(item.id)} />} />
+      renderItem={({item}) => <Row conversation={item} onPress={() => onOpen(item.id)} />}
+      ListEmptyComponent={conversations.length === 0
+        ? <EmptyState icon="message" title="No messages yet" message="Message an instructor from their course page." actionLabel="Explore courses" onAction={onExplore} />
+        : <EmptyState icon="search" title={`No chats with “${query.trim()}”`} message="Try a different name." actionLabel="Clear search" onAction={() => setQuery('')} />} />
   </View>;
 }
 
@@ -21,7 +26,10 @@ function Row({conversation, onPress}: {conversation: Conversation; onPress: () =
   return <Pressable onPress={onPress} style={({pressed}) => [styles.row, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel={`${conversation.name}${conversation.unread ? ', unread' : ''}`}>
     <View style={styles.avatar}><Text style={[styles.avatarText, font]}>{conversation.initials}</Text></View>
     <View style={styles.copy}>
-      <Text style={[styles.name, font, conversation.unread && styles.bold]} numberOfLines={1}>{conversation.name}</Text>
+      <View style={styles.nameRow}>
+        <Text style={[styles.name, font, conversation.unread && styles.bold]} numberOfLines={1}>{conversation.name}</Text>
+        {conversation.verified && <View accessibilityLabel="Verified"><Icon name="verified" size={17} color={colors.blue700} /></View>}
+      </View>
       <Text style={[styles.last, font, conversation.unread && styles.lastUnread]} numberOfLines={1}>{conversation.last}</Text>
     </View>
     <View style={styles.meta}>
@@ -41,7 +49,8 @@ const styles = StyleSheet.create({
   avatar: {width: 48, height: 48, borderRadius: 24, backgroundColor: colors.blue100, alignItems: 'center', justifyContent: 'center'},
   avatarText: {fontSize: type.caption, color: colors.blue900, fontWeight: '800'},
   copy: {flex: 1},
-  name: {fontSize: type.label, color: colors.ink, fontWeight: '600'},
+  nameRow: {flexDirection: 'row', alignItems: 'center', gap: 5},
+  name: {flexShrink: 1, fontSize: type.label, color: colors.ink, fontWeight: '600'},
   bold: {fontWeight: '800'},
   last: {fontSize: type.small, color: colors.muted, marginTop: 4},
   lastUnread: {color: colors.ink, fontWeight: '600'},

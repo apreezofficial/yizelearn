@@ -5,9 +5,9 @@ export const learnerName = 'Sunday';
 
 export const continueLearning = {
   title: 'Spreadsheet skills',
-  lesson: 'Lookup functions',
-  lessonNumber: 3,
-  lessonsTotal: 18,
+  lesson: 'Pivot tables',
+  lessonNumber: 9,
+  lessonsTotal: 24,
   progress: 64,
 };
 
@@ -82,11 +82,12 @@ export const badges: {label: string; icon: 'target' | 'calendar' | 'award' | 'me
   {label: 'Reviewer', icon: 'edit', earned: false},
 ];
 
-export type Conversation = {id: string; name: string; initials: string; last: string; time: string; unread: boolean};
+// `verified` marks official Yizelearn accounts, such as the support team.
+export type Conversation = {id: string; name: string; initials: string; last: string; time: string; unread: boolean; verified?: boolean};
 export const conversations: Conversation[] = [
   {id: 'sn', name: 'Sunday Nwachukwu', initials: 'SN', last: 'Great, good luck!', time: '9:36', unread: true},
   {id: 'tb', name: 'Tunde Bello', initials: 'TB', last: 'Your assignment is graded.', time: '8:12', unread: true},
-  {id: 'st', name: 'Support team', initials: 'ST', last: 'Your ticket has been updated.', time: 'Yesterday', unread: false},
+  {id: 'st', name: 'Support team', initials: 'ST', last: 'Your ticket has been updated.', time: 'Yesterday', unread: false, verified: true},
   {id: 'mi', name: 'Mercy Ibe', initials: 'MI', last: 'See you in the next lesson.', time: 'Mon', unread: false},
 ];
 export const threads: Record<string, {from: 'them' | 'me'; text: string; time: string}[]> = {

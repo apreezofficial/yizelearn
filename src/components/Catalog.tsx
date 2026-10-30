@@ -57,11 +57,11 @@ export function EnrolBar({price, onEnrol}: {price?: number; onEnrol: () => void}
 
 export type TabItem<T extends string> = {key: T; label: string; icon: IconName};
 export function TabBar<T extends string>({items, active, onSelect}: {items: TabItem<T>[]; active: T; onSelect: (key: T) => void}) {
-  return <View style={styles.tabBar}>{items.map(item => { const on = item.key === active; return <Pressable key={item.key} onPress={() => onSelect(item.key)} style={styles.tab} accessibilityRole="tab" accessibilityState={{selected: on}}><View style={[styles.tabIcon, on && styles.tabIconOn]}><Icon name={item.icon} size={24} color={on ? colors.blue700 : colors.muted} /></View><Text style={[styles.tabLabel, font, on && styles.tabLabelActive]}>{item.label}</Text></Pressable>; })}</View>;
+  return <View style={styles.tabBar}>{items.map(item => { const on = item.key === active; return <Pressable key={item.key} onPress={() => onSelect(item.key)} style={styles.tab} accessibilityRole="tab" accessibilityState={{selected: on}}><View style={[styles.tabIcon, on && styles.tabIconOn]}><Icon name={item.icon} size={24} color={on ? colors.sky : colors.muted} strokeWidth={1.5} /></View><Text style={[styles.tabLabel, font, on && styles.tabLabelActive]}>{item.label}</Text></Pressable>; })}</View>;
 }
 
 const styles = StyleSheet.create({
-  search: {flex: 1, height: 56, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 12},
+  search: {flexGrow: 1, flexShrink: 1, height: 56, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 12},
   searchInput: {flex: 1, fontSize: type.body, color: colors.ink, paddingVertical: 0},
   chips: {gap: 10, paddingVertical: 4, paddingHorizontal: spacing.screen},
   chip: {height: 44, paddingHorizontal: 20, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, justifyContent: 'center'},
@@ -87,10 +87,10 @@ const styles = StyleSheet.create({
   enrolPrice: {fontSize: type.title, color: colors.ink, fontWeight: '800'},
   enrolButton: {flex: 1, height: spacing.button, borderRadius: radius.button, backgroundColor: colors.sky, alignItems: 'center', justifyContent: 'center'},
   enrolText: {fontSize: type.subheading, color: colors.onSky, fontWeight: '700'},
-  tabBar: {flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.cream, borderTopWidth: 1, borderTopColor: colors.line, paddingTop: 8, paddingBottom: 8},
+  tabBar: {flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.sand, borderTopWidth: 1, borderTopColor: colors.line, paddingTop: 10, paddingBottom: 8},
   tab: {alignItems: 'center', minWidth: 64, gap: 4},
   tabIcon: {width: 56, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center'},
-  tabIconOn: {backgroundColor: colors.blue100},
+  tabIconOn: {},
   tabLabel: {fontSize: type.tab, color: colors.muted},
-  tabLabelActive: {color: colors.blue700, fontWeight: '700'},
+  tabLabelActive: {color: colors.sky, fontWeight: '700'},
 });
