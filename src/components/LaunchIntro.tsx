@@ -115,5 +115,5 @@ const styles = StyleSheet.create({
   curtain: {position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: BLUE, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', zIndex: 100},
   signature: {width: WORDMARK_WIDTH, height: 100},
   reveal: {height: 100, overflow: 'hidden'},
-  wordmark: {width: WORDMARK_WIDTH, height: 100, textAlign: 'center', color: '#FFFFFF', fontFamily: 'Allura-Regular', fontSize: 60, lineHeight: 90, includeFontPadding: false},
+  wordmark: {width: WORDMARK_WIDTH, height: 100, textAlign: 'center', color: '#FFFFFF', fontFamily: 'Charmonman-Regular', fontSize: 60, lineHeight: 100, includeFontPadding: false},
 });

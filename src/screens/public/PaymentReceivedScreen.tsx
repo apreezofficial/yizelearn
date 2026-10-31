@@ -1,14 +1,18 @@
 import React from 'react';
-import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Alert, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Icon} from '../../components/Icon';
 import {PrimaryAction} from '../../components/Layout';
 import {formatNaira} from '../../data/catalog';
-import {colors, fonts} from '../../theme/tokens';
+import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 import type {Order} from './cart';
 
 export function PaymentReceivedScreen({order, onStartLearning}: {order: Order; onStartLearning: () => void}) {
   return <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-    <View style={styles.ring}><View style={styles.badge}><Icon name="check" size={30} color={colors.white} /></View></View>
+    {/* Close, not back: the payment is done, so this leaves the checkout flow for good. */}
+    <Pressable onPress={onStartLearning} hitSlop={12} style={styles.close} accessibilityRole="button" accessibilityLabel="Close">
+      <Icon name="close" size={24} color={colors.ink} />
+    </Pressable>
+    <View style={styles.ring}><View style={styles.badge}><Icon name="check" size={40} color={colors.white} /></View></View>
     <Text style={[styles.title, font]}>Payment received</Text>
     <Text style={[styles.subtitle, font]}>A receipt was sent to your email</Text>
     <View style={styles.card}>
@@ -29,14 +33,15 @@ function Row({label, value}: {label: string; value: string}) {
 
 const font = {fontFamily: fonts.family};
 const styles = StyleSheet.create({
+  close: {alignSelf: 'flex-start', width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 8},
   screen: {flex: 1, backgroundColor: colors.cream},
-  content: {flexGrow: 1, justifyContent: 'center', padding: 16},
-  ring: {alignSelf: 'center', width: 96, height: 96, borderRadius: 48, backgroundColor: '#D7EEE3', alignItems: 'center', justifyContent: 'center', marginBottom: 20},
-  badge: {width: 72, height: 72, borderRadius: 36, backgroundColor: colors.success, alignItems: 'center', justifyContent: 'center'},
-  title: {fontSize: 24, color: colors.ink, fontWeight: '800', textAlign: 'center'},
-  subtitle: {fontSize: 12, color: colors.muted, textAlign: 'center', marginTop: 6, marginBottom: 24},
-  card: {backgroundColor: '#F7F6FA', borderWidth: 1, borderColor: colors.line, borderRadius: 12, padding: 14, gap: 14, marginBottom: 12},
+  content: {flexGrow: 1, justifyContent: 'center', paddingHorizontal: spacing.screen, paddingVertical: 24},
+  ring: {alignSelf: 'center', width: 120, height: 120, borderRadius: 60, backgroundColor: '#D7EEE3', alignItems: 'center', justifyContent: 'center', marginBottom: 24},
+  badge: {width: 88, height: 88, borderRadius: 44, backgroundColor: colors.success, alignItems: 'center', justifyContent: 'center'},
+  title: {fontSize: type.title + 2, color: colors.ink, fontWeight: '800', textAlign: 'center'},
+  subtitle: {fontSize: type.label, color: colors.muted, textAlign: 'center', marginTop: 8, marginBottom: 28},
+  card: {backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sandLine, borderRadius: radius.card, padding: 18, gap: 16, marginBottom: 14},
   row: {flexDirection: 'row', justifyContent: 'space-between'},
-  label: {fontSize: 12, color: colors.muted},
-  value: {fontSize: 12, color: colors.ink, fontWeight: '800'},
+  label: {fontSize: type.label, color: colors.muted},
+  value: {fontSize: type.label, color: colors.ink, fontWeight: '800'},
 });

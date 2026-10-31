@@ -1,32 +1,55 @@
-import React, {useState} from 'react';
-import {Alert, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Alert, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {ApiConnectionBanner} from './src/components/ApiConnectionBanner';
 import {InstructorDashboardScreen} from './src/screens/instructor/InstructorDashboardScreen';
 import {CoursesScreen} from './src/screens/instructor/CoursesScreen';
 import {StudentHomeScreen} from './src/screens/student/StudentHomeScreen';
 import {AdminDashboardScreen} from './src/screens/admin/AdminDashboardScreen';
-import {CurriculumScreen, GradingScreen, NotificationsScreen, QuizScreen} from './src/screens/flows/CoreFlowScreens';
+import {CurriculumScreen, GradingScreen} from './src/screens/flows/CoreFlowScreens';
 import type {Course} from './src/api/types';
 import {TabBar, type TabItem} from './src/components/Catalog';
 import {EmptyState} from './src/components/States';
+import {TitleBar} from './src/components/Layout';
+import {LogoutSheet} from './src/components/LogoutSheet';
+import {ReportIssueSheet} from './src/components/ReportIssueSheet';
+import RNShake from 'react-native-shake';
+import {captureScreen} from 'react-native-view-shot';
 import {sampleCourses, sampleModules} from './src/data/catalog';
+import {learnerName} from './src/data/learning';
 import {defaultBrowse, type Browse} from './src/screens/public/browse';
-import {CourseCurriculumScreen} from './src/screens/public/CourseCurriculumScreen';
 import {CourseScreen} from './src/screens/public/CourseScreen';
 import {ExploreScreen} from './src/screens/public/ExploreScreen';
 import {LandingScreen} from './src/screens/public/LandingScreen';
+import {LoginScreen, SsoScreen, SignUpScreen, VerifyCodeScreen} from './src/screens/auth/AuthScreens';
+import {MyCourseScreen} from './src/screens/student/MyCourseScreen';
+import {CoursePlayerScreen} from './src/screens/student/CoursePlayerScreen';
+import {QuizQuestionScreen} from './src/screens/student/QuizQuestionScreen';
+import {ResultScreen} from './src/screens/student/ResultScreen';
+import {AssessmentScreen} from './src/screens/student/AssessmentScreen';
+import {GradesScreen} from './src/screens/student/GradesScreen';
+import {CertificatesScreen} from './src/screens/student/CertificatesScreen';
+import {MessagesScreen} from './src/screens/student/MessagesScreen';
+import {ConversationScreen} from './src/screens/student/ConversationScreen';
+import {AccountScreen} from './src/screens/student/AccountScreen';
+import {NotificationsScreen} from './src/screens/student/NotificationsScreen';
+import {HelpCentreScreen} from './src/screens/student/HelpCentreScreen';
+import {ConnectedAccountsScreen, PaymentsScreen, PrivacyScreen, ProfileScreen} from './src/screens/student/SettingsScreens';
 import {OnboardingScreen} from './src/screens/public/OnboardingScreen';
 import {CartScreen} from './src/screens/public/CartScreen';
 import {PaymentCheckoutScreen} from './src/screens/public/PaymentCheckoutScreen';
 import {PaymentReceivedScreen} from './src/screens/public/PaymentReceivedScreen';
 import {cartTotals, createOrder, type Order} from './src/screens/public/cart';
 import {useScreenCapturePolicy, type CapturePolicy} from './src/native/screenSecurity';
+import {initialWindowMetrics, SafeAreaProvider, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {colors} from './src/theme/tokens';
 import {LaunchIntro} from './src/components/LaunchIntro';
+import {ScreenTransition} from './src/components/ScreenTransition';
 
 const C = {bg: '#FBFBF9', blue50: '#EFF5FC', blue100: '#DFEBF9', blue600: '#4F8BCD', blue700: '#2F6DB5', blue900: '#17335A', ink: '#242A36', muted: '#6F7785', line: '#E6E7E5', white: '#FFFFFF', yellow: '#F0B74A'};
 type Tab = 'Dashboard' | 'Courses' | 'Students' | 'Messages' | 'More';
-type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'CourseCurriculum' | 'LessonPreview' | 'Cart' | 'Login' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding';
+type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'LessonPreview' | 'Cart' | 'Login' | 'SignUp' | 'Verify' | 'Sso' | 'Assessment' | 'Grades' | 'Conversation' | 'Help' | 'Soon' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding' | 'Profile' | 'Payments' | 'Privacy' | 'Connected';
+// Account rows that open their own settings page.
+const settingsPages: Record<string, Page> = {'Profile': 'Profile', 'Edit profile': 'Profile', 'Payments and receipts': 'Payments', 'Privacy and data': 'Privacy', 'Connected accounts': 'Connected'};
 type Role = 'Guest' | 'Instructor' | 'Student' | 'Administrator';
 const tabs: Array<{label: Tab; icon: string}> = [{label: 'Dashboard', icon: 'D'}, {label: 'Courses', icon: 'C'}, {label: 'Students', icon: 'S'}, {label: 'Messages', icon: 'M'}, {label: 'More', icon: '...'}];
 
@@ -47,29 +70,32 @@ function Lesson({onBack}: {onBack: () => void}) { return <ScrollView contentCont
 
 function Students() { return <ScrollView contentContainerStyle={s.content}><Header title="Students" /><View style={s.search}><Text style={s.muted}>Search students</Text></View>{[['Mercy Ibe', 'Excel course, 64%'], ['Chi Eze', 'Excel course, 22%'], ['Tunde Bello', 'Python, 90%'], ['Ada Obi', 'Excel course, 100%']].map(x => <CardRow key={x[0]} title={x[0]} detail={x[1]} />)}</ScrollView>; }
 function Messages() { return <ScrollView contentContainerStyle={s.content}><Header title="Messages" /><View style={s.search}><Text style={s.muted}>Search messages</Text></View>{['Sunday Nwachukwu', 'Victor Bello', 'Precious Bello', 'Mercy Dara'].map((x, i) => <CardRow key={x} title={x} detail={i ? 'Your assignment is graded.' : 'Thanks, I will check the file.'} />)}</ScrollView>; }
-function Player({onBack, onQuiz}: {onBack: () => void; onQuiz: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="Course player" back onBack={onBack} /><View style={s.video}><Text style={s.videoPlay}>PLAY</Text></View><Text style={s.playerTitle}>Lookup functions</Text><Text style={s.muted}>Module 2, lesson 3 of 6</Text><View style={s.chips}><Text style={[s.chip, s.chipActive, s.chipTextActive]}>Lessons</Text><Text style={s.chip}>Discussion</Text><Text style={s.chip}>Resources</Text></View>{['Cell references', 'SUMIF and COUNTIF', 'Lookup functions', 'Text functions', 'Module quiz'].map((x, i) => <CardRow key={x} title={x} detail={i === 2 ? 'Current lesson' : 'Video · 8 min'} badge={i === 4 ? 'Quiz' : undefined} onPress={i === 4 ? onQuiz : undefined} />)}<Button label="Mark as complete" onPress={onBack} /></ScrollView>; }
-function Quiz({onBack, onResult}: {onBack: () => void; onResult: () => void}) { const [selected, setSelected] = useState(''); return <ScrollView contentContainerStyle={s.content}><Header title="Module 2 quiz" back onBack={onBack} /><Text style={s.muted}>Question 3 of 10</Text><View style={s.progress}><View style={s.progressFill} /></View><Text style={s.question}>Which function looks up a value in the first column of a range?</Text>{['XLOOKUP', 'VLOOKUP', 'HLOOKUP', 'INDEX'].map(x => <Pressable key={x} style={[s.option, selected === x && s.optionActive]} onPress={() => setSelected(x)}><Text style={s.radio}>{selected === x ? 'O' : 'o'}</Text><Text style={s.optionText}>{x}</Text></Pressable>)}<Button label="Next question" onPress={onResult} /><Button label="Save and exit" outline onPress={onBack} /></ScrollView>; }
-function Result({onBack, onCheckout}: {onBack: () => void; onCheckout: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="Result" back onBack={onBack} /><View style={s.resultCircle}><Text style={s.resultScore}>80%</Text></View><Text style={s.resultTitle}>You passed</Text><Text style={s.muted}>8 of 10 correct. Module 3 is unlocked.</Text><View style={s.card}><Text style={s.cardTitle}>Missed questions</Text><Text style={s.muted}>Review your answers before continuing.</Text></View><Button label="Continue to Module 3" onPress={onCheckout} /><Button label="Review answers" outline onPress={onBack} /></ScrollView>; }
 function Checkout({onReceipt}: {onReceipt: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="Checkout" /><Text style={s.intro}>Payment method</Text>{['Card', 'Bank transfer', 'Wallet'].map((x, i) => <Pressable key={x} style={[s.option, i === 0 && s.optionActive]}><Text style={s.radio}>{i === 0 ? 'O' : 'o'}</Text><Text style={s.optionText}>{x}</Text></Pressable>)}<View style={s.card}><Text style={s.cardTitle}>Order summary</Text><View style={s.sectionHead}><Text style={s.muted}>Data analysis in Excel</Text><Text style={s.muted}>₦15,000</Text></View><View style={s.sectionHead}><Text style={s.rowTitle}>Total</Text><Text style={s.rowTitle}>₦15,000</Text></View></View><Button label="Pay ₦15,000" onPress={onReceipt} /></ScrollView>; }
 function Receipt({onHome}: {onHome: () => void}) { return <View style={s.receipt}><View style={s.receiptCheck}><Text>OK</Text></View><Text style={s.resultTitle}>Payment received</Text><Text style={s.muted}>A receipt was sent to your email.</Text><View style={s.card}><Text style={s.muted}>Order #10482</Text><Text style={s.muted}>Date · 20 Oct 2026</Text><Text style={s.muted}>Total · ₦15,000</Text></View><Button label="Start learning" onPress={onHome} /><Button label="Download receipt" outline /></View>; }
-function StudentHome({onInstructor, onPlayer}: {onInstructor: () => void; onPlayer: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="Home" /><View style={s.welcome}><Text style={s.eyebrow}>WELCOME BACK</Text><Text style={s.welcomeTitle}>Continue learning</Text><Text style={s.muted}>Pick up where you stopped.</Text></View><View style={s.sectionHead}><Text style={s.sectionTitle}>My learning</Text><Text style={s.link}>See all</Text></View><CardRow title="Data analysis in Excel" detail="Lesson 9 of 24" badge="64%" onPress={onPlayer} /><CardRow title="Spreadsheet skills" detail="Lesson 3 of 18" badge="25%" onPress={onPlayer} /><View style={s.sectionHead}><Text style={s.sectionTitle}>Explore courses</Text><Text style={s.link}>Browse</Text></View><CardRow title="Business writing that gets replies" detail="12 lessons · ₦19,999" badge="New" /><Button label="Switch to Instructor preview" outline onPress={onInstructor} /></ScrollView>; }
 function AdminHome({onInstructor}: {onInstructor: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="Dashboard" /><Text style={s.intro}>ADMINISTRATOR</Text><View style={s.grid}><Metric label="Total users" value="12,480" note="+8% this month" /><Metric label="Active courses" value="312" note="14 in review" /><Metric label="Revenue" value="₦48.2k" note="This month" /><Metric label="Open tickets" value="14" note="2 urgent" /></View><View style={s.sectionHead}><Text style={s.sectionTitle}>Recent activity</Text><Text style={s.link}>View all</Text></View><CardRow title="New user invite" detail="Mercy Ibe joined 4m ago" badge="New" /><CardRow title="Course submitted" detail="Data analysis in Excel" badge="Review" /><CardRow title="Payment received" detail="Order #10482 · ₦15,000" badge="Paid" /><View style={s.sectionHead}><Text style={s.sectionTitle}>Quick actions</Text></View><Button label="Invite user" /><Button label="Switch to Instructor preview" outline onPress={onInstructor} /></ScrollView>; }
 function Grading({onBack, onGrade}: {onBack: () => void; onGrade: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="Grading" back onBack={onBack} /><View style={s.chips}><Text style={[s.chip, s.chipActive, s.chipTextActive]}>Pending</Text><Text style={s.chip}>Graded</Text></View>{[['Assignment 1', 'Mercy Ibe, 2h ago', 'Pending'], ['Assignment 1', 'Chi Eze, 5h ago', 'Pending'], ['Assignment 1', 'Tunde Bello, 1d ago', 'Overdue'], ['Module 2 quiz', 'Ada Okafor, 2d ago', 'Graded']].map(x => <CardRow key={x[1]} title={x[0]} detail={x[1]} badge={x[2]} onPress={x[2] === 'Graded' ? undefined : onGrade} />)}</ScrollView>; }
 function Grade({onBack}: {onBack: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="Grade submission" back onBack={onBack} /><View style={s.card}><Text style={s.cardTitle}>dashboard-final.xlsx</Text><Text style={s.muted}>Mercy Ibe · 2.4 MB</Text></View><View style={s.card}><Text style={s.cardTitle}>Similarity report</Text><Text style={s.resultScore}>12%</Text><Text style={s.muted}>View report</Text></View><Text style={s.intro}>Score</Text><View style={s.option}><Text style={s.optionText}>85 / 100</Text></View><Text style={s.intro}>Feedback</Text><View style={[s.card, s.feedback]}><Text style={s.muted}>Write feedback for the learner</Text></View><Button label="Save grade" onPress={onBack} /></ScrollView>; }
-function Certificates({onBack}: {onBack: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="Certificates" back onBack={onBack} /><View style={s.card}><Text style={s.cardTitle}>Certificate of completion</Text><Text style={s.muted}>Data analysis in Excel</Text><Button label="Download PDF" /></View><Text style={s.sectionTitle}>Badges</Text><View style={s.grid}><View style={s.badgeBox}><Text style={s.muted}>Excel</Text></View><View style={s.badgeBox}><Text style={s.muted}>Starter</Text></View><View style={s.badgeBox}><Text style={s.muted}>Finisher</Text></View></View></ScrollView>; }
 function Notifications({onBack}: {onBack: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="Notifications" back onBack={onBack} />{['Assignment 1 was graded', 'New lesson in Excel course', 'Your certificate is ready', 'Payment received'].map((x, i) => <CardRow key={x} title={x} detail={i + 1 + ' hours ago'} badge="New" />)}</ScrollView>; }
 function More({onStudent, onAdmin}: {onStudent: () => void; onAdmin: () => void}) { return <ScrollView contentContainerStyle={s.content}><Header title="More" />{['Discussions', 'Announcements', 'Live sessions', 'Certificate designer', 'Profile', 'Help centre'].map(x => <CardRow key={x} title={x} detail="Open section" />)}<Button label="Preview Student experience" onPress={onStudent} /><Button label="Preview Administrator experience" outline onPress={onAdmin} /></ScrollView>; }
 
 const guestTabs: TabItem<Page>[] = [{key: 'Landing', label: 'Home', icon: 'home'}, {key: 'Explore', label: 'Explore', icon: 'search'}, {key: 'Cart', label: 'Cart', icon: 'cart'}, {key: 'Login', label: 'Log in', icon: 'user'}];
 const studentTabs: TabItem<Page>[] = [{key: 'Dashboard', label: 'Home', icon: 'home'}, {key: 'Learning', label: 'Learning', icon: 'book'}, {key: 'Explore', label: 'Explore', icon: 'search'}, {key: 'Inbox', label: 'Messages', icon: 'message'}, {key: 'Account', label: 'Account', icon: 'user'}];
 
-function Pending({title, message, actionLabel, onAction}: {title: string; message: string; actionLabel?: string; onAction?: () => void}) { return <View style={s.pending}><EmptyState title={title} message={message} actionLabel={actionLabel} onAction={onAction} /></View>; }
+function Pending({title, message, actionLabel, onAction, onBack}: {title: string; message: string; actionLabel?: string; onAction?: () => void; onBack?: () => void}) { return <View style={s.pending}>{onBack && <TitleBar title="" onBack={onBack} />}<EmptyState title={title} message={message} actionLabel={actionLabel} onAction={onAction} /></View>; }
 
 // Screens people may screenshot or record. Checkout is allowed but warns, because it shows card details.
 // Every other screen blocks capture. Onboarding is the screen behind the splash, so it stays capturable too.
 const capturePolicies: Partial<Record<Page, CapturePolicy>> = {Onboarding: 'allow', Landing: 'allow', Explore: 'allow', Cart: 'allow', Checkout: 'warn'};
 
 export default function App() {
+  return <SafeAreaProvider initialMetrics={initialWindowMetrics}><AppContent /></SafeAreaProvider>;
+}
+
+// Screens with a pinned bottom bar; the bottom inset takes the bar colour so it reads as one surface.
+const barPages: Page[] = ['Course', 'Cart', 'Checkout'];
+
+function AppContent() {
+  const insets = useSafeAreaInsets();
   const [page, setPage] = useState<Page>('Onboarding');
   const [role, setRole] = useState<Role>('Guest');
   const [browse, setBrowse] = useState<Browse>(defaultBrowse);
@@ -80,7 +106,22 @@ export default function App() {
   const [cartFrom, setCartFrom] = useState<Page>('Course');
   const [promo, setPromo] = useState<string>();
   const [order, setOrder] = useState<Order>();
-  const nav = (p: Page) => setPage(p);
+  // Guests sign in by email code; afterAuth is where they land once verified.
+  const [afterAuth, setAfterAuth] = useState<Page>('Dashboard');
+  const [pending, setPending] = useState<{email: string; name?: string}>({email: ''});
+  const [thread, setThread] = useState('sn');
+  const [soonTitle, setSoonTitle] = useState('');
+  // Pages visited since the last tab or fresh start, so Android's back button retraces them.
+  const history = useRef<Page[]>([]);
+  const isTab = (p: Page) => (role === 'Guest' ? guestTabs : role === 'Student' ? studentTabs : []).some(t => t.key === p) || p === 'Onboarding';
+  const nav = (p: Page) => {
+    if (p === page) return;
+    history.current = isTab(p) ? [] : [...history.current.filter(h => h !== p), page];
+    setPage(p);
+  };
+  const reset = (p: Page) => { history.current = []; setPage(p); };
+  // Returns to whichever page opened this one, e.g. Notifications from Home or from Account.
+  const goBack = (fallback: Page) => setPage(history.current.pop() ?? fallback);
   useScreenCapturePolicy(capturePolicies[page] || 'block', () => Alert.alert('Screenshot taken', 'This screen can show sensitive payment details, like your card number. Keep the screenshot private, or delete it if you do not need it.'));
   const course = sampleCourses.find(c => c.id === courseId) || sampleCourses[0];
   const isSaved = saved.includes(course.id);
@@ -91,28 +132,69 @@ export default function App() {
   const savedForLater = sampleCourses.filter(c => saved.includes(c.id) && !cart.includes(c.id));
   const totals = cartTotals(cartItems, promo);
   // Flow A1: buying needs an account, so guests sign in first; signed-in learners add to cart.
-  const enrol = () => { if (role === 'Guest') { nav('Login'); return; } setCart(list => (list.includes(course.id) ? list : [...list, course.id])); setCartFrom(page); nav('Cart'); };
+  // Buying needs an account. Guests add to the cart first, then sign in and come back to it.
+  const enrol = () => { setCart(list => (list.includes(course.id) ? list : [...list, course.id])); setCartFrom(page); if (role === 'Guest') { needSignIn('Cart'); return; } nav('Cart'); };
   const pay = (method: Parameters<typeof createOrder>[2], cardNumber: string) => { setOrder(createOrder(cartItems, totals.total, method, cardNumber)); setCart([]); setPromo(undefined); nav('Receipt'); };
-  const signIn = () => { setRole('Student'); nav('Dashboard'); };
-  const signOut = () => { setRole('Guest'); nav('Landing'); };
-  const publicScreen = page === 'Onboarding' ? <OnboardingScreen onBrowse={() => nav('Landing')} onLogin={() => nav('Login')} />
-    : page === 'Landing' ? <LandingScreen courses={sampleCourses} onLogin={() => nav('Login')} onSearch={query => explore({query})} onCategory={category => explore({category})} onSeeAll={() => explore({})} onCourse={openCourse} />
+  const needSignIn = (next: Page) => { setAfterAuth(next); nav('Login'); };
+  const signedIn = () => { setRole('Student'); reset(afterAuth); };
+  const signOut = () => { setLogoutOpen(false); setRole('Guest'); reset('Landing'); };
+
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [shakeEnabled, setShakeEnabled] = useState(true);
+  const [screenshot, setScreenshot] = useState<string | undefined>();
+  // Grab the screen behind before the sheet covers it, so the report shows what the user was looking at.
+  const openReport = async () => {
+    if (reportOpen) return;
+    try { setScreenshot(await captureScreen({format: 'jpg', quality: 0.7})); } catch { setScreenshot(undefined); }
+    setReportOpen(true);
+  };
+  useEffect(() => {
+    if (!shakeEnabled) return;
+    const subscription = RNShake.addListener(() => { openReport(); });
+    return () => subscription.remove();
+  });
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      // After paying, back closes the receipt instead of returning to the payment form.
+      if (page === 'Receipt') { reset('Dashboard'); return true; }
+      const prev = history.current.pop();
+      if (prev) { setPage(prev); return true; }
+      if (role === 'Student' && page !== 'Dashboard') { setPage('Dashboard'); return true; }
+      return false;
+    });
+    return () => sub.remove();
+  });
+  const publicScreen = page === 'Onboarding' ? <OnboardingScreen onBrowse={() => nav('Landing')} onLogin={() => needSignIn('Dashboard')} />
+    : page === 'Landing' ? <LandingScreen courses={sampleCourses} onLogin={() => needSignIn('Dashboard')} onSearch={query => explore({query})} onCategory={category => explore({category})} onSeeAll={() => explore({})} onCourse={openCourse} />
     : page === 'Explore' ? <ExploreScreen courses={sampleCourses} browse={browse} onBrowse={setBrowse} onCourse={openCourse} />
-    : page === 'Course' ? <CourseScreen course={course} saved={isSaved} onBack={() => nav(courseFrom)} onToggleSave={toggleSave} onCurriculum={() => nav('CourseCurriculum')} onEnrol={enrol} />
-    : page === 'CourseCurriculum' ? <CourseCurriculumScreen course={course} modules={sampleModules} saved={isSaved} onBack={() => nav('Course')} onToggleSave={toggleSave} onPreview={() => nav('LessonPreview')} onEnrol={enrol} />
-    : page === 'Cart' ? <CartScreen items={cartItems} savedForLater={savedForLater} promo={promo} onPromo={setPromo} onRemove={c => setCart(list => list.filter(id => id !== c.id))} onCourse={openCourse} onCheckout={() => nav(role === 'Guest' ? 'Login' : 'Checkout')} onBrowse={() => nav('Explore')} onBack={role === 'Guest' ? undefined : () => nav(cartFrom)} />
-    : page === 'LessonPreview' ? <Pending title="Free preview" message="The preview lesson player is waiting on its design." actionLabel="Back to curriculum" onAction={() => nav('CourseCurriculum')} />
+    : page === 'Course' ? <CourseScreen key={course.id} course={course} modules={sampleModules} saved={isSaved} onBack={() => nav(courseFrom)} onToggleSave={toggleSave} onPreview={() => nav('LessonPreview')} onEnrol={enrol} />
+    : page === 'Cart' ? <CartScreen items={cartItems} savedForLater={savedForLater} promo={promo} onPromo={setPromo} onRemove={c => setCart(list => list.filter(id => id !== c.id))} onCourse={openCourse} onCheckout={() => (role === 'Guest' ? needSignIn('Checkout') : nav('Checkout'))} onBrowse={() => nav('Explore')} onBack={role === 'Guest' ? undefined : () => nav(cartFrom)} />
+      : page === 'Login' ? <LoginScreen onBack={() => nav(afterAuth === 'Dashboard' ? 'Landing' : 'Cart')} onSignUp={() => nav('SignUp')} onSso={() => nav('Sso')} onSent={email => { setPending({email}); nav('Verify'); }} />
+    : page === 'SignUp' ? <SignUpScreen onBack={() => nav('Login')} onLogin={() => nav('Login')} onSent={(email, name) => { setPending({email, name}); nav('Verify'); }} />
+    : page === 'Verify' ? <VerifyCodeScreen key={pending.email} email={pending.email} name={pending.name} onBack={() => nav(pending.name ? 'SignUp' : 'Login')} onVerified={signedIn} />
+    : page === 'Sso' ? <SsoScreen onBack={() => nav('Login')} onEmailLogin={() => nav('Login')} onSignedIn={signedIn} />
+    : page === 'LessonPreview' ? <Pending title="Free preview" message="The preview lesson player is waiting on its design." actionLabel="Back to course" onAction={() => nav('Course')} onBack={() => nav('Course')} />
     : undefined;
   const screen = publicScreen ? publicScreen
-    : role === 'Guest' ? <Pending title="Log in" message="The log in screen is waiting on its design. You can continue as a demo student for now." actionLabel="Continue as student" onAction={signIn} />
-    : role === 'Student' ? page === 'Quiz' ? <QuizScreen onBack={() => nav('Dashboard')} onResult={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => nav('Dashboard')} /> : page === 'Player' ? <Player onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} /> : page === 'Result' ? <Result onBack={() => nav('Quiz')} onCheckout={() => nav('Player')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <Certificates onBack={() => nav('Dashboard')} /> : page === 'Learning' ? <Pending title="My learning" message="This screen is waiting on its design." /> : page === 'Inbox' ? <Pending title="Messages" message="This screen is waiting on its design." /> : page === 'Account' ? <Pending title="Account" message="This screen is waiting on its design." actionLabel="Log out" onAction={signOut} /> : <StudentHomeScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} onPlayer={() => nav('Player')} />
+    : role === 'Guest' ? <Pending title="Log in to continue" message="Log in with your email to keep going." actionLabel="Log in" onAction={() => needSignIn('Dashboard')} />
+    : role === 'Student' ? page === 'Help' ? <HelpCentreScreen onBack={() => nav('Account')} /> : page === 'Profile' ? <ProfileScreen onBack={() => nav('Account')} /> : page === 'Payments' ? <PaymentsScreen onBack={() => nav('Account')} /> : page === 'Privacy' ? <PrivacyScreen onBack={() => nav('Account')} /> : page === 'Connected' ? <ConnectedAccountsScreen onBack={() => nav('Account')} /> : page === 'Soon' ? <Pending title={soonTitle} message="This section is waiting on its design." actionLabel="Back to account" onAction={() => nav('Account')} onBack={() => nav('Account')} /> : page === 'Grades' ? <GradesScreen onBack={() => nav('Account')} onAssessment={() => nav('Assessment')} /> : page === 'Assessment' ? <AssessmentScreen onBack={() => nav('Grades')} /> : page === 'Conversation' ? <ConversationScreen conversationId={thread} onBack={() => nav('Inbox')} /> : page === 'Quiz' ? <QuizQuestionScreen onBack={() => nav('Player')} onNext={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => goBack('Dashboard')} /> : page === 'Player' ? <CoursePlayerScreen onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} /> : page === 'Result' ? <ResultScreen onBack={() => nav('Dashboard')} onContinue={() => nav('Player')} onReview={() => nav('Quiz')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <CertificatesScreen onBack={() => nav('Account')} /> : page === 'Learning' ? <MyCourseScreen saved={saved} onOpen={() => nav('Player')} onExplore={() => nav('Explore')} /> : page === 'Inbox' ? <MessagesScreen onOpen={id => { setThread(id); nav('Conversation'); }} onExplore={() => nav('Explore')} /> : page === 'Account' ? <AccountScreen onGrades={() => nav('Grades')} onCertificates={() => nav('Certificates')} onNotifications={() => nav('Notifications')} onHelp={() => nav('Help')} onSoon={title => { if (settingsPages[title]) { nav(settingsPages[title]); return; } setSoonTitle(title); nav('Soon'); }} onLogout={() => setLogoutOpen(true)} onReport={openReport} /> : <StudentHomeScreen onResume={() => nav('Player')} onCourse={() => nav('Player')} onNotifications={() => nav('Notifications')} />
     : role === 'Administrator' ? <AdminDashboardScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} />
     : page === 'Grading' ? <GradingScreen onBack={() => nav('Dashboard')} onGrade={() => nav('Grade')} /> : page === 'Grade' ? <Grade onBack={() => nav('Grading')} /> : page === 'Courses' ? <CoursesScreen onSetup={() => nav('Setup')} /> : page === 'Students' ? <Students /> : page === 'Messages' ? <Messages /> : page === 'More' ? <More onStudent={() => {setRole('Student'); nav('Dashboard');}} onAdmin={() => {setRole('Administrator'); nav('Dashboard');}} /> : page === 'Setup' ? <Setup onBack={() => nav('Courses')} onCurriculum={() => nav('Curriculum')} /> : page === 'Curriculum' ? <CurriculumScreen onBack={() => nav('Setup')} onLesson={() => nav('Lesson')} /> : page === 'Lesson' ? <Lesson onBack={() => nav('Curriculum')} /> : <InstructorDashboardScreen onOpenGrading={() => nav('Grading')} />;
   const publicTabs = role === 'Guest' ? guestTabs : role === 'Student' ? studentTabs : undefined;
   const isPublic = publicTabs !== undefined;
-  const showPublicTabs = publicTabs?.some(t => t.key === page);
+  const showPublicTabs = !(['Login', 'SignUp', 'Verify', 'Sso'] as Page[]).includes(page) && publicTabs?.some(t => t.key === page);
   const tab = tabs.some(x => x.label === page);
-  return <LaunchIntro><SafeAreaView style={page === 'Onboarding' ? [s.safe, s.safeOnboarding] : isPublic ? [s.safe, s.safePublic] : s.safe}><StatusBar barStyle={page === 'Onboarding' ? 'light-content' : 'dark-content'} /><View style={isPublic ? [s.app, s.safePublic] : s.app}>{screen}{showPublicTabs && publicTabs && <TabBar items={publicTabs} active={page} onSelect={nav} />}{tab && role === 'Instructor' && <View style={s.tabBar}>{tabs.map(t => {const active = page === t.label; return <Pressable key={t.label} style={s.tab} onPress={() => nav(t.label)}><View style={[s.tabIcon, active && s.tabIconActive]}><Text style={[s.tabIconText, active && s.tabIconTextActive]}>{t.icon}</Text></View><Text style={[s.tabLabel, active && s.tabLabelActive]}>{t.label}</Text></Pressable>;})}</View>}</View></SafeAreaView></LaunchIntro>;
+  // Edge-to-edge is on, so the app pads itself with the device insets. Each inset takes the colour of what it touches.
+  const pageBg = page === 'Onboarding' ? colors.sky : isPublic ? colors.cream : C.bg;
+  const topBg = page === 'Course' ? colors.sky : pageBg;
+  const hasBar = barPages.includes(page) && !(page === 'Cart' && cartItems.length === 0);
+  const bottomBg = showPublicTabs || page === 'Conversation' ? colors.sand : tab && role === 'Instructor' ? colors.white : hasBar ? colors.barBg : pageBg;
+  return <LaunchIntro><View style={[s.safe, {backgroundColor: pageBg, paddingLeft: insets.left, paddingRight: insets.right}]}><View style={{height: insets.top, backgroundColor: topBg}} /><StatusBar barStyle={page === 'Onboarding' || page === 'Course' ? 'light-content' : 'dark-content'} /><View style={isPublic ? [s.app, s.safePublic] : s.app}><ScreenTransition key={`${role}-${page}`}>{screen}</ScreenTransition>{showPublicTabs && publicTabs && <TabBar items={publicTabs} active={page} onSelect={nav} />}{tab && role === 'Instructor' && <View style={s.tabBar}>{tabs.map(t => {const active = page === t.label; return <Pressable key={t.label} style={s.tab} onPress={() => nav(t.label)}><View style={[s.tabIcon, active && s.tabIconActive]}><Text style={[s.tabIconText, active && s.tabIconTextActive]}>{t.icon}</Text></View><Text style={[s.tabLabel, active && s.tabLabelActive]}>{t.label}</Text></Pressable>;})}</View>}</View><View style={{height: insets.bottom, backgroundColor: bottomBg}} /></View>
+    <LogoutSheet visible={logoutOpen} name={learnerName} onCancel={() => setLogoutOpen(false)} onConfirm={signOut} />
+    <ReportIssueSheet visible={reportOpen} screenshot={screenshot} page={page} shakeEnabled={shakeEnabled} onShakeEnabled={setShakeEnabled} onContactSupport={() => { setReportOpen(false); if (role === 'Student') nav('Help'); }} onClose={() => setReportOpen(false)} />
+  </LaunchIntro>;
 }
 
 const s = StyleSheet.create({

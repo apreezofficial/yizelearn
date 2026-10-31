@@ -1,5 +1,5 @@
 {
-  "name": "CathEdTech",
+  "name": "Yizelearn",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,10 +10,15 @@
     "test": "jest"
   },
   "dependencies": {
+    "@hugeicons/core-free-icons": "^4.3.5",
+    "@hugeicons/react-native": "^1.0.16",
+    "@react-native/new-app-screen": "0.88.0",
     "react": "19.3.0",
     "react-native": "0.88.0",
-    "@react-native/new-app-screen": "0.88.0",
-    "react-native-safe-area-context": "^5.5.2"
+    "react-native-safe-area-context": "^5.5.2",
+    "react-native-shake": "^6.11.0",
+    "react-native-svg": "^15.16.0",
+    "react-native-view-shot": "^6.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -27,6 +27,16 @@ export const sampleModules: Module[] = [
   {id: 'm6', title: 'Module 6: Dashboards', lessons: [video('l17', 'Planning a dashboard', 8), video('l18', 'Slicers and timelines', 10), video('l19', 'Final project', 15)]},
 ];
 
+export type Review = {id: string; name: string; rating: number; when: string; text: string};
+export const sampleReviews: Review[] = [
+  {id: 'r1', name: 'Mercy Ibe', rating: 5, when: '2 weeks ago', text: 'Clear, practical and straight to the point. I rebuilt our sales report in a day after Module 4.'},
+  {id: 'r2', name: 'Tunde Bello', rating: 5, when: '1 month ago', text: 'The exercises use real-looking data, which made everything click. Worth every naira.'},
+  {id: 'r3', name: 'Chi Eze', rating: 4, when: '1 month ago', text: 'Great pace for beginners. I would love a few more practice files on pivot tables.'},
+  {id: 'r4', name: 'Ada Obi', rating: 5, when: '2 months ago', text: 'My manager noticed the difference in my dashboards within a week.'},
+];
+// Share of ratings at 5, 4, 3, 2 and 1 stars.
+export const ratingBreakdown = [0.74, 0.18, 0.05, 0.02, 0.01];
+
 export function formatNumber(value = 0) { return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 export function formatNaira(amount = 0) { return `₦${formatNumber(amount)}`; }
 export function formatDuration(minutes = 0) { const h = Math.floor(minutes / 60); const m = minutes % 60; return h ? `${h}h ${m}m` : `${m} min`; }

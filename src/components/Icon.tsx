@@ -1,32 +1,104 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {HugeiconsIcon} from '@hugeicons/react-native';
+import ArrowDown01Icon from '@hugeicons/core-free-icons/ArrowDown01Icon';
+import ArrowLeft01Icon from '@hugeicons/core-free-icons/ArrowLeft01Icon';
+import ArrowUp01Icon from '@hugeicons/core-free-icons/ArrowUp01Icon';
+import ArrowUpDownIcon from '@hugeicons/core-free-icons/ArrowUpDownIcon';
+import BankIcon from '@hugeicons/core-free-icons/BankIcon';
+import BookOpen01Icon from '@hugeicons/core-free-icons/BookOpen01Icon';
+import Cancel01Icon from '@hugeicons/core-free-icons/Cancel01Icon';
+import Certificate01Icon from '@hugeicons/core-free-icons/Certificate01Icon';
+import CreditCardIcon from '@hugeicons/core-free-icons/CreditCardIcon';
+import FavouriteIcon from '@hugeicons/core-free-icons/FavouriteIcon';
+import AppleIcon from '@hugeicons/core-free-icons/AppleIcon';
+import Award01Icon from '@hugeicons/core-free-icons/Award01Icon';
+import ArrowRight01Icon from '@hugeicons/core-free-icons/ArrowRight01Icon';
+import Attachment01Icon from '@hugeicons/core-free-icons/Attachment01Icon';
+import Calendar01Icon from '@hugeicons/core-free-icons/Calendar01Icon';
+import Clock01Icon from '@hugeicons/core-free-icons/Clock01Icon';
+import Download01Icon from '@hugeicons/core-free-icons/Download01Icon';
+import Edit02Icon from '@hugeicons/core-free-icons/Edit02Icon';
+import Logout01Icon from '@hugeicons/core-free-icons/Logout01Icon';
+import Mail01Icon from '@hugeicons/core-free-icons/Mail01Icon';
+import Medal01Icon from '@hugeicons/core-free-icons/Medal01Icon';
+import Notification01Icon from '@hugeicons/core-free-icons/Notification01Icon';
+import Settings01Icon from '@hugeicons/core-free-icons/Settings01Icon';
+import SentIcon from '@hugeicons/core-free-icons/SentIcon';
+import Share01Icon from '@hugeicons/core-free-icons/Share01Icon';
+import Target01Icon from '@hugeicons/core-free-icons/Target01Icon';
+import Upload01Icon from '@hugeicons/core-free-icons/Upload01Icon';
+import FilterHorizontalIcon from '@hugeicons/core-free-icons/FilterHorizontalIcon';
+import GoogleIcon from '@hugeicons/core-free-icons/GoogleIcon';
+import Home01Icon from '@hugeicons/core-free-icons/Home01Icon';
+import Infinity01Icon from '@hugeicons/core-free-icons/Infinity01Icon';
+import Message01Icon from '@hugeicons/core-free-icons/Message01Icon';
+import PlayIcon from '@hugeicons/core-free-icons/PlayIcon';
+import Search01Icon from '@hugeicons/core-free-icons/Search01Icon';
+import MoreHorizontalIcon from '@hugeicons/core-free-icons/MoreHorizontalIcon';
+import SecurityCheckIcon from '@hugeicons/core-free-icons/SecurityCheckIcon';
+import Building03Icon from '@hugeicons/core-free-icons/Building03Icon';
+import School01Icon from '@hugeicons/core-free-icons/School01Icon';
+import CheckmarkBadge01Icon from '@hugeicons/core-free-icons/CheckmarkBadge01Icon';
+import ShoppingCart01Icon from '@hugeicons/core-free-icons/ShoppingCart01Icon';
+import SquareLock02Icon from '@hugeicons/core-free-icons/SquareLock02Icon';
+import StarIcon from '@hugeicons/core-free-icons/StarIcon';
+import Tick02Icon from '@hugeicons/core-free-icons/Tick02Icon';
+import UserIcon from '@hugeicons/core-free-icons/UserIcon';
 import {colors} from '../theme/tokens';
 
-export type IconName = 'search' | 'filter' | 'back' | 'down' | 'up' | 'heart' | 'heartFilled' | 'check' | 'play' | 'lock' | 'home' | 'book' | 'cart' | 'user' | 'message' | 'close';
+// App icon names mapped to Hugeicons. `filled` renders the same outline icon with a solid fill.
+const icons = {
+  search: {icon: Search01Icon},
+  more: {icon: MoreHorizontalIcon},
+  shield: {icon: SecurityCheckIcon},
+  building: {icon: Building03Icon},
+  school: {icon: School01Icon},
+  verified: {icon: CheckmarkBadge01Icon},
+  filter: {icon: FilterHorizontalIcon},
+  sort: {icon: ArrowUpDownIcon},
+  back: {icon: ArrowLeft01Icon},
+  down: {icon: ArrowDown01Icon},
+  up: {icon: ArrowUp01Icon},
+  heart: {icon: FavouriteIcon},
+  heartFilled: {icon: FavouriteIcon, filled: true},
+  star: {icon: StarIcon},
+  starFilled: {icon: StarIcon, filled: true},
+  check: {icon: Tick02Icon},
+  play: {icon: PlayIcon, filled: true},
+  lock: {icon: SquareLock02Icon},
+  home: {icon: Home01Icon},
+  book: {icon: BookOpen01Icon},
+  cart: {icon: ShoppingCart01Icon},
+  user: {icon: UserIcon},
+  message: {icon: Message01Icon},
+  close: {icon: Cancel01Icon},
+  certificate: {icon: Certificate01Icon},
+  infinity: {icon: Infinity01Icon},
+  card: {icon: CreditCardIcon},
+  bank: {icon: BankIcon},
+  google: {icon: GoogleIcon},
+  apple: {icon: AppleIcon},
+  bell: {icon: Notification01Icon},
+  upload: {icon: Upload01Icon},
+  send: {icon: SentIcon},
+  share: {icon: Share01Icon},
+  download: {icon: Download01Icon},
+  award: {icon: Award01Icon},
+  medal: {icon: Medal01Icon},
+  target: {icon: Target01Icon},
+  calendar: {icon: Calendar01Icon},
+  edit: {icon: Edit02Icon},
+  clock: {icon: Clock01Icon},
+  attach: {icon: Attachment01Icon},
+  mail: {icon: Mail01Icon},
+  settings: {icon: Settings01Icon},
+  logout: {icon: Logout01Icon},
+  next: {icon: ArrowRight01Icon},
+} as const;
 
-// Line icons drawn with plain views, so the app needs no native icon dependency.
-export function Icon({name, size = 22, color = colors.ink}: {name: IconName; size?: number; color?: string}) {
-  const s = size; const w = Math.max(1.5, Math.round(s / 11)); const box = {width: s, height: s};
-  const line = {borderColor: color, borderWidth: w};
-  switch (name) {
-    case 'search': return <View style={box}><View style={[line, {width: s * 0.62, height: s * 0.62, borderRadius: s}]} /><View style={{position: 'absolute', left: s * 0.6, top: s * 0.56, width: w, height: s * 0.38, backgroundColor: color, borderRadius: w, transform: [{rotate: '-45deg'}]}} /></View>;
-    case 'filter': return <View style={[box, styles.center, {gap: s * 0.16}]}>{[0.8, 0.52, 0.24].map(f => <View key={f} style={{width: s * f, height: w, borderRadius: w, backgroundColor: color}} />)}</View>;
-    case 'back': case 'down': case 'up': {
-      const rotate = name === 'back' ? '45deg' : name === 'down' ? '-45deg' : '135deg';
-      const shift = name === 'back' ? {marginLeft: s * 0.18} : name === 'down' ? {marginTop: -s * 0.18} : {marginTop: s * 0.18};
-      return <View style={[box, styles.center]}><View style={[shift, {width: s * 0.42, height: s * 0.42, borderLeftWidth: w, borderBottomWidth: w, borderColor: color, transform: [{rotate}]}]} /></View>;
-    }
-    case 'heart': case 'heartFilled': return <View style={[box, styles.center]}><Text style={{fontSize: s, lineHeight: s * 1.15, color, includeFontPadding: false}}>{name === 'heart' ? '♡' : '♥'}</Text></View>;
-    case 'close': return <View style={[box, styles.center]}>{['45deg', '-45deg'].map(rotate => <View key={rotate} style={{position: 'absolute', width: s * 0.7, height: w, borderRadius: w, backgroundColor: color, transform: [{rotate}]}} />)}</View>;
-    case 'check': return <View style={[box, styles.center]}><View style={{width: s * 0.55, height: s * 0.3, marginTop: -s * 0.12, borderLeftWidth: w, borderBottomWidth: w, borderColor: color, transform: [{rotate: '-45deg'}]}} /></View>;
-    case 'play': return <View style={[box, styles.center]}><View style={{marginLeft: s * 0.1, width: 0, height: 0, borderTopWidth: s * 0.28, borderBottomWidth: s * 0.28, borderLeftWidth: s * 0.44, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: color}} /></View>;
-    case 'lock': return <View style={[box, styles.center]}><View style={[line, {width: s * 0.46, height: s * 0.36, borderBottomWidth: 0, borderTopLeftRadius: s, borderTopRightRadius: s, marginBottom: -w}]} /><View style={[line, {width: s * 0.66, height: s * 0.44, borderRadius: w}]} /></View>;
-    case 'home': return <View style={[box, styles.center]}><View style={{width: s * 0.56, height: s * 0.56, borderTopWidth: w, borderLeftWidth: w, borderColor: color, transform: [{rotate: '45deg'}], marginBottom: -s * 0.36}} /><View style={[line, {width: s * 0.62, height: s * 0.44, borderTopWidth: 0, borderBottomLeftRadius: w, borderBottomRightRadius: w}]} /></View>;
-    case 'book': return <View style={[box, styles.center]}><View style={[line, {width: s * 0.72, height: s * 0.8, borderRadius: w * 1.5, borderLeftWidth: w * 2}]}><View style={{position: 'absolute', left: s * 0.08, right: s * 0.08, bottom: s * 0.14, height: w, backgroundColor: color}} /></View></View>;
-    case 'cart': return <View style={[box, styles.center]}><View style={[line, {width: s * 0.66, height: s * 0.42, borderBottomLeftRadius: w * 2, borderBottomRightRadius: w * 2, marginTop: s * 0.06}]} /><View style={{flexDirection: 'row', gap: s * 0.22, marginTop: s * 0.06}}><View style={{width: w * 2, height: w * 2, borderRadius: w, backgroundColor: color}} /><View style={{width: w * 2, height: w * 2, borderRadius: w, backgroundColor: color}} /></View><View style={{position: 'absolute', left: s * 0.02, top: s * 0.14, width: s * 0.18, height: w, backgroundColor: color}} /></View>;
-    case 'user': return <View style={[box, styles.center]}><View style={[line, {width: s * 0.4, height: s * 0.4, borderRadius: s}]} /><View style={[line, {width: s * 0.72, height: s * 0.32, borderBottomWidth: 0, borderTopLeftRadius: s, borderTopRightRadius: s, marginTop: s * 0.06}]} /></View>;
-    case 'message': return <View style={[box, styles.center]}><View style={[line, {width: s * 0.8, height: s * 0.58, borderRadius: w * 2}]} /><View style={{position: 'absolute', left: s * 0.24, bottom: s * 0.12, width: s * 0.2, height: s * 0.2, borderLeftWidth: w, borderBottomWidth: w, borderColor: color, backgroundColor: 'transparent', transform: [{rotate: '-20deg'}]}} /></View>;
-  }
+export type IconName = keyof typeof icons;
+
+export function Icon({name, size = 24, color = colors.ink, strokeWidth = 1.8}: {name: IconName; size?: number; color?: string; strokeWidth?: number}) {
+  const {icon, filled} = icons[name] as {icon: typeof StarIcon; filled?: boolean};
+  return <HugeiconsIcon icon={icon} size={size} color={color} strokeWidth={strokeWidth} fill={filled ? color : 'none'} />;
 }
-
-const styles = StyleSheet.create({center: {alignItems: 'center', justifyContent: 'center'}});
