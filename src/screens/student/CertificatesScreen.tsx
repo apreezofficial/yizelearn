@@ -2,6 +2,7 @@ import React from 'react';
 import {Alert, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Icon, type IconName} from '../../components/Icon';
 import {PrimaryAction, TitleBar} from '../../components/Layout';
+import {Rise} from '../../components/Motion';
 import {badges, certificate} from '../../data/learning';
 import {learnerName} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
@@ -14,27 +15,27 @@ export function CertificatesScreen({onBack}: {onBack: () => void}) {
   return <View style={styles.screen}>
     <TitleBar title="Certificates" onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <View style={styles.certificate}>
+      <Rise style={styles.certificate}>
         <Text style={[styles.kicker, font]}>{certificate.title}</Text>
         <Text style={[styles.name, font]}>{learnerName} Nwachukwu</Text>
         <Text style={[styles.course, font]}>has completed {certificate.course}</Text>
         <View style={styles.seal}><Icon name="award" size={26} color={colors.onSky} /></View>
-      </View>
+      </Rise>
 
-      <View style={styles.actions}>
+      <Rise delay={100} style={styles.actions}>
         <View style={styles.half}><PrimaryAction label="Share" outline onPress={() => notConnected('Sharing')} /></View>
         <View style={styles.half}><PrimaryAction label="Download PDF" onPress={() => notConnected('Download')} /></View>
-      </View>
+      </Rise>
 
-      <Text style={[styles.section, font]}>Badges</Text>
-      <View style={styles.grid}>
+      <Rise delay={180}><Text style={[styles.section, font]}>Badges</Text></Rise>
+      <Rise delay={240} style={styles.grid}>
         {badges.map(badge => <View key={badge.label} style={styles.badge} accessibilityLabel={`${badge.label}, ${badge.earned ? 'earned' : 'locked'}`}>
           <View style={[styles.badgeIcon, badge.earned ? styles.badgeEarned : styles.badgeLocked]}>
             <Icon name={badge.icon as IconName} size={24} color={badge.earned ? colors.blue700 : colors.muted} />
           </View>
           <Text style={[styles.badgeLabel, font, !badge.earned && styles.muted]}>{badge.label}</Text>
         </View>)}
-      </View>
+      </Rise>
     </ScrollView>
   </View>;
 }

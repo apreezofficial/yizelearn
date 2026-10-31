@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {Icon, type IconName} from '../../components/Icon';
 import {TitleBar} from '../../components/Layout';
+import {Rise} from '../../components/Motion';
 import {helpArticles} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
@@ -19,19 +20,19 @@ export function HelpCentreScreen({onBack}: {onBack: () => void}) {
   return <View style={styles.screen}>
     <TitleBar title="Help centre" onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-      <View style={styles.search}>
+      <Rise style={styles.search}>
         <Icon name="search" size={20} color={colors.muted} />
         <TextInput value={query} onChangeText={setQuery} placeholder="Search for help" placeholderTextColor={colors.muted} style={[styles.input, font]} />
-      </View>
+      </Rise>
 
-      <View style={styles.topics}>
+      <Rise delay={80} style={styles.topics}>
         {topics.map(t => <Pressable key={t.label} onPress={() => Alert.alert(t.label, 'Browse this topic is not set up yet.')} style={({pressed}) => [styles.topic, pressed && styles.pressed]} accessibilityRole="button">
           <View style={styles.topicIcon}><Icon name={t.icon} size={22} color={colors.blue700} /></View>
           <Text style={[styles.topicText, font]}>{t.label}</Text>
         </Pressable>)}
-      </View>
+      </Rise>
 
-      <Text style={[styles.section, font]}>Popular articles</Text>
+      <Rise delay={160}><Text style={[styles.section, font]}>Popular articles</Text></Rise>
       {articles.map(a => <Pressable key={a} onPress={() => Alert.alert('Help article', 'Articles are not published yet.')} style={({pressed}) => [styles.article, pressed && styles.pressed]} accessibilityRole="button">
         <Text style={[styles.articleText, font]}>{a}</Text>
         <Icon name="next" size={18} color={colors.muted} />

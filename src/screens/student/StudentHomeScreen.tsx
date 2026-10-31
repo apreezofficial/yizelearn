@@ -4,6 +4,7 @@ import Svg, {Path} from 'react-native-svg';
 import type {Course} from '../../api/types';
 import {SearchField} from '../../components/Catalog';
 import {Icon} from '../../components/Icon';
+import {Rise} from '../../components/Motion';
 import {formatNaira, sampleCourses} from '../../data/catalog';
 import {continueLearning, learnerName} from '../../data/learning';
 import {colors, fonts, spacing, type} from '../../theme/tokens';
@@ -13,13 +14,6 @@ const font = {fontFamily: fonts.family};
 const chips = ['All', 'AI', 'Tech', 'Design', 'Programming', 'Database'];
 // Courses that sit under each chip until the catalogue has these categories.
 const chipCategory: Record<string, string[]> = {AI: ['Tech'], Tech: ['Tech'], Design: ['Design'], Programming: ['Tech'], Database: ['Business', 'Tech']};
-
-/** Fades and lifts its content in after `delay` ms. */
-function Rise({children, delay = 0, style}: {children: React.ReactNode; delay?: number; style?: ViewStyle | ViewStyle[]}) {
-  const t = useRef(new Animated.Value(0)).current;
-  useEffect(() => { Animated.timing(t, {toValue: 1, duration: 520, delay, easing: Easing.bezier(0.16, 1, 0.3, 1), useNativeDriver: true}).start(); }, [delay, t]);
-  return <Animated.View style={[style, {opacity: t, transform: [{translateY: t.interpolate({inputRange: [0, 1], outputRange: [16, 0]})}]}]}>{children}</Animated.View>;
-}
 
 /** Progress as the design draws it: a solid run for what is done, then chalk dots for what is left. */
 function ChalkProgress({value}: {value: number}) {

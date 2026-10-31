@@ -3,6 +3,7 @@ import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Icon} from '../../components/Icon';
 import {ChalkCard, ProgressBar} from '../../components/Chalkboard';
 import {TitleBar} from '../../components/Layout';
+import {Rise} from '../../components/Motion';
 import {gradeCourse, gradeItems, gradeOverall} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
@@ -18,14 +19,14 @@ export function GradesScreen({onBack, onAssessment}: {onBack: () => void; onAsse
         <Icon name="down" size={18} color={colors.ink} />
       </View>
 
-      <ChalkCard style={styles.overall}>
+      <Rise delay={80}><ChalkCard style={styles.overall}>
         <Text style={[styles.overallLabel, font]}>Overall grade</Text>
         <Text style={[styles.overallValue, font]}>{gradeOverall}%</Text>
         <ProgressBar value={gradeOverall} track="rgba(254, 249, 242, 0.25)" fill={colors.sky} height={8} />
-      </ChalkCard>
+      </ChalkCard></Rise>
 
-      <Text style={[styles.section, font]}>Breakdown</Text>
-      {gradeItems.map(item => {
+      <Rise delay={160}><Text style={[styles.section, font]}>Breakdown</Text></Rise>
+      {gradeItems.map((item, i) => {
         const pending = item.score === 'Pending';
         const row = <>
           <View style={styles.copy}>
@@ -35,9 +36,9 @@ export function GradesScreen({onBack, onAssessment}: {onBack: () => void; onAsse
           <Text style={[styles.score, font, pending && styles.scorePending]}>{item.score}</Text>
           {item.kind === 'Assignment' && <Icon name="next" size={18} color={colors.muted} />}
         </>;
-        return item.kind === 'Assignment'
+        return <Rise key={item.id} delay={220 + i * 70}>{item.kind === 'Assignment'
           ? <Pressable key={item.id} onPress={onAssessment} style={({pressed}) => [styles.row, pressed && styles.pressed]} accessibilityRole="button">{row}</Pressable>
-          : <View key={item.id} style={styles.row}>{row}</View>;
+          : <View key={item.id} style={styles.row}>{row}</View>}</Rise>;
       })}
     </ScrollView>
   </View>;

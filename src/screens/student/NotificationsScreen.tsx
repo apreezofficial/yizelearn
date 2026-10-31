@@ -1,13 +1,15 @@
 import React, {useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {Icon} from '../../components/Icon';
+import {Icon, type IconName} from '../../components/Icon';
 import {TitleBar} from '../../components/Layout';
+import {Rise} from '../../components/Motion';
 import {notices, type NotificationKind} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
 const font = {fontFamily: fonts.family};
 type Filter = 'All' | 'Learning' | 'Messages';
 const filters: Filter[] = ['All', 'Learning', 'Messages'];
+const kindIcon: Record<NotificationKind, IconName> = {learning: 'book', messages: 'message', other: 'bell'};
 const kindOf: Record<Filter, NotificationKind | undefined> = {All: undefined, Learning: 'learning', Messages: 'messages'};
 
 export function NotificationsScreen({onBack}: {onBack: () => void}) {
@@ -15,21 +17,21 @@ export function NotificationsScreen({onBack}: {onBack: () => void}) {
   const shown = notices.filter(n => !kindOf[filter] || n.kind === kindOf[filter]);
   return <View style={styles.screen}>
     <TitleBar title="Notifications" onBack={onBack} />
-    <View style={styles.filters}>
+    <Rise style={styles.filters}>
       {filters.map(f => <Pressable key={f} onPress={() => setFilter(f)} style={[styles.chip, filter === f && styles.chipOn]} accessibilityRole="tab" accessibilityState={{selected: filter === f}}>
         <Text style={[styles.chipText, font, filter === f && styles.chipTextOn]}>{f}</Text>
       </Pressable>)}
-    </View>
+    </Rise>
     <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
       {shown.length === 0 && <Text style={[styles.empty, font]}>You are all caught up.</Text>}
-      {shown.map(n => <View key={n.id} style={styles.row} accessibilityLabel={`${n.title}${n.unread ? ', unread' : ''}`}>
-        <View style={styles.icon}><Icon name="bell" size={20} color={colors.blue700} /></View>
+      {shown.map((n, i) => <Rise key={`${filter}-${n.id}`} delay={80 + i * 70} style={[styles.row, n.unread && styles.unread]} ><View accessible accessibilityLabel={`${n.title}${n.unread ? ', unread' : ''}`} style={styles.rowInner}>
+        <View style={styles.icon}><Icon name={kindIcon[n.kind]} size={20} color={colors.blue700} /></View>
         <View style={styles.copy}>
           <Text style={[styles.title, font, n.unread && styles.bold]}>{n.title}</Text>
           <Text style={[styles.time, font]}>{n.time}</Text>
         </View>
         {n.unread && <View style={styles.dot} />}
-      </View>)}
+      </View></Rise>)}
     </ScrollView>
   </View>;
 }
@@ -42,7 +44,9 @@ const styles = StyleSheet.create({
   chipText: {fontSize: type.small, color: colors.ink, fontWeight: '600'},
   chipTextOn: {color: colors.onSky, fontWeight: '800'},
   list: {paddingHorizontal: spacing.screen, paddingBottom: 28},
-  row: {flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 72, borderBottomWidth: 1, borderBottomColor: colors.line},
+  row: {borderRadius: radius.card, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, marginBottom: 10},
+  unread: {backgroundColor: colors.blue50, borderColor: colors.blue100},
+  rowInner: {flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 72, paddingHorizontal: 14},
   icon: {width: 44, height: 44, borderRadius: 22, backgroundColor: colors.blue100, alignItems: 'center', justifyContent: 'center'},
   copy: {flex: 1},
   title: {fontSize: type.label, color: colors.ink, lineHeight: 21},
