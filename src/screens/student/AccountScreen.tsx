@@ -1,5 +1,6 @@
 import React from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {TabBarSpacer} from '../../components/Catalog';
 import {Icon} from '../../components/Icon';
 import {learnerName} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
@@ -52,6 +53,7 @@ export function AccountScreen({onGrades, onCertificates, onNotifications, onHelp
       <Pressable onPress={onLogout} style={({pressed}) => [styles.logout, pressed && styles.pressed]} accessibilityRole="button">
         <Text style={[styles.logoutText, font]}>Log out</Text>
       </Pressable>
+      <TabBarSpacer />
     </ScrollView>
   </View>;
 }

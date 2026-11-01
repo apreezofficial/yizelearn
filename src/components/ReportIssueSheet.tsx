@@ -3,6 +3,7 @@ import {ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Switch, Tex
 import {supportApi} from '../api/endpoints';
 import {colors, fonts, radius, spacing, type} from '../theme/tokens';
 import {Icon} from './Icon';
+import {haptic} from '../theme/system';
 import {Sheet} from './Sheet';
 
 const font = {fontFamily: fonts.family};
@@ -35,6 +36,7 @@ export function ReportIssueSheet({visible, screenshot, page, shakeEnabled, onSha
     setError('');
     try {
       await supportApi.reportIssue({message: message.trim(), screenshot: withShot ? screenshot : undefined, page});
+      haptic.success();
       setSent(true);
     } catch {
       setError('Couldn’t send that. Check your connection and try again.');
@@ -53,7 +55,7 @@ export function ReportIssueSheet({visible, screenshot, page, shakeEnabled, onSha
     </View>
 
     {sent ? <View style={styles.done}>
-      <View style={styles.doneRing}><View style={styles.doneBadge}><Icon name="check" size={34} color={colors.white} /></View></View>
+      <View style={styles.doneRing}><View style={styles.doneBadge}><Icon name="check" size={34} color={colors.onAccent} /></View></View>
       <Text style={[styles.doneTitle, font]}>Thanks for telling us</Text>
       <Text style={[styles.doneText, font]}>We read every report. If we need more detail, we’ll reach out by email.</Text>
       <Pressable onPress={onClose} style={({pressed}) => [styles.send, styles.doneButton, pressed && styles.pressed]} accessibilityRole="button">
@@ -73,7 +75,7 @@ export function ReportIssueSheet({visible, screenshot, page, shakeEnabled, onSha
             <Text style={[styles.rowTitle, font]}>Include screenshot in report</Text>
             {!screenshot && <Text style={[styles.rowMeta, font]}>No screenshot available</Text>}
           </View>
-          <Switch value={withShot} onValueChange={setWithShot} disabled={!screenshot} trackColor={{false: colors.sandLine, true: colors.blue700}} thumbColor={colors.white} ios_backgroundColor={colors.sandLine} accessibilityLabel="Include screenshot in report" />
+          <Switch value={withShot} onValueChange={v => { haptic.select(); setWithShot(v); }} disabled={!screenshot} trackColor={{false: colors.sandLine, true: colors.blue700}} thumbColor={colors.onAccent} ios_backgroundColor={colors.sandLine} accessibilityLabel="Include screenshot in report" />
         </View>
         {withShot && screenshot && <Image source={{uri: screenshot}} style={styles.shot} resizeMode="cover" accessibilityLabel="Screenshot to include" />}
 
@@ -82,12 +84,12 @@ export function ReportIssueSheet({visible, screenshot, page, shakeEnabled, onSha
             <Text style={[styles.rowTitle, font]}>Shake phone to report a bug</Text>
             <Text style={[styles.rowMeta, font]}>Toggle off to disable</Text>
           </View>
-          <Switch value={shakeEnabled} onValueChange={onShakeEnabled} trackColor={{false: colors.sandLine, true: colors.blue700}} thumbColor={colors.white} ios_backgroundColor={colors.sandLine} accessibilityLabel="Shake phone to report a bug" />
+          <Switch value={shakeEnabled} onValueChange={v => { haptic.select(); onShakeEnabled(v); }} trackColor={{false: colors.sandLine, true: colors.blue700}} thumbColor={colors.onAccent} ios_backgroundColor={colors.sandLine} accessibilityLabel="Shake phone to report a bug" />
         </View>
       </ScrollView>
       {!!error && <Text style={[styles.error, font]}>{error}</Text>}
       <Pressable onPress={send} disabled={!message.trim() || busy} style={({pressed}) => [styles.send, !message.trim() && styles.sendOff, pressed && styles.pressed]} accessibilityRole="button" accessibilityState={{disabled: !message.trim() || busy, busy}}>
-        {busy ? <ActivityIndicator color={colors.white} /> : <Text style={[styles.sendText, font]}>Send</Text>}
+        {busy ? <ActivityIndicator color={colors.onAccent} /> : <Text style={[styles.sendText, font]}>Send</Text>}
       </Pressable>
     </>}
   </Sheet>;
@@ -114,7 +116,7 @@ const styles = StyleSheet.create({
   error: {fontSize: type.caption, color: colors.danger, textAlign: 'center', marginBottom: 8},
   send: {height: spacing.button, borderRadius: radius.pill, backgroundColor: colors.blue700, alignItems: 'center', justifyContent: 'center'},
   sendOff: {backgroundColor: '#B9C3CF'},
-  sendText: {fontSize: type.subheading, color: colors.white, fontWeight: '700'},
+  sendText: {fontSize: type.subheading, color: colors.onAccent, fontWeight: '700'},
   pressed: {opacity: 0.8},
   done: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 40},
   doneRing: {width: 110, height: 110, borderRadius: 55, backgroundColor: colors.blue50, alignItems: 'center', justifyContent: 'center', marginBottom: 20},

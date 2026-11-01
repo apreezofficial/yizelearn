@@ -1,13 +1,13 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View, type ViewStyle} from 'react-native';
+import {Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View, type ColorValue, type ViewStyle} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 import type {Course} from '../../api/types';
-import {SearchField} from '../../components/Catalog';
+import {SearchField, TabBarSpacer} from '../../components/Catalog';
 import {Icon} from '../../components/Icon';
 import {Rise} from '../../components/Motion';
 import {formatNaira, sampleCourses} from '../../data/catalog';
 import {continueLearning, learnerName} from '../../data/learning';
-import {colors, fonts, spacing, type} from '../../theme/tokens';
+import {colors, fonts, palettes, spacing, type} from '../../theme/tokens';
 
 type Props = {onResume: () => void; onCourse: (course: Course) => void; onNotifications: () => void};
 const font = {fontFamily: fonts.family};
@@ -38,7 +38,7 @@ function BookArt() {
   </View>;
 }
 
-const tileArt: {bg: string; border: string; shapes: ViewStyle[]}[] = [
+const tileArt: {bg: ColorValue; border: ColorValue; shapes: ViewStyle[]}[] = [
   {bg: colors.cream, border: colors.sandLine, shapes: [
     {left: '20%', top: '20%', width: '40%', height: '52%', borderRadius: 10, backgroundColor: '#A6C3EA'},
     {left: '56%', top: '28%', width: 52, height: 52, borderRadius: 26, backgroundColor: colors.marigold},
@@ -101,7 +101,7 @@ export function StudentHomeScreen({onResume, onCourse, onNotifications}: Props) 
           <View style={styles.boardCopy}>
             <Text style={styles.chalkTitle} numberOfLines={1} adjustsFontSizeToFit>{continueLearning.title}</Text>
             <Svg width={150} height={10} viewBox="0 0 150 10" style={styles.squiggle}>
-              <Path d="M2 6 C 14 1, 22 1, 34 5 S 56 9, 68 5 S 90 1, 102 5 S 124 9, 136 5 S 146 3, 148 4" stroke={colors.chalkText} strokeWidth={2} fill="none" strokeLinecap="round" />
+              <Path d="M2 6 C 14 1, 22 1, 34 5 S 56 9, 68 5 S 90 1, 102 5 S 124 9, 136 5 S 146 3, 148 4" stroke={palettes.light.chalkText} strokeWidth={2} fill="none" strokeLinecap="round" />
             </Svg>
             <Text style={[styles.chalkMeta, font]} numberOfLines={1}>Lesson {continueLearning.lessonNumber} of {continueLearning.lessonsTotal}: {continueLearning.lesson}</Text>
             <ChalkProgress value={continueLearning.progress} />
@@ -134,6 +134,7 @@ export function StudentHomeScreen({onResume, onCourse, onNotifications}: Props) 
       {recommended.map((course, i) => <CourseTile key={`${chip}-${course.id}`} course={course} index={i} onPress={() => onCourse(course)} />)}
     </ScrollView>
     {recommended.length === 0 && <Text style={[styles.empty, font]}>No courses in this category yet.</Text>}
+    <TabBarSpacer />
   </ScrollView>;
 }
 
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
   hello: {fontSize: 28, color: colors.ink, fontWeight: '800'},
   bell: {width: 36, height: 36, alignItems: 'center', justifyContent: 'center'},
   unread: {position: 'absolute', top: 2, right: 3, width: 10, height: 10, borderRadius: 5, backgroundColor: '#E5483B'},
-  search: {backgroundColor: '#F8F8FC', height: 58},
+  search: {backgroundColor: colors.white, height: 58},
   section: {fontSize: type.heading, color: colors.ink, fontWeight: '800', marginTop: 24, marginBottom: 12},
   flat: {marginTop: 0, marginBottom: 0},
   sectionRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 28, marginBottom: 14},
@@ -179,10 +180,10 @@ const styles = StyleSheet.create({
   chip: {paddingVertical: 4},
   chipOn: {height: 44, paddingHorizontal: 22, borderRadius: 22, backgroundColor: '#3E6FB0', justifyContent: 'center'},
   chipText: {fontSize: type.label, color: colors.ink, fontWeight: '700'},
-  chipTextOn: {fontSize: type.label, color: colors.white, fontWeight: '700'},
+  chipTextOn: {fontSize: type.label, color: colors.onAccent, fontWeight: '700'},
   chipLine: {height: 2, borderRadius: 1, backgroundColor: colors.marigold, marginTop: 2},
   rail: {gap: 14, paddingHorizontal: spacing.screen, paddingBottom: 6},
-  tile: {width: TILE, backgroundColor: '#FBFAF8', borderWidth: 1, borderColor: colors.sandLine, borderRadius: 14, padding: 10},
+  tile: {width: TILE, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sandLine, borderRadius: 14, padding: 10},
   tileArt: {height: 148, borderRadius: 10, borderWidth: 1, overflow: 'hidden'},
   shape: {position: 'absolute'},
   tileCopy: {paddingHorizontal: 8, paddingTop: 14, paddingBottom: 6},

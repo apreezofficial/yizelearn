@@ -3,6 +3,7 @@ import {Alert, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View,
 import {Icon, type IconName} from '../../components/Icon';
 import {BottomButton, PrimaryAction, TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
+import {haptic} from '../../theme/system';
 import {formatNaira} from '../../data/catalog';
 import {learnerName} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
@@ -45,7 +46,7 @@ export function ProfileScreen({onBack}: {onBack: () => void}) {
       <Rise style={styles.avatarBlock}>
         <View style={styles.avatar}><Text style={[styles.avatarText, font]}>{initials}</Text></View>
         <Pressable onPress={() => Alert.alert('Change photo', 'Photo uploads are not connected yet.')} style={({pressed}) => [styles.camera, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Change photo">
-          <Icon name="upload" size={16} color={colors.white} />
+          <Icon name="upload" size={16} color={colors.onAccent} />
         </Pressable>
         <Text style={[styles.avatarName, font]}>{form.name || 'Your name'}</Text>
         <Text style={[styles.avatarMeta, font]}>Learner · {form.school}</Text>
@@ -58,7 +59,7 @@ export function ProfileScreen({onBack}: {onBack: () => void}) {
         <Field label="About you" value={form.bio} onChangeText={set('bio')} multiline />
       </Rise>
     </ScrollView>
-    <BottomButton label={changed ? 'Save changes' : 'Saved'} disabled={!changed || !form.name.trim()} onPress={() => { setSaved(form); Alert.alert('Profile saved', 'Your details are up to date.'); }} />
+    <BottomButton label={changed ? 'Save changes' : 'Saved'} disabled={!changed || !form.name.trim()} onPress={() => { setSaved(form); haptic.success(); Alert.alert('Profile saved', 'Your details are up to date.'); }} />
   </View>;
 }
 
@@ -106,7 +107,7 @@ function ToggleRow({icon, title, detail, value, onChange, first}: {icon: IconNam
       <Text style={[styles.rowTitle, font]}>{title}</Text>
       <Text style={[styles.rowMeta, font]}>{detail}</Text>
     </View>
-    <Switch value={value} onValueChange={onChange} trackColor={{false: colors.sandLine, true: colors.blue700}} thumbColor={colors.white} ios_backgroundColor={colors.sandLine} accessibilityLabel={title} />
+    <Switch value={value} onValueChange={v => { haptic.select(); onChange(v); }} trackColor={{false: colors.sandLine, true: colors.blue700}} thumbColor={colors.onAccent} ios_backgroundColor={colors.sandLine} accessibilityLabel={title} />
   </View>;
 }
 
@@ -216,6 +217,6 @@ const styles = StyleSheet.create({
   dangerText: {fontSize: type.label, color: colors.danger, fontWeight: '800'},
   linkButton: {paddingHorizontal: 14, height: 36, borderRadius: radius.pill, backgroundColor: colors.blue700, justifyContent: 'center'},
   linkButtonOn: {backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sandLine},
-  linkText: {fontSize: type.caption, color: colors.white, fontWeight: '800'},
+  linkText: {fontSize: type.caption, color: colors.onAccent, fontWeight: '800'},
   linkTextOn: {color: colors.ink},
 });

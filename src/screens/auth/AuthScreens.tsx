@@ -4,6 +4,7 @@ import {ApiError, auth} from '../../api/client';
 import {authApi, type Organisation} from '../../api/endpoints';
 import type {User} from '../../api/types';
 import {RoundButton} from '../../components/Catalog';
+import {Notice} from '../../components/States';
 import {Icon} from '../../components/Icon';
 import {AppleLogo, GoogleLogo} from '../../components/BrandLogos';
 import {TitleBar} from '../../components/Layout';
@@ -27,7 +28,9 @@ export function LoginScreen({onBack, onSignUp, onSso, onSent}: LoginProps) {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [touched, setTouched] = useState(false);
   const valid = EMAIL.test(email.trim());
+  const emailError = touched && email.trim() && !valid ? 'Enter a full email address, like name@example.com' : undefined;
 
   const submit = async () => {
     if (!valid || busy) return;
@@ -49,8 +52,8 @@ export function LoginScreen({onBack, onSignUp, onSso, onSent}: LoginProps) {
     <Text style={[styles.title, font]}>Welcome back</Text>
     <Text style={[styles.subtitle, font]}>Log in to keep learning</Text>
 
-    <Field label="Email" value={email} onChangeText={setEmail} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
-    {!!error && <Text style={[styles.error, font]}>{error}</Text>}
+    {!!error && <View style={styles.notice}><Notice tone="danger" title="We couldn't log you in" message={error} /></View>}
+    <Field label="Email" value={email} onChangeText={v => { setEmail(v); setError(''); }} onBlur={() => setTouched(true)} onSubmitEditing={() => { setTouched(true); submit(); }} error={emailError} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
     <Primary label="Log in" disabled={!valid} busy={busy} onPress={submit} />
 
     <Divider label="or continue with" />
@@ -180,18 +183,22 @@ function CodeInput({value, onChange, onComplete}: {value: string; onChange: (val
   </Pressable>;
 }
 
-type FieldProps = Pick<TextInputProps, 'value' | 'onChangeText' | 'placeholder' | 'keyboardType' | 'autoCapitalize' | 'autoComplete' | 'textContentType'> & {label: string};
-function Field({label, ...input}: FieldProps) {
+type FieldProps = Pick<TextInputProps, 'value' | 'onChangeText' | 'placeholder' | 'keyboardType' | 'autoCapitalize' | 'autoComplete' | 'textContentType' | 'onBlur' | 'onSubmitEditing'> & {label: string};
+function Field({label, error, ...input}: FieldProps & {error?: string}) {
   return <View style={styles.field}>
     <Text style={[styles.label, font]}>{label}</Text>
-    <TextInput {...input} placeholderTextColor={colors.muted} style={[styles.input, font]} />
+    <View>
+      <TextInput {...input} placeholderTextColor={colors.muted} style={[styles.input, font, !!error && styles.inputError]} accessibilityHint={error} />
+      {!!error && <View style={styles.inputIcon} pointerEvents="none"><Icon name="alert" size={18} color={colors.danger} /></View>}
+    </View>
+    {!!error && <Text style={[styles.fieldError, font]}>{error}</Text>}
   </View>;
 }
 
 function Primary({label, onPress, disabled, busy}: {label: string; onPress: () => void; disabled?: boolean; busy?: boolean}) {
   return <Pressable onPress={onPress} disabled={disabled || busy} accessibilityRole="button" accessibilityState={{disabled: disabled || busy, busy}}
     style={({pressed}) => [styles.primary, (disabled && !busy) && styles.dim, pressed && styles.pressed]}>
-    {busy ? <ActivityIndicator color={colors.white} /> : <Text style={[styles.primaryText, font]}>{label}</Text>}
+    {busy ? <ActivityIndicator color={colors.onAccent} /> : <Text style={[styles.primaryText, font]}>{label}</Text>}
   </Pressable>;
 }
 
@@ -333,7 +340,7 @@ function SigningSteps() {
   }, [done]);
   return <View style={styles.steps}>{SIGNING_STEPS.map((label, i) => <View key={label} style={styles.stepRow}>
     <View style={[styles.stepDot, i < done && styles.stepDotDone]}>
-      {i < done ? <Icon name="check" size={14} color={colors.white} /> : i === done ? <ActivityIndicator size="small" color={colors.blue700} /> : null}
+      {i < done ? <Icon name="check" size={14} color={colors.onAccent} /> : i === done ? <ActivityIndicator size="small" color={colors.blue700} /> : null}
     </View>
     <Text style={[styles.stepText, font, i > done && styles.muted]}>{label}</Text>
   </View>)}</View>;
@@ -348,6 +355,10 @@ const styles = StyleSheet.create({
   subtitle: {fontSize: type.label, color: colors.muted, textAlign: 'center', marginTop: 8, marginBottom: 28, lineHeight: 22},
   field: {marginBottom: 18},
   label: {fontSize: type.small, color: colors.ink, fontWeight: '700', marginBottom: 8},
+  inputError: {borderColor: colors.danger, borderWidth: 1.5, backgroundColor: colors.dangerSoft, paddingRight: 46},
+  inputIcon: {position: 'absolute', right: 16, top: 0, bottom: 0, justifyContent: 'center'},
+  fieldError: {fontSize: type.caption, color: colors.danger, marginTop: 6},
+  notice: {marginBottom: 16},
   input: {height: 58, borderRadius: radius.field, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, paddingHorizontal: 18, fontSize: type.body, color: colors.ink},
   error: {fontSize: type.caption, color: colors.danger, marginBottom: 10, textAlign: 'center'},
   primary: {height: spacing.button, borderRadius: radius.button, backgroundColor: colors.sky, alignItems: 'center', justifyContent: 'center', marginTop: 4},
@@ -387,7 +398,7 @@ const styles = StyleSheet.create({
   ssoRing: {position: 'absolute', bottom: 16, right: 10, width: 16, height: 16, borderRadius: 8, borderWidth: 2, borderColor: colors.blue700},
   orgCard: {flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, borderRadius: radius.card, borderWidth: 1.5, borderColor: colors.sky, backgroundColor: colors.white},
   orgBadge: {width: 48, height: 48, borderRadius: 12, backgroundColor: colors.blue900, alignItems: 'center', justifyContent: 'center'},
-  orgInitials: {fontSize: type.label, color: colors.white, fontWeight: '800'},
+  orgInitials: {fontSize: type.label, color: colors.onAccent, fontWeight: '800'},
   orgCopy: {flex: 1},
   orgName: {fontSize: type.body, color: colors.ink, fontWeight: '800'},
   orgMeta: {fontSize: type.caption, color: colors.muted, marginTop: 3},

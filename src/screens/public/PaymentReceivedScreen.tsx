@@ -12,7 +12,7 @@ export function PaymentReceivedScreen({order, onStartLearning}: {order: Order; o
     <Pressable onPress={onStartLearning} hitSlop={12} style={styles.close} accessibilityRole="button" accessibilityLabel="Close">
       <Icon name="close" size={24} color={colors.ink} />
     </Pressable>
-    <View style={styles.ring}><View style={styles.badge}><Icon name="check" size={40} color={colors.white} /></View></View>
+    <View style={styles.ring}><View style={styles.badge}><Icon name="check" size={40} color={colors.onAccent} /></View></View>
     <Text style={[styles.title, font]}>Payment received</Text>
     <Text style={[styles.subtitle, font]}>A receipt was sent to your email</Text>
     <View style={styles.card}>

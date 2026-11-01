@@ -3,7 +3,9 @@ import {Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View, type La
 import type {Course, Lesson, Module} from '../../api/types';
 import {EnrolBar, Rating, RoundButton, Stars} from '../../components/Catalog';
 import {Icon, type IconName} from '../../components/Icon';
+import {TitleBar} from '../../components/Layout';
 import {ModuleList} from '../../components/ModuleList';
+import {EmptyState} from '../../components/States';
 import {formatDuration, formatNumber, ratingBreakdown, sampleReviews} from '../../data/catalog';
 import {colors, fonts, motion, radius, spacing, type} from '../../theme/tokens';
 
@@ -11,6 +13,14 @@ type Props = {course: Course; modules: Module[]; saved: boolean; onBack: () => v
 const tabs = ['Overview', 'Curriculum', 'Reviews'] as const;
 type Tab = (typeof tabs)[number];
 const outExpo = Easing.bezier(...motion.outExpo);
+
+/** Shown in place of the course page when the instructor has unpublished it. */
+export function CourseUnavailableScreen({onBack, onBrowse, onSupport}: {onBack: () => void; onBrowse: () => void; onSupport: () => void}) {
+  return <View style={styles.screen}>
+    <TitleBar title="Course" onBack={onBack} />
+    <EmptyState icon="lock" tone="gold" title="This course is no longer available" message={'The instructor has unpublished it.\nYour progress and certificate are kept.'} actionLabel="Browse similar courses" onAction={onBrowse} secondaryLabel="Contact support" onSecondary={onSupport} />
+  </View>;
+}
 
 export function CourseScreen({course, modules, saved, onBack, onToggleSave, onPreview, onEnrol}: Props) {
   const [tab, setTab] = useState<Tab>('Overview');

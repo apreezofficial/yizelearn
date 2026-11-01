@@ -1,20 +1,28 @@
 import React, {useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {Icon} from '../../components/Icon';
-import {BottomButton, TitleBar} from '../../components/Layout';
+import {BottomButton, PrimaryAction, TitleBar} from '../../components/Layout';
+import {Sheet} from '../../components/Sheet';
+import {haptic} from '../../theme/system';
 import {formatNaira} from '../../data/catalog';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 import {cardErrors, digits, formatCardNumber, formatExpiry, type PaymentMethod} from './cart';
 
-type Props = {courseCount: number; total: number; onBack: () => void; onPay: (method: PaymentMethod, cardNumber: string) => void};
+// onPay returns false when the payment did not go through.
+type Props = {courseCount: number; total: number; onBack: () => void; onPay: (method: PaymentMethod, cardNumber: string) => boolean; onSupport: () => void};
 
-export function PaymentCheckoutScreen({courseCount, total, onBack, onPay}: Props) {
+export function PaymentCheckoutScreen({courseCount, total, onBack, onPay, onSupport}: Props) {
+  const [failed, setFailed] = useState(false);
   const [method, setMethod] = useState<PaymentMethod>('card');
   const [card, setCard] = useState({number: '', expiry: '', cvv: ''});
   const [saveCard, setSaveCard] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const errors = method === 'card' ? cardErrors(card) : {};
-  const pay = () => { setSubmitted(true); if (!Object.keys(errors).length) onPay(method, card.number); };
+  const pay = () => {
+    setSubmitted(true);
+    if (Object.keys(errors).length) return;
+    if (!onPay(method, card.number)) { haptic.warning(); setFailed(true); }
+  };
   const shown = submitted ? errors : {};
   return <View style={styles.screen}>
     <TitleBar title="Checkout" onBack={onBack} />
@@ -33,6 +41,18 @@ export function PaymentCheckoutScreen({courseCount, total, onBack, onPay}: Props
       <View style={styles.summary}><Text style={[styles.summaryTitle, font]}>Order summary</Text><View style={styles.summaryRow}><Text style={[styles.muted, font]}>{courseCount} {courseCount === 1 ? 'course' : 'courses'}</Text><Text style={[styles.summaryTotal, font]}>{formatNaira(total)}</Text></View></View>
     </ScrollView>
     <BottomButton label={`Pay ${formatNaira(total)}`} onPress={pay} />
+    <Sheet visible={failed} onClose={() => setFailed(false)}>
+      <View style={styles.failed}>
+        <View style={styles.failedIcon}><Icon name="card" size={26} color={colors.danger} /></View>
+        <Text style={[styles.failedTitle, font]} accessibilityRole="header">Payment did not go through</Text>
+        <Text style={[styles.failedText, font]}>Your bank declined the card. No money was taken.</Text>
+        <View style={styles.failedActions}>
+          <PrimaryAction label="Try again" onPress={() => { setFailed(false); setTimeout(pay, 300); }} />
+          <PrimaryAction label="Use another method" outline onPress={() => { setFailed(false); setMethod(method === 'card' ? 'transfer' : 'card'); }} />
+        </View>
+        <Pressable onPress={() => { setFailed(false); onSupport(); }} hitSlop={10} style={styles.support} accessibilityRole="button"><Text style={[styles.supportText, font]}>Contact support</Text></Pressable>
+      </View>
+    </Sheet>
   </View>;
 }
 
@@ -73,5 +93,12 @@ const styles = StyleSheet.create({
   summaryTitle: {fontSize: type.subheading, color: colors.ink, fontWeight: '800', marginBottom: 10},
   summaryRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
   muted: {fontSize: type.label, color: colors.muted},
+  failed: {alignItems: 'center', paddingTop: 14, paddingBottom: 6},
+  failedIcon: {width: 64, height: 64, borderRadius: 32, backgroundColor: colors.dangerSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 16},
+  failedTitle: {fontSize: type.heading, color: colors.ink, fontWeight: '800', textAlign: 'center'},
+  failedText: {fontSize: type.small, color: colors.muted, textAlign: 'center', marginTop: 8, lineHeight: 20},
+  failedActions: {alignSelf: 'stretch', gap: 12, marginTop: 22},
+  support: {padding: 12, marginTop: 6},
+  supportText: {fontSize: type.small, color: colors.blue700, fontWeight: '700'},
   summaryTotal: {fontSize: type.heading, color: colors.ink, fontWeight: '800'},
 });

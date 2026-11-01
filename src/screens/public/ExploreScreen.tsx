@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import type {Course} from '../../api/types';
-import {CategoryChips, CourseCard, SearchField} from '../../components/Catalog';
+import {CategoryChips, CourseCard, SearchField, TabBarSpacer} from '../../components/Catalog';
 import {Icon} from '../../components/Icon';
 import {EmptyState} from '../../components/States';
 import {categories, formatNumber} from '../../data/catalog';
@@ -22,7 +22,7 @@ export function ExploreScreen({courses, browse, onBrowse, onCourse}: Props) {
       <View style={styles.bleed}><CategoryChips items={categories} active={browse.category} onSelect={category => set({category})} /></View>
       <View style={styles.meta}><Text style={[styles.count, font]}>{formatNumber(results.length)} {results.length === 1 ? 'course' : 'courses'}</Text><Pressable onPress={() => set({sort: nextSort[browse.sort]})} hitSlop={10} style={styles.sortButton}><Icon name="sort" size={18} color={colors.blue700} /><Text style={[styles.sort, font]}>{sortLabels[browse.sort]}</Text></Pressable></View>
     </View>
-    <FlatList data={results} keyExtractor={c => c.id} contentContainerStyle={styles.list} renderItem={({item}) => <CourseCard course={item} index={courses.indexOf(item)} onPress={() => onCourse(item)} />} ListEmptyComponent={<NoResults query={browse.query} courses={courses} onSearch={query => set({query})} onClear={() => onBrowse({...browse, query: '', category: 'All', filters: defaultFilters})} />} />
+    <FlatList ListFooterComponent={<TabBarSpacer />} data={results} keyExtractor={c => c.id} contentContainerStyle={styles.list} renderItem={({item}) => <CourseCard course={item} index={courses.indexOf(item)} onPress={() => onCourse(item)} />} ListEmptyComponent={<NoResults query={browse.query} courses={courses} onSearch={query => set({query})} onClear={() => onBrowse({...browse, query: '', category: 'All', filters: defaultFilters})} />} />
     <FilterSheet visible={filtersOpen} courses={courses} browse={browse} onApply={filters => {set({filters}); setFiltersOpen(false);}} onClose={() => setFiltersOpen(false)} />
   </View>;
 }
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   searchRow: {flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16},
   filterButton: {width: 56, height: 56, borderRadius: 28, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center'},
   filterDot: {position: 'absolute', top: 6, right: 6, minWidth: 20, height: 20, borderRadius: 10, backgroundColor: colors.blue700, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4},
-  filterDotText: {fontSize: type.tab, color: colors.white, fontWeight: '800'},
+  filterDotText: {fontSize: type.tab, color: colors.onAccent, fontWeight: '800'},
   bleed: {marginHorizontal: -spacing.screen},
   meta: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, marginBottom: 14},
   count: {fontSize: type.small, color: colors.muted},

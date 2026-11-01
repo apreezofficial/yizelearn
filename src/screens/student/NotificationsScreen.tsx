@@ -3,6 +3,7 @@ import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Icon, type IconName} from '../../components/Icon';
 import {TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
+import {EmptyState} from '../../components/States';
 import {notices, type NotificationKind} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
@@ -23,7 +24,7 @@ export function NotificationsScreen({onBack}: {onBack: () => void}) {
       </Pressable>)}
     </Rise>
     <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
-      {shown.length === 0 && <Text style={[styles.empty, font]}>You are all caught up.</Text>}
+      {shown.length === 0 && <EmptyState key={filter} icon="bell" title="You are all caught up" message="New grades, replies and lessons will show here." />}
       {shown.map((n, i) => <Rise key={`${filter}-${n.id}`} delay={80 + i * 70} style={[styles.row, n.unread && styles.unread]} ><View accessible accessibilityLabel={`${n.title}${n.unread ? ', unread' : ''}`} style={styles.rowInner}>
         <View style={styles.icon}><Icon name={kindIcon[n.kind]} size={20} color={colors.blue700} /></View>
         <View style={styles.copy}>
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   chipOn: {backgroundColor: colors.sky, borderColor: colors.sky},
   chipText: {fontSize: type.small, color: colors.ink, fontWeight: '600'},
   chipTextOn: {color: colors.onSky, fontWeight: '800'},
-  list: {paddingHorizontal: spacing.screen, paddingBottom: 28},
+  list: {flexGrow: 1, paddingHorizontal: spacing.screen, paddingBottom: 28},
   row: {borderRadius: radius.card, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, marginBottom: 10},
   unread: {backgroundColor: colors.blue50, borderColor: colors.blue100},
   rowInner: {flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 72, paddingHorizontal: 14},
@@ -53,5 +54,4 @@ const styles = StyleSheet.create({
   bold: {fontWeight: '800'},
   time: {fontSize: type.caption, color: colors.muted, marginTop: 4},
   dot: {width: 10, height: 10, borderRadius: 5, backgroundColor: colors.blue700},
-  empty: {fontSize: type.label, color: colors.muted, textAlign: 'center', marginTop: 48},
 });

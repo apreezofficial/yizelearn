@@ -60,7 +60,7 @@ export const assessment = {
   due: 'Due 21 Oct · 11:59 PM',
   attempts: '1 attempt',
   instructions: 'Use the sample data to build a one-page dashboard with two charts and a short summary.',
-  formats: 'XLSX, PDF or CSV · up to 10 MB',
+  formats: 'XLSX, PDF or CSV · up to 25 MB',
 };
 
 export const gradeCourse = 'Data analysis in Excel';
@@ -72,7 +72,8 @@ export const gradeItems: {id: string; title: string; kind: string; score: string
   {id: 'm3', title: 'Module 3 quiz', kind: 'Quiz', score: 'Not started'},
 ];
 
-export const certificate = {title: 'Certificate of completion', course: 'Data analysis in Excel'};
+// Undefined until the learner finishes a course.
+export const certificate: {title: string; course: string} | undefined = {title: 'Certificate of completion', course: 'Data analysis in Excel'};
 export const badges: {label: string; icon: 'target' | 'calendar' | 'award' | 'medal' | 'edit'; earned: boolean}[] = [
   {label: 'First lesson', icon: 'target', earned: true},
   {label: 'Quiz ace', icon: 'award', earned: false},

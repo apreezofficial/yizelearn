@@ -1,8 +1,11 @@
 import React from 'react';
-import {Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, Text, TextInput, View, type ColorValue} from 'react-native';
 import type {Course} from '../api/types';
 import {formatNaira, formatNumber} from '../data/catalog';
 import {colors, fonts, radius, spacing, type} from '../theme/tokens';
+import {LiquidGlassView} from '@callstack/liquid-glass';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {haptic, useGlass} from '../theme/system';
 import {Icon, type IconName} from './Icon';
 
 const font = {fontFamily: fonts.family};
@@ -47,8 +50,8 @@ export function CourseCard({course, index, onPress}: {course: Course; index: num
   </Pressable>;
 }
 
-export function RoundButton({icon, onPress, size = 44, color = colors.ink, style, label}: {icon: IconName; onPress?: () => void; size?: number; color?: string; style?: object; label?: string}) {
-  return <Pressable onPress={onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel={label} style={({pressed}) => [styles.round, {width: size, height: size, borderRadius: size / 2}, style, pressed && styles.pressed]}><Icon name={icon} size={size * 0.52} color={color} /></Pressable>;
+export function RoundButton({icon, onPress, size = 44, color = colors.ink, style, label}: {icon: IconName; onPress?: () => void; size?: number; color?: ColorValue; style?: object; label?: string}) {
+  return <Pressable onPress={onPress} onPressIn={onPress ? haptic.tap : undefined} hitSlop={8} accessibilityRole="button" accessibilityLabel={label} style={({pressed}) => [styles.round, {width: size, height: size, borderRadius: size / 2}, style, pressed && styles.pressed]}><Icon name={icon} size={size * 0.52} color={color} /></Pressable>;
 }
 
 export function EnrolBar({price, onEnrol}: {price?: number; onEnrol: () => void}) {
@@ -57,7 +60,26 @@ export function EnrolBar({price, onEnrol}: {price?: number; onEnrol: () => void}
 
 export type TabItem<T extends string> = {key: T; label: string; icon: IconName};
 export function TabBar<T extends string>({items, active, onSelect}: {items: TabItem<T>[]; active: T; onSelect: (key: T) => void}) {
-  return <View style={styles.tabBar}>{items.map(item => { const on = item.key === active; return <Pressable key={item.key} onPress={() => onSelect(item.key)} style={styles.tab} accessibilityRole="tab" accessibilityState={{selected: on}}><View style={[styles.tabIcon, on && styles.tabIconOn]}><Icon name={item.icon} size={24} color={on ? colors.sky : colors.muted} strokeWidth={1.5} /></View><Text style={[styles.tabLabel, font, on && styles.tabLabelActive]}>{item.label}</Text></Pressable>; })}</View>;
+  const glass = useGlass();
+  const {bottom} = useSafeAreaInsets();
+  const select = (key: T) => { if (key !== active) haptic.select(); onSelect(key); };
+  const tabs = items.map(item => { const on = item.key === active; return <Pressable key={item.key} onPress={() => select(item.key)} style={glass ? styles.glassTab : styles.tab} accessibilityRole="tab" accessibilityState={{selected: on}} accessibilityLabel={item.label}>
+    {glass && on && <View style={styles.glassActive} />}
+    <View style={[styles.tabIcon, glass && styles.glassIcon]}><Icon name={item.icon} size={glass ? 23 : 24} color={on ? (glass ? colors.blue700 : colors.sky) : glass ? colors.ink : colors.muted} strokeWidth={on ? 1.9 : 1.5} /></View>
+    <Text style={[styles.tabLabel, font, glass && styles.glassLabel, on && (glass ? styles.glassLabelActive : styles.tabLabelActive)]} numberOfLines={1} maxFontSizeMultiplier={1.3}>{item.label}</Text>
+  </Pressable>; });
+  // iOS 26: a floating Liquid Glass capsule that the page scrolls underneath. Elsewhere, the solid sand bar.
+  if (glass) return <View style={[styles.glassWrap, {bottom: Math.max(bottom - 6, 10)}]} pointerEvents="box-none">
+    <LiquidGlassView interactive effect="regular" style={styles.glassBar}>{tabs}</LiquidGlassView>
+  </View>;
+  return <View style={styles.tabBar}>{tabs}</View>;
+}
+
+/** Room at the end of a tab page so its last row can scroll clear of the floating glass bar. */
+export const GLASS_BAR_SPACE = 96;
+export function TabBarSpacer() {
+  const {bottom} = useSafeAreaInsets();
+  return useGlass() ? <View style={{height: GLASS_BAR_SPACE + bottom}} /> : null;
 }
 
 const styles = StyleSheet.create({
@@ -93,4 +115,11 @@ const styles = StyleSheet.create({
   tabIconOn: {},
   tabLabel: {fontSize: type.tab, color: colors.muted},
   tabLabelActive: {color: colors.sky, fontWeight: '700'},
+  glassWrap: {position: 'absolute', left: 14, right: 14},
+  glassBar: {flexDirection: 'row', height: 66, borderRadius: 33, paddingHorizontal: 6, alignItems: 'center'},
+  glassTab: {flex: 1, height: 56, alignItems: 'center', justifyContent: 'center', gap: 2},
+  glassActive: {position: 'absolute', top: 0, bottom: 0, left: 2, right: 2, borderRadius: 28, backgroundColor: colors.blue100, opacity: 0.85},
+  glassIcon: {width: 40, height: 28},
+  glassLabel: {fontSize: 11, color: colors.ink, fontWeight: '600'},
+  glassLabelActive: {color: colors.blue700, fontWeight: '800'},
 });

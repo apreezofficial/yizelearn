@@ -1,4 +1,5 @@
 import React from 'react';
+import {useColorScheme, type ColorValue} from 'react-native';
 import {HugeiconsIcon} from '@hugeicons/react-native';
 import ArrowDown01Icon from '@hugeicons/core-free-icons/ArrowDown01Icon';
 import ArrowLeft01Icon from '@hugeicons/core-free-icons/ArrowLeft01Icon';
@@ -44,7 +45,12 @@ import SquareLock02Icon from '@hugeicons/core-free-icons/SquareLock02Icon';
 import StarIcon from '@hugeicons/core-free-icons/StarIcon';
 import Tick02Icon from '@hugeicons/core-free-icons/Tick02Icon';
 import UserIcon from '@hugeicons/core-free-icons/UserIcon';
-import {colors} from '../theme/tokens';
+import ChartHistogramIcon from '@hugeicons/core-free-icons/ChartHistogramIcon';
+import RefreshIcon from '@hugeicons/core-free-icons/RefreshIcon';
+import Alert02Icon from '@hugeicons/core-free-icons/Alert02Icon';
+import WifiOff01Icon from '@hugeicons/core-free-icons/WifiOff01Icon';
+import File01Icon from '@hugeicons/core-free-icons/File01Icon';
+import {colors, resolveColor} from '../theme/tokens';
 
 // App icon names mapped to Hugeicons. `filled` renders the same outline icon with a solid fill.
 const icons = {
@@ -94,11 +100,18 @@ const icons = {
   settings: {icon: Settings01Icon},
   logout: {icon: Logout01Icon},
   next: {icon: ArrowRight01Icon},
+  chart: {icon: ChartHistogramIcon},
+  refresh: {icon: RefreshIcon},
+  alert: {icon: Alert02Icon},
+  offline: {icon: WifiOff01Icon},
+  file: {icon: File01Icon},
 } as const;
 
 export type IconName = keyof typeof icons;
 
-export function Icon({name, size = 24, color = colors.ink, strokeWidth = 1.8}: {name: IconName; size?: number; color?: string; strokeWidth?: number}) {
+export function Icon({name, size = 24, color: token = colors.ink, strokeWidth = 1.8}: {name: IconName; size?: number; color?: ColorValue; strokeWidth?: number}) {
+  // SVG strokes need a plain colour, so pick the light or dark value of the token here.
+  const color = resolveColor(token, useColorScheme());
   const {icon, filled} = icons[name] as {icon: typeof StarIcon; filled?: boolean};
   return <HugeiconsIcon icon={icon} size={size} color={color} strokeWidth={strokeWidth} fill={filled ? color : 'none'} />;
 }

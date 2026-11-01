@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Animated, Easing, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {Icon} from '../../components/Icon';
+import {haptic, useReduceMotion} from '../../theme/system';
 import {conversations, threads} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
@@ -10,8 +11,9 @@ type Message = {from: 'them' | 'me'; text: string; time: string};
 
 /** A bubble that rises in from its own side as it arrives. */
 function Bubble({message, delay}: {message: Message; delay: number}) {
-  const t = useRef(new Animated.Value(0)).current;
-  useEffect(() => { Animated.timing(t, {toValue: 1, duration: 380, delay, easing: Easing.bezier(0.16, 1, 0.3, 1), useNativeDriver: true}).start(); }, [delay, t]);
+  const still = useReduceMotion();
+  const t = useRef(new Animated.Value(still ? 1 : 0)).current;
+  useEffect(() => { if (still) { t.setValue(1); return; } Animated.timing(t, {toValue: 1, duration: 380, delay, easing: Easing.bezier(0.16, 1, 0.3, 1), useNativeDriver: true}).start(); }, [delay, still, t]);
   const me = message.from === 'me';
   return <Animated.View style={[styles.bubbleRow, me && styles.bubbleRowMe, {opacity: t, transform: [
     {translateY: t.interpolate({inputRange: [0, 1], outputRange: [12, 0]})},
@@ -34,6 +36,7 @@ export function ConversationScreen({conversationId, onBack}: {conversationId: st
     if (!text) return;
     setMessages(list => [...list, {from: 'me', text, time: 'Now'}]);
     setDraft('');
+    haptic.tap();
   };
 
   return <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -59,7 +62,7 @@ export function ConversationScreen({conversationId, onBack}: {conversationId: st
     <View style={styles.composer}>
       <TextInput value={draft} onChangeText={setDraft} placeholder="Write a message" placeholderTextColor={colors.muted} onSubmitEditing={send} returnKeyType="send" style={[styles.input, font]} />
       <Pressable onPress={send} disabled={!draft.trim()} style={({pressed}) => [styles.send, !draft.trim() && styles.dim, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Send message">
-        <Icon name="send" size={20} color={colors.white} />
+        <Icon name="send" size={20} color={colors.onAccent} />
       </Pressable>
     </View>
   </KeyboardAvoidingView>;
@@ -78,12 +81,12 @@ const styles = StyleSheet.create({
   bubbleRow: {flexDirection: 'row'},
   bubbleRowMe: {justifyContent: 'flex-end'},
   bubble: {maxWidth: '76%', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 16},
-  bubbleThem: {backgroundColor: '#F1EEE8'},
+  bubbleThem: {backgroundColor: colors.bubble},
   bubbleMe: {backgroundColor: '#3E6FB0'},
   bubbleText: {fontSize: type.label, lineHeight: 22, color: colors.ink},
-  bubbleTextMe: {color: colors.white},
+  bubbleTextMe: {color: colors.onAccent},
   composer: {flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: spacing.screen, paddingTop: 16, paddingBottom: 18, backgroundColor: colors.sand},
-  input: {flex: 1, height: 54, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: '#FBFAF8', paddingHorizontal: 24, fontSize: type.body, color: colors.ink},
+  input: {flex: 1, height: 54, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, paddingHorizontal: 24, fontSize: type.body, color: colors.ink},
   send: {width: 54, height: 54, borderRadius: 27, backgroundColor: '#3E6FB0', alignItems: 'center', justifyContent: 'center'},
   dim: {backgroundColor: '#8DB0E3'},
   pressed: {opacity: 0.8},

@@ -4,14 +4,16 @@ import {Icon} from '../../components/Icon';
 import {ChalkCard, ProgressBar} from '../../components/Chalkboard';
 import {TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
+import {EmptyState} from '../../components/States';
 import {gradeCourse, gradeItems, gradeOverall} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
 const font = {fontFamily: fonts.family};
 
-export function GradesScreen({onBack, onAssessment}: {onBack: () => void; onAssessment: () => void}) {
+export function GradesScreen({onBack, onAssessment, onCourses}: {onBack: () => void; onAssessment: () => void; onCourses: () => void}) {
   return <View style={styles.screen}>
     <TitleBar title="Grades" onBack={onBack} />
+    {gradeItems.length === 0 ? <EmptyState icon="chart" title="No grades yet" message={'Finish a quiz or assignment\nand your score will appear here.'} actionLabel="Go to my courses" onAction={onCourses} /> :
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       {/* A course picker is needed once learners have more than one course with grades. */}
       <View style={styles.picker}>
@@ -40,7 +42,7 @@ export function GradesScreen({onBack, onAssessment}: {onBack: () => void; onAsse
           ? <Pressable key={item.id} onPress={onAssessment} style={({pressed}) => [styles.row, pressed && styles.pressed]} accessibilityRole="button">{row}</Pressable>
           : <View key={item.id} style={styles.row}>{row}</View>}</Rise>;
       })}
-    </ScrollView>
+    </ScrollView>}
   </View>;
 }
 

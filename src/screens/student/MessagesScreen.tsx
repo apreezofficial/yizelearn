@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
-import {SearchField} from '../../components/Catalog';
+import {SearchField, TabBarSpacer} from '../../components/Catalog';
 import {EmptyState} from '../../components/States';
 import {Icon} from '../../components/Icon';
 import {conversations, type Conversation} from '../../data/learning';
@@ -14,7 +14,7 @@ export function MessagesScreen({onOpen, onExplore}: {onOpen: (id: string) => voi
   return <View style={styles.screen}>
     <Text style={[styles.title, font]}>Messages</Text>
     <View style={styles.search}><SearchField value={query} onChangeText={setQuery} placeholder="Search messages" /></View>
-    <FlatList data={rows} keyExtractor={c => c.id} contentContainerStyle={styles.list}
+    <FlatList ListFooterComponent={<TabBarSpacer />} data={rows} keyExtractor={c => c.id} contentContainerStyle={styles.list}
       renderItem={({item}) => <Row conversation={item} onPress={() => onOpen(item.id)} />}
       ListEmptyComponent={conversations.length === 0
         ? <EmptyState icon="message" title="No messages yet" message="Message an instructor from their course page." actionLabel="Explore courses" onAction={onExplore} />

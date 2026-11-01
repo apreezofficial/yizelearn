@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import type {Lesson} from '../../api/types';
 import {CourseArt, RoundButton} from '../../components/Catalog';
 import {ChalkCard, ProgressBar} from '../../components/Chalkboard';
 import {Icon} from '../../components/Icon';
 import {PrimaryAction} from '../../components/Layout';
-import {EmptyState} from '../../components/States';
+import {EmptyState, Notice} from '../../components/States';
+import {haptic} from '../../theme/system';
 import {currentLessonId, doneLessonIds, moduleTwo, playingLesson} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
@@ -13,10 +14,17 @@ type Tab = 'Lessons' | 'Discussion' | 'Resources';
 const tabs: Tab[] = ['Lessons', 'Discussion', 'Resources'];
 const font = {fontFamily: fonts.family};
 
-type Props = {onBack: () => void; onQuiz: () => void};
+type Props = {onBack: () => void; onQuiz: () => void; onReport: () => void};
+// Lesson videos aren't hosted yet, so every play attempt ends in the could-not-load state.
+const VIDEO_URL: string | undefined = undefined;
 
-export function CoursePlayerScreen({onBack, onQuiz}: Props) {
+export function CoursePlayerScreen({onBack, onQuiz, onReport}: Props) {
   const [tab, setTab] = useState<Tab>('Lessons');
+  const [video, setVideo] = useState<'idle' | 'loading' | 'failed'>('idle');
+  const play = () => {
+    setVideo('loading');
+    setTimeout(() => { if (!VIDEO_URL) { haptic.warning(); setVideo('failed'); } }, 900);
+  };
   const [completed, setCompleted] = useState(false);
   const lessonsDone = moduleTwo.lessons.filter(l => l.type !== 'quiz').every(l => doneLessonIds.includes(l.id));
   const statusOf = (lesson: Lesson) => {
@@ -28,21 +36,32 @@ export function CoursePlayerScreen({onBack, onQuiz}: Props) {
 
   return <View style={styles.screen}>
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <View style={styles.video}>
+      {video === 'failed' ? <View style={[styles.video, styles.videoFailed]}>
+        <Pressable onPress={play} style={({pressed}) => [styles.retry, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Reload video"><Icon name="refresh" size={24} color={colors.onAccent} /></Pressable>
+        <Text style={[styles.failedTitle, font]}>This video will not load</Text>
+        <Text style={[styles.failedText, font]}>Check your connection and try again</Text>
+        <RoundButton icon="back" onPress={onBack} label="Back" style={styles.back} />
+      </View> : <View style={styles.video}>
         <CourseArt index={2} size={150} />
-        <Pressable style={({pressed}) => [styles.playButton, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Play lesson">
-          <Icon name="play" size={26} color={colors.blue700} />
+        <Pressable onPress={play} disabled={video === 'loading'} style={({pressed}) => [styles.playButton, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Play lesson">
+          {video === 'loading' ? <ActivityIndicator color={colors.blue700} /> : <Icon name="play" size={26} color={colors.blue700} />}
         </Pressable>
         <RoundButton icon="back" onPress={onBack} label="Back" style={styles.back} />
         <View style={styles.timeBar}>
           <Text style={[styles.time, font]}>{playingLesson.elapsed} / {playingLesson.duration}</Text>
           <ProgressBar value={playingLesson.progress} track="rgba(254, 249, 242, 0.3)" fill={colors.sky} height={5} />
         </View>
-      </View>
+      </View>}
 
       <View style={styles.body}>
+        {video === 'failed' && <View style={styles.saved}><Notice tone="success" title="Your progress is saved" message={`You will resume at ${playingLesson.elapsed}.`} /></View>}
         <Text style={[styles.lessonTitle, font]}>{playingLesson.title}</Text>
         <Text style={[styles.meta, font]}>{playingLesson.moduleTitle} · Lesson {playingLesson.lessonNumber} of {playingLesson.lessonsTotal}</Text>
+
+        {video === 'failed' && <View style={styles.failedActions}>
+          <View style={styles.half}><PrimaryAction label="Reload video" onPress={play} /></View>
+          <View style={styles.half}><PrimaryAction label="Report a problem" outline onPress={onReport} /></View>
+        </View>}
 
         <ChalkCard style={styles.board}>
           <Text style={[styles.boardTitle, font]}>On the board</Text>
@@ -92,6 +111,13 @@ const styles = StyleSheet.create({
   timeBar: {position: 'absolute', left: 16, right: 16, bottom: 14, gap: 8},
   time: {fontSize: type.caption, color: colors.chalkText, fontWeight: '700'},
   pressed: {opacity: 0.85},
+  videoFailed: {backgroundColor: colors.blue900, paddingHorizontal: 24},
+  retry: {width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(255, 255, 255, 0.16)', alignItems: 'center', justifyContent: 'center', marginBottom: 14},
+  failedTitle: {fontSize: type.label, color: colors.chalkText, fontWeight: '800', textAlign: 'center'},
+  failedText: {fontSize: type.caption, color: colors.chalkText, opacity: 0.8, marginTop: 4, textAlign: 'center'},
+  saved: {marginBottom: 16},
+  failedActions: {flexDirection: 'row', gap: 12, marginBottom: 22},
+  half: {flex: 1},
   body: {paddingHorizontal: spacing.screen, paddingTop: 20},
   lessonTitle: {fontSize: type.title, color: colors.ink, fontWeight: '800'},
   meta: {fontSize: type.small, color: colors.muted, marginTop: 6, marginBottom: 18},

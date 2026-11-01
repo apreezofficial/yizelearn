@@ -65,7 +65,7 @@ function RangeSlider({min, max, step, value, onChange}: {min: number; max: numbe
 
 const font = {fontFamily: fonts.family};
 const styles = StyleSheet.create({
-  backdrop: {flex: 1, backgroundColor: 'rgba(36, 42, 54, 0.5)'},
+  backdrop: {flex: 1, backgroundColor: colors.scrim},
   sheet: {backgroundColor: colors.cream, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: spacing.screen},
   grabber: {alignSelf: 'center', width: 48, height: 5, borderRadius: 3, backgroundColor: colors.sandLine, marginTop: 12, marginBottom: 14},
   titleRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6},

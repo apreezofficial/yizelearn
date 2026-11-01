@@ -1,6 +1,7 @@
 import React from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {colors, fonts, radius, spacing, type} from '../theme/tokens';
+import {haptic} from '../theme/system';
 import {RoundButton} from './Catalog';
 
 const font = {fontFamily: fonts.family};
@@ -12,11 +13,11 @@ export function TitleBar({title, onBack}: {title: string; onBack?: () => void}) 
 
 /** Full-width action pinned to the bottom of a screen. */
 export function BottomButton({label, onPress, disabled, busy}: {label: string; onPress: () => void; disabled?: boolean; busy?: boolean}) {
-  return <View style={styles.bottom}><Pressable onPress={onPress} disabled={disabled || busy} style={({pressed}) => [styles.button, (disabled || pressed) && styles.dim]} accessibilityRole="button" accessibilityState={{disabled: disabled || busy, busy}}>{busy ? <ActivityIndicator color={colors.white} /> : <Text style={[styles.buttonText, font]}>{label}</Text>}</Pressable></View>;
+  return <View style={styles.bottom}><Pressable onPress={onPress} onPressIn={haptic.tap} disabled={disabled || busy} style={({pressed}) => [styles.button, (disabled || pressed) && styles.dim]} accessibilityRole="button" accessibilityState={{disabled: disabled || busy, busy}}>{busy ? <ActivityIndicator color={colors.onAccent} /> : <Text style={[styles.buttonText, font]}>{label}</Text>}</Pressable></View>;
 }
 
 export function PrimaryAction({label, onPress, outline, disabled}: {label: string; onPress?: () => void; outline?: boolean; disabled?: boolean}) {
-  return <Pressable onPress={onPress} disabled={disabled} accessibilityState={{disabled}} style={({pressed}) => [styles.action, outline && styles.outline, (disabled || pressed) && styles.dim]} accessibilityRole="button"><Text style={[styles.buttonText, font, outline && styles.outlineText]}>{label}</Text></Pressable>;
+  return <Pressable onPress={onPress} onPressIn={haptic.tap} disabled={disabled} accessibilityState={{disabled}} style={({pressed}) => [styles.action, outline && styles.outline, (disabled || pressed) && styles.dim]} accessibilityRole="button"><Text style={[styles.buttonText, font, outline && styles.outlineText]}>{label}</Text></Pressable>;
 }
 
 const styles = StyleSheet.create({

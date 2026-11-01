@@ -1,4 +1,6 @@
-export const colors = {
+import {Appearance, DynamicColorIOS, Platform, type ColorValue} from 'react-native';
+
+const light = {
   cotton: '#FBFBF9',
   cream: '#FDF8F1',
   barBg: '#F7F6FA',
@@ -14,7 +16,9 @@ export const colors = {
   ink: '#242A36',
   muted: '#5C6472',
   line: '#E6E7E5',
+  // Card and field surfaces. Dark mode turns these dark, so text on a coloured button uses onAccent.
   white: '#FFFFFF',
+  onAccent: '#FFFFFF',
   heroText: '#FBF1E1',
   marigold: '#F0B74A',
   // Stars need 3:1 against cream; the bright marigold only reached 1.7:1.
@@ -26,7 +30,65 @@ export const colors = {
   chalkText: '#FEF9F2',
   danger: '#B53A3A',
   success: '#2E8B67',
-} as const;
+  // Chat bubbles and the dimmed backdrop behind sheets.
+  bubble: '#F1EEE8',
+  bubbleMe: '#3E6FB0',
+  dangerSoft: '#FBE6E6',
+  successSoft: '#E6F3EC',
+  warning: '#9A6A12',
+  warningSoft: '#FBF0DA',
+  scrim: 'rgba(23, 28, 38, 0.45)',
+};
+export type ColorName = keyof typeof light;
+
+// Warm charcoal rather than pure black, so the chalkboard cards still stand apart from the page.
+const dark: Record<ColorName, string> = {
+  cotton: '#1B1D22',
+  cream: '#121418',
+  barBg: '#1A1C21',
+  sand: '#1C1F25',
+  sandLine: '#353A43',
+  blue50: '#18222F',
+  blue100: '#1F3047',
+  sky: '#74A7E3',
+  blue600: '#6A9FDB',
+  blue700: '#4A87D0',
+  navy: '#9DBFEA',
+  blue900: '#D4E4F7',
+  ink: '#ECEDEF',
+  muted: '#A3A9B4',
+  line: '#2A2E35',
+  white: '#1E2127',
+  onAccent: '#FFFFFF',
+  heroText: '#FBF1E1',
+  marigold: '#F0B74A',
+  star: '#E8AF45',
+  onSky: '#17335A',
+  chalk: '#24322E',
+  chalkText: '#FEF9F2',
+  danger: '#E27272',
+  success: '#55BE92',
+  bubble: '#262A31',
+  bubbleMe: '#3E6FB0',
+  dangerSoft: '#3A2224',
+  successSoft: '#1E3229',
+  warning: '#E8B860',
+  warningSoft: '#3A3020',
+  scrim: 'rgba(0, 0, 0, 0.6)',
+};
+export const palettes = {light, dark};
+
+// iOS switches every colour live when the phone changes appearance. Android reads the setting at launch.
+const androidScheme = Appearance.getColorScheme() === 'dark' ? dark : light;
+const names = Object.keys(light) as ColorName[];
+export const colors = Object.fromEntries(names.map(n => [n, Platform.OS === 'ios' ? DynamicColorIOS({light: light[n], dark: dark[n]}) : androidScheme[n]])) as Record<ColorName, ColorValue>;
+
+// SVG drawings need a plain colour string, so map a token back to the current scheme's value.
+const tokenName = new Map<unknown, ColorName>(names.map(n => [colors[n], n]));
+export function resolveColor(color: ColorValue, scheme: 'light' | 'dark' | null | undefined): string {
+  const name = tokenName.get(color);
+  return name ? (scheme === 'dark' ? dark : light)[name] : (color as string);
+}
 
 // Brand font is Cavolini. Set `family` to 'Cavolini' once the font files are bundled.
 export const fonts = {family: undefined as string | undefined} as const;

@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import type {Course} from '../../api/types';
-import {CourseArt} from '../../components/Catalog';
+import {CourseArt, TabBarSpacer} from '../../components/Catalog';
 import {ProgressBar} from '../../components/Chalkboard';
 import {EmptyState} from '../../components/States';
 import {sampleCourses} from '../../data/catalog';
@@ -30,7 +30,7 @@ export function MyCourseScreen({saved, onOpen, onExplore}: Props) {
         <Text style={[styles.segmentText, font, tab === t && styles.segmentTextOn]}>{t}</Text>
       </Pressable>)}
     </View>
-    <FlatList data={rows} keyExtractor={r => r.course.id} contentContainerStyle={styles.list}
+    <FlatList ListFooterComponent={<TabBarSpacer />} data={rows} keyExtractor={r => r.course.id} contentContainerStyle={styles.list}
       ListEmptyComponent={tab === 'Wishlist'
         ? <EmptyState key={tab} icon="heart" title="Nothing saved yet" message="Tap the heart on any course to save it for later." actionLabel="Explore courses" onAction={onExplore} />
         : tab === 'In progress'

@@ -2,7 +2,9 @@ import React, {useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {ChalkCard} from '../../components/Chalkboard';
 import {PrimaryAction, TitleBar} from '../../components/Layout';
+import {Notice} from '../../components/States';
 import {quiz} from '../../data/learning';
+import {useOnline} from '../../theme/system';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
 type Props = {onBack: () => void; onNext: () => void};
@@ -10,9 +12,11 @@ const font = {fontFamily: fonts.family};
 
 export function QuizQuestionScreen({onBack, onNext}: Props) {
   const [selected, setSelected] = useState<string>();
+  const online = useOnline();
   return <View style={styles.screen}>
     <TitleBar title={quiz.title} onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      {!online && <View style={styles.offline}><Notice tone="warning" title="You are offline" message="Your answers are saved on this device." /></View>}
       <ChalkCard>
         <Text style={[styles.count, font]}>Question {quiz.current} of {quiz.total}</Text>
         <View style={styles.dots} accessibilityLabel={`${quiz.answeredCount} of ${quiz.total} answered`}>
@@ -34,7 +38,7 @@ export function QuizQuestionScreen({onBack, onNext}: Props) {
         })}
       </View>
 
-      <PrimaryAction label="Next question" onPress={onNext} />
+      <PrimaryAction label={online ? 'Next question' : 'Reconnecting…'} disabled={!online} onPress={onNext} />
       <Pressable onPress={onBack} style={styles.exit} accessibilityRole="button"><Text style={[styles.exitText, font]}>Save and exit</Text></Pressable>
     </ScrollView>
   </View>;
@@ -43,6 +47,7 @@ export function QuizQuestionScreen({onBack, onNext}: Props) {
 const styles = StyleSheet.create({
   screen: {flex: 1, backgroundColor: colors.cream},
   content: {padding: spacing.screen, paddingBottom: 28},
+  offline: {marginBottom: 16},
   count: {fontSize: type.small, color: colors.chalkText, fontWeight: '700', marginBottom: 12},
   dots: {flexDirection: 'row', gap: 6, marginBottom: 18},
   dot: {flex: 1, height: 8, borderRadius: 4, backgroundColor: 'rgba(254, 249, 242, 0.25)'},

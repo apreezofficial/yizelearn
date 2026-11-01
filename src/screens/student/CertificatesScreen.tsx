@@ -3,6 +3,7 @@ import {Alert, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native
 import {Icon, type IconName} from '../../components/Icon';
 import {PrimaryAction, TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
+import {EmptyState} from '../../components/States';
 import {badges, certificate} from '../../data/learning';
 import {learnerName} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
@@ -11,9 +12,10 @@ const font = {fontFamily: fonts.family};
 // Certificate PDFs come from the payments/courses API, which isn't connected yet.
 const notConnected = (what: string) => Alert.alert(what, `${what} is not connected yet.`);
 
-export function CertificatesScreen({onBack}: {onBack: () => void}) {
+export function CertificatesScreen({onBack, onLearn}: {onBack: () => void; onLearn: () => void}) {
   return <View style={styles.screen}>
     <TitleBar title="Certificates" onBack={onBack} />
+    {!certificate ? <EmptyState icon="award" title="No certificates yet" message="Complete a course to earn your first one." actionLabel="Continue learning" onAction={onLearn} /> :
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Rise style={styles.certificate}>
         <Text style={[styles.kicker, font]}>{certificate.title}</Text>
@@ -36,7 +38,7 @@ export function CertificatesScreen({onBack}: {onBack: () => void}) {
           <Text style={[styles.badgeLabel, font, !badge.earned && styles.muted]}>{badge.label}</Text>
         </View>)}
       </Rise>
-    </ScrollView>
+    </ScrollView>}
   </View>;
 }
 
