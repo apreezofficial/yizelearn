@@ -40,7 +40,8 @@
 @media (max-width: 900px) {
   .journey { margin-top: 72px; border-inline: 0; }
   .title { padding: 28px 16px; }
-  .grid { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  .screens, .slot, .window, .windowBody { min-width: 0; }
   /* Phones: the steps become a sticky row of numbers above the screens */
   .steps { top: 72px; z-index: 5; display: flex; overflow-x: auto; scrollbar-width: none; border-right: 0; border-bottom: 1px solid var(--hair); background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(10px); }
   .steps li { flex: none; border-bottom: 0; border-right: 1px solid var(--hair); }
@@ -49,7 +50,9 @@
   .stepOn .detail { display: none; }
   .bar { top: auto; left: 0; right: 0; width: auto; height: 3px; transform: scaleX(0); transform-origin: left; }
   .stepOn .bar { transform: scaleX(1); }
-  .slot { min-height: 0; padding: 28px 0 28px 16px; }
-  .window { padding: 18px 0 18px 16px; }
-  .windowBody, .windowSub { margin-left: 0; }
+  .slot { min-height: 0; padding: 20px 16px; }
+  /* No dimming on phones: with touch scrolling, greyed-out windows just look disabled */
+  .window { width: 100%; border-radius: 18px; padding: 16px; transform: none; opacity: 1; filter: none; }
+  .windowBody { margin-left: 0; padding-right: 0; }
+  .windowSub { margin-left: 0; }
 }

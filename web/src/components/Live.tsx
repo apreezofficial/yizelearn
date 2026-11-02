@@ -106,6 +106,12 @@ export function ScrollWords({label, text, accent = [], dark = false, children}: 
       frame = 0;
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight;
+      if (window.innerWidth <= 900) {
+        // Phones: nothing pins. The words fill as the statement scrolls up the screen; cards are simply there.
+        const head = el.querySelector('.scrollWordsHead')!.getBoundingClientRect();
+        set(Math.min(1, Math.max(0, (vh * 0.82 - head.top) / (vh * 0.4))), 1, 1);
+        return;
+      }
       // Start while the section is still scrolling in (top at 60% of the screen) so the pinned stretch stays short.
       const p = Math.min(1, Math.max(0, (vh * 0.6 - r.top) / Math.max(1, r.height - vh + vh * 0.6)));
       // Words fill over the first stretch, the statement lifts, then the cards come in.

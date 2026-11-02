@@ -12,6 +12,7 @@ export type Step = {title: string; detail: string; kicker: string; screen: React
 export function Journey({title, steps}: {title: string; steps: Step[]}) {
   const [active, setActive] = useState(0);
   const screens = useRef<(HTMLDivElement | null)[]>([]);
+  const list = useRef<HTMLOListElement>(null);
 
   useEffect(() => {
     const io = new IntersectionObserver(entries => {
@@ -21,12 +22,19 @@ export function Journey({title, steps}: {title: string; steps: Step[]}) {
     return () => io.disconnect();
   }, []);
 
+  // On phones the steps are a sideways row, so keep the active one in view.
+  useEffect(() => {
+    const ol = list.current;
+    const btn = ol?.children[active] as HTMLElement | undefined;
+    if (ol && btn && ol.scrollWidth > ol.clientWidth) ol.scrollTo({left: Math.max(0, btn.offsetLeft - 16), behavior: 'smooth'});
+  }, [active]);
+
   const go = (i: number) => screens.current[i]?.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center'});
 
   return <section className={s.journey} id="how-it-works">
     <h2 className={s.title}>{title}</h2>
     <div className={s.grid}>
-      <ol className={s.steps}>
+      <ol ref={list} className={s.steps}>
         {steps.map((st, i) => <li key={st.title}>
           <button className={i === active ? s.stepOn : s.step} onClick={() => go(i)} aria-current={i === active ? 'step' : undefined}>
             <span className={s.num}>{String(i + 1).padStart(2, '0')}</span>

@@ -103,10 +103,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .scrollWords[data-still='true'] { height: auto; }
 .scrollWords[data-still='true'] .scrollWordsPin { position: static; height: auto; padding: 96px 24px; }
+/* Phones: no pinning. The block flows normally; only the words fill in as you scroll past. */
 @media (max-width: 900px) {
-  .scrollWords { height: 190vh; }
-  .scrollWordsPin { padding: 88px 16px 16px; gap: 20px; }
+  .scrollWords { height: auto; padding: 72px 0 56px; }
+  .scrollWordsPin { position: static; height: auto; padding: 0 16px; gap: 22px; overflow: visible; }
   .scrollWordsHead { transform: none; }
-  .scrollWordsLabel { position: static; margin-bottom: 10px; transform: none; }
-  .scrollWordsText { padding-left: 0; max-width: none; font-size: calc(30px - var(--lift) * 8px); }
+  .scrollWordsLabel { position: static; margin-bottom: 12px; transform: none; }
+  .scrollWordsText { padding-left: 0; max-width: none; font-size: 27px; line-height: 1.22; }
 }
