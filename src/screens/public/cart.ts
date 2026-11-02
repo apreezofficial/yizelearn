@@ -41,6 +41,10 @@ export function cardErrors(card: {number: string; expiry: string; cvv: string}, 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 export function formatDate(d: Date) { return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`; }
 
+// No payment gateway is connected yet, so this widely used test number stands in for a card the bank declines.
+const DECLINED_TEST_CARD = '4000000000000002';
+export function isDeclined(cardNumber: string) { return digits(cardNumber) === DECLINED_TEST_CARD; }
+
 export function createOrder(items: Course[], total: number, method: PaymentMethod, cardNumber: string): Order {
   return {id: String(10000 + Math.floor(Math.random() * 90000)), date: formatDate(new Date()), method: method === 'card' ? `Card ending ${digits(cardNumber).slice(-4)}` : 'Bank transfer', total, courseIds: items.map(c => c.id)};
 }

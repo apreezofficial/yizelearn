@@ -1,0 +1,112 @@
+/* Same palette as the mobile apps (src/theme/tokens.ts), with the dark values under prefers-color-scheme. */
+:root {
+  /* yizelearn logo: navy plate, sky blue "Yize" and swoosh, soft yellow "learn" */
+  --logo-navy: #1C1F33;
+  --logo-sky: #9CC6E0;
+  --logo-yellow: #F5EFA8;
+  --cream: #FDF8F1;
+  --sand: #F4EFE7;
+  --sand-line: #DCD5CA;
+  --surface: #FFFFFF;
+  --blue50: #EFF5FC;
+  --blue100: #DFEBF9;
+  --sky: #74A7E3;
+  --blue600: #4F8BCD;
+  --blue700: #2F6DB5;
+  --navy: #24508F;
+  --blue900: #17335A;
+  --ink: #242A36;
+  --muted: #5C6472;
+  --line: #E6E7E5;
+  --on-accent: #FFFFFF;
+  --on-sky: #17335A;
+  --marigold: #F0B74A;
+  --danger: #B53A3A;
+  --danger-soft: #FBE6E6;
+  --success: #2E8B67;
+  --success-soft: #E6F3EC;
+  --warning: #9A6A12;
+  --warning-soft: #FBF0DA;
+  --radius-card: 16px;
+  --radius-field: 14px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+  /* yizelearn logo: navy plate, sky blue "Yize" and swoosh, soft yellow "learn" */
+  --logo-navy: #1C1F33;
+  --logo-sky: #9CC6E0;
+  --logo-yellow: #F5EFA8;
+    --cream: #15171B;
+    --sand: #1E2127;
+    --sand-line: #353A43;
+    --surface: #1E2127;
+    --blue50: #18263A;
+    --blue100: #213452;
+    --sky: #6E9FDB;
+    --blue600: #6E9FDB;
+    --blue700: #8DB6EA;
+    --blue900: #D9E6F7;
+    --ink: #ECEEF2;
+    --muted: #A2A9B5;
+    --line: #2A2E35;
+    --on-sky: #0E1A2C;
+    --danger: #E27272;
+    --danger-soft: #3A2224;
+    --success: #55BE92;
+    --success-soft: #1E3229;
+    --warning: #E8B860;
+    --warning-soft: #3A3020;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--blue700); outline-offset: 2px; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes pop { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* Cencori-style pinned section (components/Live.tsx ScrollWords).
+   --lift: 0 = statement big and centred, 1 = small beside the label. --enter drives the cards. */
+.scrollWords { --from: #C9D3E2; --to: #17335A; --accent: #2F6DB5; --bg: #F4F1EA; --lift: 0; --enter: 0; position: relative; height: 210vh; background: var(--bg); }
+.scrollWords[data-dark='true'] { --from: #2A3A55; --to: #FDF8F1; --accent: #9CC6E0; --bg: #0B1A2E; }
+@media (prefers-color-scheme: dark) { .scrollWords:not([data-dark='true']) { --from: #2A2E35; --to: #ECEEF2; --accent: #8DB6EA; --bg: #15171B; } }
+.scrollWordsPin { position: sticky; top: 0; height: 100vh; height: 100dvh; max-width: 1160px; margin: 0 auto; padding: 104px 24px 24px; display: flex; flex-direction: column; gap: 28px; overflow: hidden; }
+/* Before the lift the statement sits just under the label; after it, beside the label. */
+.scrollWordsHead { position: relative; transform: translateY(calc((1 - var(--lift)) * 52px)); }
+.scrollWordsLabel { position: absolute; top: 4px; left: 0; margin: 0; font-size: 15px; font-weight: 500; color: color-mix(in srgb, var(--to) 55%, transparent);
+  transform: translateY(calc((1 - var(--lift)) * -52px)); }
+.scrollWordsText { margin: 0; max-width: calc(980px - var(--lift) * 300px); padding-left: calc(var(--lift) * 200px); font-size: calc(clamp(30px, 4.4vw, 56px) - var(--lift) * (clamp(30px, 4.4vw, 56px) - clamp(22px, 2.3vw, 30px)));
+  line-height: 1.18; letter-spacing: -0.03em; font-weight: 600; }
+.scrollWordsText span { --p: 0; color: color-mix(in srgb, var(--to) calc(var(--p) * 100%), var(--from)); }
+.scrollWordsText span.accent { color: color-mix(in srgb, var(--accent) calc(var(--p) * 100%), var(--from)); }
+.scrollWordsBody { min-height: 0; opacity: min(1, calc(var(--enter) * 6)); }
+/* Each card slides up in turn: card i starts when --enter passes i/6 */
+.scrollWords [style*='--i'] { --t: clamp(0, calc(var(--enter) * 6 - var(--i)), 1); opacity: var(--t); transform: translateY(calc((1 - var(--t)) * 160px)); }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.scrollWords[data-still='true'] { height: auto; }
+.scrollWords[data-still='true'] .scrollWordsPin { position: static; height: auto; padding: 96px 24px; }
+@media (max-width: 900px) {
+  .scrollWords { height: 190vh; }
+  .scrollWordsPin { padding: 88px 16px 16px; gap: 20px; }
+  .scrollWordsHead { transform: none; }
+  .scrollWordsLabel { position: static; margin-bottom: 10px; transform: none; }
+  .scrollWordsText { padding-left: 0; max-width: none; font-size: calc(30px - var(--lift) * 8px); }
+}

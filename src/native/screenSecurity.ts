@@ -14,7 +14,7 @@ interface ScreenSecurity extends TurboModule {
   setScreenshotWatch(enabled: boolean): void;
 }
 
-// Android-only native module (android/app/src/main/java/com/cathedtech/ScreenSecurityModule.kt).
+// Android-only native module (android/app/src/main/java/com/yizelearn/ScreenSecurityModule.kt).
 const native = Platform.OS === 'android' ? TurboModuleRegistry.get<ScreenSecurity>('ScreenSecurity') : null;
 
 export function useScreenCapturePolicy(policy: CapturePolicy, onScreenshot: () => void) {

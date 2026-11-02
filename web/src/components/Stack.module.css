@@ -1,0 +1,33 @@
+/* Each wrapper is 300vh, so its panel stays pinned for 200vh. The words fill during the first ~60vh,
+   there's a pause to read, and the next wrapper (pulled up 100vh) only appears after 100vh of scrolling. */
+.stack { position: relative; }
+.wrap { position: relative; height: 300vh; }
+.wrap + .wrap { margin-top: -100vh; }
+.panel { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; display: grid; grid-template-columns: 1fr 420px; grid-template-rows: auto 1fr; gap: 0 48px; padding: 104px max(24px, calc((100vw - 1160px) / 2)) 48px; box-shadow: 0 -30px 60px -40px rgba(0, 0, 0, 0.45); }
+.panel:not(.withArt) { grid-template-columns: 1fr; }
+.light { --from: #CBD3DF; --to: #17335A; background: #F4F1EA; color: #17335A; }
+.dark { --from: #2A3A55; --to: #FDF8F1; background: #0B1A2E; color: #FDF8F1; }
+@media (prefers-color-scheme: dark) { .light { --from: #3A3F48; --to: #ECEEF2; background: #1E2127; color: #ECEEF2; } }
+
+.label { grid-column: 1; margin: 0; font-size: 15px; font-weight: 500; opacity: 0.6; }
+.copy { grid-column: 1; align-self: end; }
+.text, .big { margin: 0; letter-spacing: -0.025em; font-weight: 500; }
+.text { font-size: clamp(26px, 3vw, 40px); line-height: 1.2; max-width: 560px; }
+.big { font-size: clamp(30px, 4vw, 56px); line-height: 1.12; max-width: 1080px; }
+.text span[data-w], .big span[data-w] { --p: 0; color: color-mix(in srgb, var(--to) calc(var(--p) * 100%), var(--from)); }
+.link { display: inline-block; margin-top: 24px; font-family: ui-monospace, Menlo, monospace; font-size: 13px; text-decoration: underline; text-underline-offset: 4px; opacity: 0.8; }
+.link:hover { opacity: 1; }
+.art { grid-column: 2; grid-row: 1 / span 2; align-self: center; height: min(70vh, 560px); border-radius: 14px; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.5); }
+.art svg { width: 100%; height: 100%; display: block; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.stack[data-still='true'] .wrap { height: auto; margin-top: 0; }
+.stack[data-still='true'] .panel { position: static; height: auto; min-height: 80vh; }
+
+@media (max-width: 900px) {
+  .panel { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; padding: 92px 16px 32px; gap: 20px; }
+  .art { grid-column: 1; grid-row: 2; height: 24vh; }
+  .copy { grid-row: 3; }
+  .text { font-size: 21px; }
+  .big { font-size: 24px; }
+}

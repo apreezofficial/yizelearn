@@ -1,0 +1,57 @@
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.tab, .tabOn { height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink2, #0B1A2E); font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.12s; }
+.tab:hover { border-color: #2F6DB5; }
+.tab:active, .tabOn:active { transform: scale(0.97); }
+.tabOn { background: #0B1A2E; color: #fff; border-color: #0B1A2E; }
+
+.railWrap { position: relative; margin-top: 20px; }
+.rail { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 3 * 18px) / 4); gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 4px 2px 24px; }
+.rail::-webkit-scrollbar { display: none; }
+
+.card { scroll-snap-align: start; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); overflow: hidden; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s; }
+.card:hover { transform: translateY(-4px); box-shadow: 0 24px 40px -24px rgba(11, 26, 46, 0.35); }
+
+/* Thumbnail: a striped brand gradient */
+.thumb { position: relative; aspect-ratio: 16 / 9; background: linear-gradient(120deg, #17335A, #2F6DB5); overflow: hidden; }
+/* Covers in brand gradients only: app blues, the logo's sky and yellow, and marigold */
+.thumb[data-tone='1'] { background: linear-gradient(120deg, #2F6DB5, #74A7E3); }
+.thumb[data-tone='2'] { background: linear-gradient(120deg, #24508F, #9CC6E0); }
+.thumb[data-tone='3'] { background: linear-gradient(120deg, #1C1F33, #24508F); }
+.thumb[data-tone='4'] { background: linear-gradient(120deg, #F0B74A, #F5EFA8); }
+.thumb[data-tone='4'] .topic { color: #17335A; text-shadow: none; }
+.thumb[data-tone='3'] .topic { color: #F5EFA8; }
+.thumb[data-tone='4'] .tag { background: #17335A; color: #F5EFA8; }
+.thumb::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(105deg, transparent 0 6px, rgba(255,255,255,0.22) 7px, transparent 9px 14px); mix-blend-mode: overlay; transition: transform 0.6s; }
+.card:hover .thumb::after { transform: translateX(14px); }
+.topic { position: absolute; left: 14px; bottom: 10px; z-index: 1; color: #fff; font-size: 26px; font-weight: 800; letter-spacing: -0.03em; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.18); }
+.tag, .tagNew { position: absolute; left: 12px; top: 12px; z-index: 1; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+.tag { background: #F0B74A; color: #17335A; }
+.tagNew { background: #fff; color: #2F6DB5; }
+
+.body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.body h3 { margin: 0; font-size: 15px; line-height: 1.35; font-weight: 700; color: var(--ink2, #0B1A2E); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.body p { margin: 0; font-size: 13px; color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--muted); }
+.meta span { display: inline-flex; align-items: center; gap: 4px; }
+.rating b { color: #B7791F; }
+.rating svg { color: #F0B74A; }
+.price { margin-top: auto; display: flex; align-items: baseline; gap: 8px; padding-top: 6px; }
+.price b { font-size: 17px; color: var(--ink2, #0B1A2E); }
+.price s { font-size: 13px; color: var(--muted); }
+
+.more { scroll-snap-align: start; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px dashed var(--sand-line); border-radius: 16px; font-weight: 700; color: #2F6DB5; text-align: center; padding: 24px; transition: background 0.2s; }
+.more:hover { background: var(--blue50); }
+
+.nav { position: absolute; top: 34%; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink2, #0B1A2E); cursor: pointer; box-shadow: 0 10px 24px -12px rgba(11, 26, 46, 0.45); transition: transform 0.15s; }
+.nav:hover { transform: scale(1.06); }
+.prev { left: -22px; }
+.next { right: -22px; }
+
+@media (prefers-color-scheme: dark) { .tabOn { background: #8DB6EA; color: #0B1A2E; border-color: #8DB6EA; } .more { color: #8DB6EA; } }
+
+@media (max-width: 900px) {
+  .rail { grid-auto-columns: 78%; }
+  .nav { display: none; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: -16px; padding-inline: 16px; }
+  .tab, .tabOn { flex: none; }
+}

@@ -1,0 +1,55 @@
+/* pxxl-style: hairline grid borders, sticky numbered steps, product windows on a dotted field */
+.journey { --hair: rgba(23, 51, 90, 0.12); max-width: 1160px; margin: 120px auto 0; border-inline: 1px solid var(--hair); }
+.title { margin: 0; padding: 40px 32px; font-size: clamp(30px, 3.6vw, 44px); font-weight: 500; letter-spacing: -0.03em; color: #0B1A2E; border-bottom: 1px solid var(--hair); }
+.grid { display: grid; grid-template-columns: 360px 1fr; }
+
+.steps { position: sticky; top: 96px; align-self: start; list-style: none; margin: 0; padding: 0; border-right: 1px solid var(--hair); }
+.steps li { border-bottom: 1px solid var(--hair); }
+.step, .stepOn { position: relative; display: flex; gap: 14px; width: 100%; padding: 22px 28px; border: 0; background: none; text-align: left; cursor: pointer; color: #8A93A3; transition: color 0.3s, background 0.3s; }
+.step:hover { color: #42506A; background: rgba(47, 109, 181, 0.03); }
+.stepOn { color: #0B1A2E; background: linear-gradient(90deg, rgba(47, 109, 181, 0.06), transparent 70%); }
+.num { font-family: ui-monospace, Menlo, monospace; font-size: 11px; padding-top: 4px; }
+.stepCopy b { display: block; font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+/* The description only opens on the active step */
+.detail { display: grid; grid-template-rows: 0fr; overflow: hidden; font-size: 14px; color: #4A5468; transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1), margin 0.4s; }
+.stepOn .detail { grid-template-rows: 1fr; margin-top: 6px; }
+.detail > span { min-height: 0; }
+.bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(#2F6DB5, #9CC6E0); transform: scaleY(0); transform-origin: top; transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+.stepOn .bar { transform: scaleY(1); }
+
+.screens { padding: 0 0 0 0; background-image: radial-gradient(rgba(23, 51, 90, 0.16) 1px, transparent 1.2px); background-size: 16px 16px; }
+.slot { min-height: 78vh; display: flex; align-items: center; padding: 56px 0 56px 48px; border-bottom: 1px solid var(--hair); overflow: hidden; }
+/* Windows dim and recede until they reach the middle of the screen */
+.window { width: calc(100% + 40px); border-radius: 18px 0 0 18px; background: #0F1F35; color: #ECEEF2; box-shadow: 0 40px 80px -40px rgba(11, 26, 46, 0.7); padding: 22px 0 22px 24px; opacity: 0.45; transform: translateX(28px) scale(0.97); filter: saturate(0.6);
+  transition: opacity 0.6s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s; }
+.slotOn .window { opacity: 1; transform: none; filter: none; }
+.windowHead { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #8796AE; }
+.windowHead b { color: #ECEEF2; font-weight: 600; }
+.ring { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #8796AE; }
+.slotOn .ring { border-color: #9CC6E0; box-shadow: 0 0 0 4px rgba(156, 198, 224, 0.15); }
+.windowSub { margin: 6px 0 18px 30px; font-size: 13px; color: #8796AE; }
+.windowBody { margin-left: 30px; padding-right: 24px; }
+
+@media (prefers-color-scheme: dark) {
+  .journey { --hair: rgba(255, 255, 255, 0.1); }
+  .title, .stepOn { color: #ECEEF2; }
+  .detail { color: #A2A9B5; }
+  .screens { background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1.2px); }
+}
+
+@media (max-width: 900px) {
+  .journey { margin-top: 72px; border-inline: 0; }
+  .title { padding: 28px 16px; }
+  .grid { grid-template-columns: 1fr; }
+  /* Phones: the steps become a sticky row of numbers above the screens */
+  .steps { top: 72px; z-index: 5; display: flex; overflow-x: auto; scrollbar-width: none; border-right: 0; border-bottom: 1px solid var(--hair); background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(10px); }
+  .steps li { flex: none; border-bottom: 0; border-right: 1px solid var(--hair); }
+  .step, .stepOn { padding: 12px 16px; }
+  .stepCopy b { font-size: 14px; white-space: nowrap; }
+  .stepOn .detail { display: none; }
+  .bar { top: auto; left: 0; right: 0; width: auto; height: 3px; transform: scaleX(0); transform-origin: left; }
+  .stepOn .bar { transform: scaleX(1); }
+  .slot { min-height: 0; padding: 28px 0 28px 16px; }
+  .window { padding: 18px 0 18px 16px; }
+  .windowBody, .windowSub { margin-left: 0; }
+}
