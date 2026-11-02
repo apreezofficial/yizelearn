@@ -72,8 +72,8 @@ export function Hero() {
         <h1>Practical skills that move{' '}<br />your career <mark>forward, faster</mark></h1>
         <p className={s.lede}>Short courses from people who do the work. Learn in minutes a day, join live classes, and finish with a certificate you can show. Keep access after you finish.</p>
         <div className={s.ctas}>
-          <Link href="#" className={s.primary}>Start learning <span className={s.avatar} aria-hidden>Y</span></Link>
-          <Link href="#courses" className={s.secondary}>Browse courses <HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>
+          <Link href="/signup" className={s.primary}>Start learning <span className={s.avatar} aria-hidden>Y</span></Link>
+          <Link href="/#courses" className={s.secondary}>Browse courses <HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>
         </div>
       </div>
       <div className={s.statsWrap}>

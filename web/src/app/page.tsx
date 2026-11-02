@@ -4,6 +4,8 @@ import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Mic01Icon, PlayIcon, SentIcon, Video01Icon} from '@hugeicons/core-free-icons';
 import {OfferBar, SiteNav} from '@/components/Chrome';
 import {Hero} from '@/components/Hero';
+import {Faq} from '@/components/Faq';
+import {OfferBanner} from '@/components/OfferBanner';
 import {GoalCourses} from '@/components/Explore';
 import {Journey} from '@/components/Journey';
 import {SwitchCta} from '@/components/SwitchCta';
@@ -28,9 +30,9 @@ export default function Home() {
     </div>
 
     {/* Course browser: the statement fills in, lifts, then the goal tabs and course cards slide up beneath it */}
-    <ScrollWords label="Find your next course" text="Pick a goal and we line up short, practical courses that get you there, taught by people who do the work every day." accent={['goal', 'practical']}>
+    <div id="courses"><ScrollWords label="Find your next course" text="Pick a goal and we line up short, practical courses that get you there, taught by people who do the work every day." accent={['goal', 'practical']}>
       <GoalCourses />
-    </ScrollWords>
+    </ScrollWords></div>
 
     {/* Product walk-through after pxxl.app: sticky numbered steps on the left, the matching screen on the right */}
     <Journey title="One place to learn, practise and prove it." steps={[
@@ -92,7 +94,7 @@ export default function Home() {
     <div className={s.wordsGap} />
     <ScrollWords dark label="Paths" text="Follow a path, not a pile of courses. Each one lines up the right courses in the right order, with a project at the end you can show." accent={['path', 'project']}>
       <div className={s.paths}>
-        {paths.map((p, i) => <Link key={p.title} href="#" className={`${s.path} ${p.light ? s.pathLight : ''}`} style={{['--from' as string]: p.from, ['--to' as string]: p.to, ['--i' as string]: i}}>
+        {paths.map((p, i) => <Link key={p.title} href="/signup" className={`${s.path} ${p.light ? s.pathLight : ''}`} style={{['--from' as string]: p.from, ['--to' as string]: p.to, ['--i' as string]: i}}>
           <span className={s.pathGlow} aria-hidden />
           <h3>{p.title}</h3>
           <p>{p.outcome}</p>
@@ -101,6 +103,10 @@ export default function Home() {
         </Link>)}
       </div>
     </ScrollWords>
+
+    <OfferBanner />
+
+    <Faq />
 
     {/* Closing call to action: Upwork-style card with a Learn / Teach switch over video */}
     <SwitchCta />

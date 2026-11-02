@@ -3,6 +3,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowUp02Icon, Cancel01Icon, PlusSignIcon} from '@hugeicons/core-free-icons';
+import {SUPPORT_EMAIL} from '@/lib/faq';
 import s from './Help.module.css';
 
 type Msg = {me: boolean; text: string};
@@ -17,7 +18,6 @@ const topics: {q: string; keys: string[]; a: string}[] = [
   {q: "My course won't open", keys: ["won't", 'wont', 'open', 'load', 'error', 'stuck', 'broken'], a: 'Try signing out and back in, then check your connection. If it still won\'t open, use "Report a problem" in the app (or shake your phone) and include a screenshot. We reply within a day.'},
   {q: 'Can I get a refund?', keys: ['refund', 'money back', 'cancel'], a: 'If a course isn\'t right for you, ask within 14 days of buying and before finishing more than a quarter of it, and we\'ll refund you.'},
 ];
-const SUPPORT_EMAIL = 'support@yizelearn.com';
 
 function answer(text: string) {
   const t = text.toLowerCase();
@@ -34,6 +34,12 @@ export function Help() {
   const list = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
 
+  // The FAQ's "Ask in chat" button opens this panel.
+  useEffect(() => {
+    const openIt = () => setOpen(true);
+    window.addEventListener('yz-help-open', openIt);
+    return () => window.removeEventListener('yz-help-open', openIt);
+  }, []);
   useEffect(() => { list.current?.scrollTo({top: list.current.scrollHeight, behavior: 'smooth'}); }, [msgs, typing]);
   useEffect(() => {
     if (!open) return;

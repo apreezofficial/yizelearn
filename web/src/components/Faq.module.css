@@ -1,0 +1,32 @@
+.faq { --hair: rgba(23, 51, 90, 0.12); display: grid; grid-template-columns: 380px minmax(0, 1fr); max-width: 1160px; margin: 120px auto 0; border: 1px solid var(--hair); background: var(--surface); }
+.head { padding: 48px 36px; border-right: 1px solid var(--hair); align-self: start; position: sticky; top: 96px; }
+.kicker { margin: 0 0 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.08em; color: var(--muted); }
+.head h2 { margin: 0; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 600; color: var(--ink2, #0B1A2E); }
+.sub { margin: 16px 0 24px; color: var(--muted); line-height: 1.55; }
+.ask { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--ink2, #0B1A2E); background: none; color: var(--ink2, #0B1A2E); font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.ask:hover { background: var(--ink2, #0B1A2E); color: var(--surface); }
+
+.list { list-style: none; margin: 0; padding: 0; }
+.item, .itemOn { border-bottom: 1px solid var(--hair); transition: background 0.3s; }
+.item:last-child, .itemOn:last-child { border-bottom: 0; }
+.itemOn { background: linear-gradient(90deg, rgba(47, 109, 181, 0.05), transparent 70%); }
+.item h3, .itemOn h3 { margin: 0; font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+.item button, .itemOn button { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; padding: 24px 32px; border: 0; background: none; color: var(--ink2, #0B1A2E); font: inherit; text-align: left; cursor: pointer; }
+.item button:hover { color: var(--blue700); }
+.plus { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--hair); transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1), background 0.25s, color 0.25s; }
+.itemOn .plus { transform: rotate(135deg); background: var(--blue700); border-color: var(--blue700); color: var(--surface); }
+/* Answer height animates with the grid-rows trick, so no measuring is needed */
+.panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.itemOn .panel { grid-template-rows: 1fr; }
+.panel > div { overflow: hidden; }
+.panel p { margin: 0; padding: 0 32px 26px; max-width: 620px; color: var(--muted); line-height: 1.65; opacity: 0; transform: translateY(-4px); transition: opacity 0.3s, transform 0.4s; }
+.itemOn .panel p { opacity: 1; transform: none; transition-delay: 0.08s; }
+
+@media (prefers-color-scheme: dark) { .faq { --hair: rgba(255, 255, 255, 0.1); } .head h2, .item button, .itemOn button, .ask { color: #ECEEF2; } .ask { border-color: #ECEEF2; } .ask:hover { background: #ECEEF2; color: #15171B; } }
+@media (prefers-reduced-motion: reduce) { .panel, .panel p, .plus { transition: none; } }
+@media (max-width: 900px) {
+  .faq { grid-template-columns: minmax(0, 1fr); margin: 72px 16px 0; }
+  .head { position: static; border-right: 0; border-bottom: 1px solid var(--hair); padding: 32px 20px; }
+  .item button, .itemOn button { padding: 20px; font-size: 17px; }
+  .panel p { padding: 0 20px 22px; }
+}
