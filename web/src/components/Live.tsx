@@ -81,26 +81,33 @@ export function QuizDemo() {
 }
 
 /**
- * A pinned statement whose words fill in from pale to full colour as you scroll through it,
- * after Cencori's "For developers" section. `accent` words fill in brand blue instead of navy.
- * With reduced motion it renders fully filled and doesn't pin.
+ * Cencori-style pinned section: the statement fills in word by word, then shrinks up beside
+ * the label, then the children (cards) slide up into place one after another, all while pinned.
+ * Children set `--i` on each card; CSS turns `--enter` into a per-card slide.
+ * With reduced motion everything shows at once and nothing pins.
  */
-export function ScrollWords({label, text, accent = [], dark = false}: {label: string; text: string; accent?: string[]; dark?: boolean}) {
+export function ScrollWords({label, text, accent = [], dark = false, children}: {label: string; text: string; accent?: string[]; dark?: boolean; children?: React.ReactNode}) {
   const wrap = useRef<HTMLDivElement>(null);
   const words = text.split(' ');
   useEffect(() => {
     const el = wrap.current;
     if (!el) return;
     const spans = [...el.querySelectorAll<HTMLSpanElement>('[data-w]')];
-    if (reduced()) { el.dataset.still = 'true'; spans.forEach(s => s.style.setProperty('--p', '1')); return; }
+    const set = (fill: number, lift: number, enter: number) => {
+      const lit = fill * spans.length;
+      spans.forEach((s, i) => s.style.setProperty('--p', String(Math.min(1, Math.max(0, lit - i)))));
+      el.style.setProperty('--lift', lift.toFixed(3));
+      el.style.setProperty('--enter', enter.toFixed(3));
+    };
+    if (reduced()) { el.dataset.still = 'true'; set(1, 1, 1); return; }
+    const phase = (p: number, a: number, b: number) => Math.min(1, Math.max(0, (p - a) / (b - a)));
     let frame = 0;
     const update = () => {
       frame = 0;
       const r = el.getBoundingClientRect();
-      // 0 when the block reaches the top, 1 when its pinned stretch is used up; finish a little early so the last words settle.
-      const progress = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight) * 1.15));
-      const lit = progress * spans.length;
-      spans.forEach((s, i) => s.style.setProperty('--p', String(Math.min(1, Math.max(0, lit - i)))));
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight)));
+      // Words fill over the first stretch, the statement lifts, then the cards come in.
+      set(phase(p, 0, 0.42), phase(p, 0.42, 0.56), phase(p, 0.54, 0.92));
     };
     const queue = () => { if (!frame) frame = requestAnimationFrame(update); };
     update();
@@ -108,13 +115,16 @@ export function ScrollWords({label, text, accent = [], dark = false}: {label: st
     window.addEventListener('resize', queue);
     return () => { window.removeEventListener('scroll', queue); window.removeEventListener('resize', queue); cancelAnimationFrame(frame); };
   }, [text]);
-  return <div ref={wrap} className="scrollWords" data-dark={dark}>
+  return <section ref={wrap} className="scrollWords" data-dark={dark}>
     <div className="scrollWordsPin">
-      <p className="scrollWordsLabel">{label}</p>
-      <p className="scrollWordsText">
-        <span className="srOnly">{text}</span>
-        {words.map((w, i) => <span key={i} data-w aria-hidden className={accent.includes(w.replace(/[^\w']/g, '')) ? 'accent' : undefined}>{w} </span>)}
-      </p>
+      <div className="scrollWordsHead">
+        <p className="scrollWordsLabel">{label}</p>
+        <p className="scrollWordsText">
+          <span className="srOnly">{text}</span>
+          {words.map((w, i) => <span key={i} data-w aria-hidden className={accent.includes(w.replace(/[^\w']/g, '')) ? 'accent' : undefined}>{w} </span>)}
+        </p>
+      </div>
+      {children && <div className="scrollWordsBody">{children}</div>}
     </div>
-  </div>;
+  </section>;
 }

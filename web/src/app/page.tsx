@@ -24,12 +24,10 @@ export default function Home() {
       <div className={s.track}>{[...topics, ...topics].map((t, i) => <span key={i} aria-hidden={i >= topics.length}>{t}</span>)}</div>
     </div>
 
-    {/* Course browser by goal, introduced by a statement that fills in as you scroll */}
-    <ScrollWords label="Find your next course" text="Pick a goal and we line up short, practical courses that get you there, taught by people who do the work every day." accent={['goal', 'practical']} />
-    <section className={`${s.section} ${s.afterWords}`}>
-      <Reveal className={s.reveal}><h2 className={s.h2}>What do you want to get better at?</h2></Reveal>
+    {/* Course browser: the statement fills in, lifts, then the goal tabs and course cards slide up beneath it */}
+    <ScrollWords label="Find your next course" text="Pick a goal and we line up short, practical courses that get you there, taught by people who do the work every day." accent={['goal', 'practical']}>
       <GoalCourses />
-    </section>
+    </ScrollWords>
 
     {/* Bento of product moments */}
     <section className={s.section} id="courses">
@@ -103,23 +101,19 @@ export default function Home() {
       </div>
     </section>
 
-    {/* Career paths, introduced by a dark statement that fills in as you scroll */}
+    {/* Career paths: same pinned sequence, on navy */}
     <div className={s.wordsGap} />
-    <ScrollWords dark label="Paths" text="Follow a path, not a pile of courses. Each one lines up the right courses in the right order, with a project at the end you can show." accent={['path', 'project']} />
-    <section className={`${s.section} ${s.afterWords}`}>
-      <Reveal className={s.reveal}><h2 className={s.h2}>Pick where you want to go.</h2></Reveal>
+    <ScrollWords dark label="Paths" text="Follow a path, not a pile of courses. Each one lines up the right courses in the right order, with a project at the end you can show." accent={['path', 'project']}>
       <div className={s.paths}>
-        {paths.map((p, i) => <Reveal key={p.title} delay={i * 80} className={s.reveal}>
-          <Link href="#" className={`${s.path} ${p.light ? s.pathLight : ''}`} style={{['--from' as string]: p.from, ['--to' as string]: p.to}}>
-            <span className={s.pathGlow} aria-hidden />
-            <h3>{p.title}</h3>
-            <p>{p.outcome}</p>
-            <ul>{p.skills.map(k => <li key={k}>{k}</li>)}</ul>
-            <div className={s.pathFoot}><span>{p.courses} courses · {p.hours}h</span><Arrow /></div>
-          </Link>
-        </Reveal>)}
+        {paths.map((p, i) => <Link key={p.title} href="#" className={`${s.path} ${p.light ? s.pathLight : ''}`} style={{['--from' as string]: p.from, ['--to' as string]: p.to, ['--i' as string]: i}}>
+          <span className={s.pathGlow} aria-hidden />
+          <h3>{p.title}</h3>
+          <p>{p.outcome}</p>
+          <ul>{p.skills.map(k => <li key={k}>{k}</li>)}</ul>
+          <div className={s.pathFoot}><span>{p.courses} courses · {p.hours}h</span><Arrow /></div>
+        </Link>)}
       </div>
-    </section>
+    </ScrollWords>
 
     {/* Dark numbers section */}
     <section className={s.dark}>
