@@ -45,7 +45,7 @@ export function Catalog() {
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // A short shimmer on first load and whenever the view changes, so the page never jumps.
-  const shimmer = (ms: number) => { setLoading(true); clearTimeout(timer.current); timer.current = setTimeout(() => setLoading(false), ms); };
+  const shimmer = (ms: number) => { window.scrollTo({top: 0, behavior: 'instant'}); setLoading(true); clearTimeout(timer.current); timer.current = setTimeout(() => setLoading(false), ms); };
   useEffect(() => { timer.current = setTimeout(() => setLoading(false), 1000); return () => clearTimeout(timer.current); }, []);
   const setTab = (v: Tab) => { setTabRaw(v); shimmer(450); };
   const setQ = (v: string) => { setQRaw(v); shimmer(450); };
