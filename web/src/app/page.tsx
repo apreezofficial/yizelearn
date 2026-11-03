@@ -14,7 +14,7 @@ import {QuizDemo, ScrollWords} from '@/components/Live';
 import {paths} from '@/lib/courses';
 import s from './page.module.css';
 
-const topics = ['Excel', 'Financial modelling', 'Python', 'Business writing', 'Design basics', 'Data analysis', 'Public speaking', 'Project management', 'Macros', 'Healthy habits'];
+const topics = ['Python', 'TypeScript', 'React', 'SQL', 'AI agents', 'SEO', 'TikTok', 'PostgreSQL', 'Computer vision', 'Data annotator'];
 
 const Arrow = () => <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={2.4} className={s.arrow} />;
 
@@ -62,7 +62,7 @@ export default function Home() {
       </div>},
       {kicker: 'Checkout', title: 'Pay once in naira', detail: 'Card or bank transfer. Keep access after you finish.', screen: <div className={s.appFrame}>
         <div className={s.checkout}>
-          <div className={s.coRow}><span>Data analysis in Excel</span><b>₦15,000</b></div>
+          <div className={s.coRow}><span>SQL for beginners</span><b>₦15,000</b></div>
           <div className={s.coRow}><span>Promo WELCOME10</span><b className={s.green}>−₦1,500</b></div>
           <div className={`${s.coRow} ${s.coTotal}`}><span>Total</span><b>₦13,500</b></div>
           <div className={s.coMethods}><span className={s.on}>Card</span><span>Bank transfer</span></div>
@@ -71,7 +71,7 @@ export default function Home() {
       </div>},
       {kicker: 'Progress', title: 'Keep going every day', detail: 'Progress bars and streaks that make finishing easy.', screen: <div className={s.appFrame}>
         <div className={s.progress}>
-          {[['Data analysis in Excel', 72], ['Business writing', 40], ['Intro to Python', 18]].map(([t, p], i) => <div key={t as string} className={s.pRow}>
+          {[['SQL for beginners', 72], ['Intro to digital marketing', 40], ['Python programming', 18]].map(([t, p], i) => <div key={t as string} className={s.pRow}>
             <span>{t}</span><div className={s.pTrack}><i style={{width: `${p}%`, animationDelay: `${i * 150}ms`}} /></div><b>{p}%</b>
           </div>)}
           <div className={s.streak}>{['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <span key={i} className={i < 5 ? s.lit : ''} style={{animationDelay: `${i * 90}ms`}}>{d}</span>)}<em>5-day streak</em></div>
@@ -82,7 +82,7 @@ export default function Home() {
           <div className={s.cert}>
             <small>Certificate of completion</small>
             <strong>Mercy Ibe</strong>
-            <span>has completed <b>Data analysis in Excel</b></span>
+            <span>has completed <b>SQL for beginners</b></span>
             <div className={s.certFoot}><Image src="/logo.png" alt="" width={64} height={25} /><i><HugeiconsIcon icon={Award01Icon} size={18} /></i></div>
           </div>
           <div className={s.share}><span>Share to</span><b>LinkedIn</b><b>Download PDF</b></div>

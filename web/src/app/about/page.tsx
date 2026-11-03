@@ -11,7 +11,7 @@ export const metadata: Metadata = {title: 'About', description: 'yizelearn makes
 const panels: Panel[] = [
   {label: 'Our mission', tone: 'light', art: 'mission', text: 'Make practical, career-changing skills easy to learn for everyone, everywhere, in minutes a day.'},
   {label: 'What this means for Africa... and the world', tone: 'dark', art: 'africa', text: 'Talent is everywhere, but good training has been expensive, slow and far away. We teach the skills people use on Monday, in short lessons that are light on data, from instructors who do the work. Learn anywhere. Grow everywhere.'},
-  {label: 'How we teach', tone: 'light', size: 'big', link: {href: '/#courses', label: 'See the courses'}, text: 'Learning used to mean long lectures and longer certificates. It is becoming short lessons, real projects and live help when you are stuck. What you can do matters more than how long you sat in class. Short lessons. Real skills. Built on yizelearn.'},
+  {label: 'How we teach', tone: 'light', size: 'big', link: {href: '/courses', label: 'See the courses'}, text: 'Learning used to mean long lectures and longer certificates. It is becoming short lessons, real projects and live help when you are stuck. What you can do matters more than how long you sat in class. Short lessons. Real skills. Built on yizelearn.'},
 ];
 
 export default function AboutPage() {
