@@ -31,10 +31,50 @@
 .cta svg { transition: transform 0.2s; }
 .cta:hover svg { transform: translateX(3px); }
 
-@media (prefers-reduced-motion: reduce) { .copy > * { animation: none; } }
+/* Right-hand stage: a main product card with two chips around it, gently floating */
+.stage { position: absolute; right: 56px; top: 50%; width: min(420px, 38%); height: 380px; transform: translateY(-50%); }
+.float { position: absolute; animation: pop 0.7s cubic-bezier(0.16, 1, 0.3, 1) both, bob 6s ease-in-out 0.7s infinite; }
+@keyframes bob { 50% { translate: 0 -8px; } }
+.main { left: 0; right: 0; top: 50px; border-radius: 20px; background: rgba(255, 255, 255, 0.96); color: #0B1A2E; box-shadow: 0 40px 70px -30px rgba(0, 0, 0, 0.7); overflow: hidden; animation-delay: 0.05s, 0.7s; }
+.cover { position: relative; height: 130px; display: flex; align-items: flex-end; padding: 14px 16px; background: repeating-linear-gradient(105deg, transparent 0 7px, rgba(255,255,255,0.14) 8px, transparent 10px 15px), linear-gradient(120deg, #17335A, #2F6DB5 60%, #74A7E3); color: #fff; }
+.cover b { font-size: 28px; letter-spacing: -0.03em; }
+.play { position: absolute; right: 16px; top: 16px; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #2F6DB5; box-shadow: 0 0 0 0 rgba(255,255,255,0.6); animation: ring 2.2s ease-out infinite; }
+@keyframes ring { 70% { box-shadow: 0 0 0 14px rgba(255,255,255,0); } 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); } }
+.mainBody { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 4px; }
+.mainBody strong { font-size: 17px; }
+.mainBody span { font-size: 13px; color: #6A7487; }
+.track { height: 8px; margin-top: 10px; border-radius: 4px; background: #E6E9EE; overflow: hidden; }
+.track i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #2F6DB5, #9CC6E0); transform-origin: left; animation: fillIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
+@keyframes fillIn { from { transform: scaleX(0); } }
+.mainBody small { margin-top: 6px; font-size: 12px; color: #6A7487; }
+.builderHead { display: flex; justify-content: space-between; align-items: center; padding: 18px 18px 10px; }
+.builderHead strong { font-size: 17px; }
+.builderHead span { font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #FBF0DA; color: #9A6A12; }
+.lesson { display: flex; align-items: center; gap: 10px; margin: 0 14px 8px; padding: 11px 12px; border-radius: 12px; background: #F4F6F9; font-size: 14px; animation: pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.lesson:nth-child(2) { animation-delay: 0.25s; } .lesson:nth-child(3) { animation-delay: 0.4s; } .lesson:nth-child(4) { animation-delay: 0.55s; }
+.lesson svg { color: #2E8B67; flex: none; }
+.lesson em { margin-left: auto; font-style: normal; font-size: 12px; color: #6A7487; }
+.addLesson { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 14px 16px; padding: 11px; border-radius: 12px; border: 1.5px dashed #C9D3E2; color: #2F6DB5; font-size: 14px; font-weight: 600; }
+.chip { z-index: 2; display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 10px; border-radius: 16px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.24); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6); }
+.chip b { display: block; font-size: 14px; }
+.chip div span { font-size: 12px; color: rgba(255, 255, 255, 0.75); }
+.chipTop { top: 0; right: -24px; animation-delay: 0.25s, 1s; animation-duration: 0.7s, 7s; }
+.chipBottom { bottom: -10px; left: -40px; animation-delay: 0.4s, 1.3s; animation-duration: 0.7s, 5.5s; }
+.chipIcon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; }
+.chipIcon[data-tone='gold'] { background: #F0B74A; color: #17335A; }
+.chipIcon[data-tone='green'] { background: #2E8B67; color: #fff; }
+.chipIcon[data-tone='sky'] { background: #9CC6E0; color: #17335A; }
+.chipIcon[data-tone='red'] { background: #B53A3A; color: #fff; }
+
+@media (prefers-reduced-motion: reduce) { .copy > * { animation: none; } .float, .lesson, .track i, .play { animation: none; } }
 @media (max-width: 900px) {
   .card { margin: 72px 12px 0; min-height: 520px; border-radius: 22px; }
   .content { padding: 28px 22px; }
   .copy p { font-size: 16px; }
   .shade { background: linear-gradient(0deg, rgba(11, 26, 46, 0.92) 10%, rgba(11, 26, 46, 0.5) 60%, rgba(11, 26, 46, 0.2)); }
+  /* Phones: the product moments sit above the copy */
+  .card { flex-direction: column-reverse; align-items: stretch; }
+  .stage { position: relative; right: auto; top: auto; transform: none; width: auto; height: 330px; margin: 24px 34px 8px 22px; }
+  .chipTop { right: -18px; }
+  .chipBottom { left: -10px; bottom: -14px; }
 }

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {ArrowRight01Icon} from '@hugeicons/core-free-icons';
+import {Add01Icon, ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, FireIcon, PlayIcon, UserAdd01Icon, Video01Icon} from '@hugeicons/core-free-icons';
 import s from './SwitchCta.module.css';
 
 type Side = 'learn' | 'teach';
@@ -47,6 +47,30 @@ export function SwitchCta() {
         <p>{c.text}</p>
         <Link href={c.href} className={s.cta}>{c.cta} <HugeiconsIcon icon={ArrowRight01Icon} size={18} strokeWidth={2.2} /></Link>
       </div>
+    </div>
+    {/* Floating product moments on the right; they swap with the switch and sit over the video when there is one */}
+    <div key={`art-${side}`} className={s.stage} aria-hidden>
+      {side === 'learn' ? <>
+        <div className={`${s.float} ${s.main}`}>
+          <div className={s.cover}><span className={s.play}><HugeiconsIcon icon={PlayIcon} size={18} /></span><b>Excel</b></div>
+          <div className={s.mainBody}>
+            <strong>Data analysis in Excel</strong>
+            <span>Module 2 · Lookup functions</span>
+            <div className={s.track}><i style={{width: '68%'}} /></div>
+            <small>68% complete · 12 min left today</small>
+          </div>
+        </div>
+        <div className={`${s.float} ${s.chip} ${s.chipTop}`}><span className={s.chipIcon} data-tone="gold"><HugeiconsIcon icon={FireIcon} size={16} /></span><div><b>5-day streak</b><span>Keep it going</span></div></div>
+        <div className={`${s.float} ${s.chip} ${s.chipBottom}`}><span className={s.chipIcon} data-tone="green"><HugeiconsIcon icon={Award01Icon} size={16} /></span><div><b>Certificate earned</b><span>Business writing</span></div></div>
+      </> : <>
+        <div className={`${s.float} ${s.main}`}>
+          <div className={s.builderHead}><strong>Your course</strong><span>Draft</span></div>
+          {['Welcome and setup', 'Formulas that matter', 'Lookups in practice'].map((t, i) => <div key={t} className={s.lesson}><HugeiconsIcon icon={CheckmarkCircle02Icon} size={16} /><span>{t}</span><em>{6 + i * 2} min</em></div>)}
+          <div className={s.addLesson}><HugeiconsIcon icon={Add01Icon} size={16} />Add a lesson</div>
+        </div>
+        <div className={`${s.float} ${s.chip} ${s.chipTop}`}><span className={s.chipIcon} data-tone="sky"><HugeiconsIcon icon={UserAdd01Icon} size={16} /></span><div><b>New learner enrolled</b><span>Just now</span></div></div>
+        <div className={`${s.float} ${s.chip} ${s.chipBottom}`}><span className={s.chipIcon} data-tone="red"><HugeiconsIcon icon={Video01Icon} size={16} /></span><div><b>Your live class</b><span>Thursday, 6:00 PM</span></div></div>
+      </>}
     </div>
   </section>;
 }
