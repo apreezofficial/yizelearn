@@ -25,7 +25,7 @@ export const terms: LegalDoc = {
       'A certificate is issued when you complete every lesson and pass the required quizzes. It shows that you completed a yizelearn course. It is not a degree or an official qualification, and you must not edit or misrepresent it.',
     ]},
     {id: 'payments', title: 'Payments & Refunds', body: [
-      'Prices are shown in naira (₦) and include any taxes we are required to collect. You can pay by card or bank transfer. Payments are handled by our payment partners, and we do not store your full card number.',
+      'Prices are shown in the currency you choose and are converted from our base price at the rate shown at checkout. They include any taxes we are required to collect. You can pay by card or bank transfer. Payments are handled by our payment partners, and we do not store your full card number.',
       'A bank transfer course unlocks once we have confirmed the payment.',
       'If a course is not right for you, you can ask for a refund within 14 days of buying it, as long as you have completed no more than a quarter of it. To ask, contact us at the address in the Contact section below. Refunds go back to the original payment method where possible.',
       'Promo codes are single-purpose, may expire, and cannot be exchanged for cash.',

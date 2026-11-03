@@ -5,7 +5,8 @@
 .cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
 .cols a { color: #ECEEF2; opacity: 0.85; transition: opacity 0.15s, color 0.15s; }
 .cols a:hover { opacity: 1; color: #9CC6E0; }
-.legal { display: flex; justify-content: space-between; margin-top: 56px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #8796AE; }
+.prefs { margin-top: 48px; }
+.legal { display: flex; justify-content: space-between; margin-top: 28px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #8796AE; }
 .legal span:last-child { display: flex; gap: 16px; }
 /* Giant logo wordmark across the bottom, cut off by the footer edge just below the baseline */
 .mark { position: relative; width: max-content; max-width: none; margin: 24px auto -0.04em; font-family: var(--font-logo), var(--font-sans), sans-serif; font-weight: 600; font-size: clamp(56px, 23vw, 340px); line-height: 0.95; letter-spacing: -0.02em; white-space: nowrap; user-select: none; }

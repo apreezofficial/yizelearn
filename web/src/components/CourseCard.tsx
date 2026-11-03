@@ -4,7 +4,9 @@ import Link from 'next/link';
 import {useSyncExternalStore} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {AiBrain01Icon, ComputerSettingsIcon, DatabaseIcon, FavouriteIcon, Megaphone01Icon, SourceCodeIcon, StarIcon} from '@hugeicons/core-free-icons';
-import {naira, type Category, type Course} from '@/lib/courses';
+import {type Category, type Course} from '@/lib/courses';
+import {preferencesAllowed} from '@/lib/consent';
+import {useMoney} from '@/lib/prefs';
 import s from './CourseCard.module.css';
 
 export const categoryIcon: Record<Category, typeof SourceCodeIcon> = {
@@ -23,7 +25,7 @@ export function useWish(id: string) {
   const toggle = () => {
     const list = JSON.parse(read()) as string[];
     const next = list.includes(id) ? list.filter(x => x !== id) : [...list, id];
-    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* private mode: nothing is kept */ }
+    try { if (preferencesAllowed()) localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* private mode: nothing is kept */ }
     listeners.forEach(fn => fn());
   };
   return [on, toggle] as const;
@@ -39,6 +41,7 @@ export function Heart({id, className}: {id: string; className?: string}) {
 
 /** Udemy home-page card: bordered box, inset picture, bold title, instructor, badge and rating pills, price and a button. */
 export function CourseCard({course: c, wide}: {course: Course; wide?: boolean}) {
+  const money = useMoney();
   return <Link href={`/courses/${c.id}`} className={`${s.card} ${wide ? s.wide : ''}`}>
     <div className={s.art} data-tone={c.tone}>
       <HugeiconsIcon icon={categoryIcon[c.category]} size={56} strokeWidth={1.4} className={s.glyph} />
@@ -54,7 +57,7 @@ export function CourseCard({course: c, wide}: {course: Course; wide?: boolean}) 
         <span className={s.pill}>{c.reviews.toLocaleString()} ratings</span>
       </div>
       <div className={s.foot}>
-        <p className={s.meta}><b>{naira(c.price)}</b>{c.was && <s>{naira(c.was)}</s>}</p>
+        <p className={s.meta}><b>{money(c.price)}</b>{c.was && <s>{money(c.was)}</s>}</p>
         <span className={s.btn}>View course</span>
       </div>
     </div>

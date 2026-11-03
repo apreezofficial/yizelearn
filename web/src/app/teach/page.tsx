@@ -8,7 +8,7 @@ import {TeachBand, TeachBar, TeachHero, TeachWays} from '@/components/Teach';
 import {categories} from '@/lib/courses';
 import s from './teach.module.css';
 
-export const metadata: Metadata = {title: 'Teach on yizelearn', description: 'Turn what you know into a short course and get paid in naira.'};
+export const metadata: Metadata = {title: 'Teach on yizelearn', description: 'Turn what you know into a short course and get paid in the currency you choose.'};
 
 const steps = [
   {n: '01', title: 'Plan your course', text: 'Pick one skill and one clear result. Break it into short lessons that each take a few minutes to finish.'},
@@ -21,7 +21,7 @@ const help = [
   {title: 'Support when you need it', text: 'Message us from the app or by email and we will get back to you.'},
 ];
 const topicCount = categories.reduce((n, c) => n + c.topics.length, 0);
-const stats = [[String(categories.length), 'categories to teach in'], [`${topicCount}+`, 'topics learners ask for'], ['2', 'apps: iPhone and Android'], ['₦', 'priced and paid in naira']];
+const stats = [[String(categories.length), 'categories to teach in'], [`${topicCount}+`, 'topics learners ask for'], ['2', 'apps: iPhone and Android'], ['Any', 'currency to pay and withdraw in']];
 
 export default function TeachPage() {
   return <div className={s.page}>

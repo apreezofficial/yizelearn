@@ -7,6 +7,7 @@ import {Hero} from '@/components/Hero';
 import {Faq} from '@/components/Faq';
 import {OfferBanner} from '@/components/OfferBanner';
 import {GoalCourses} from '@/components/Explore';
+import {Money} from '@/components/Money';
 import {Journey} from '@/components/Journey';
 import {SwitchCta} from '@/components/SwitchCta';
 import {Footer} from '@/components/Footer';
@@ -60,13 +61,13 @@ export default function Home() {
           <div className={s.composer}>Type a question<HugeiconsIcon icon={SentIcon} size={14} /></div>
         </div>
       </div>},
-      {kicker: 'Checkout', title: 'Pay once in naira', detail: 'Card or bank transfer. Keep access after you finish.', screen: <div className={s.appFrame}>
+      {kicker: 'Checkout', title: 'Pay once, in your currency', detail: 'Card or bank transfer, in any currency. Keep access after you finish.', screen: <div className={s.appFrame}>
         <div className={s.checkout}>
-          <div className={s.coRow}><span>SQL for beginners</span><b>₦15,000</b></div>
-          <div className={s.coRow}><span>Promo WELCOME10</span><b className={s.green}>−₦1,500</b></div>
-          <div className={`${s.coRow} ${s.coTotal}`}><span>Total</span><b>₦13,500</b></div>
+          <div className={s.coRow}><span>SQL for beginners</span><b><Money n={15000} /></b></div>
+          <div className={s.coRow}><span>Promo WELCOME10</span><b className={s.green}><Money n={1500} minus /></b></div>
+          <div className={`${s.coRow} ${s.coTotal}`}><span>Total</span><b><Money n={13500} /></b></div>
           <div className={s.coMethods}><span className={s.on}>Card</span><span>Bank transfer</span></div>
-          <div className={s.coPay}>Pay ₦13,500</div>
+          <div className={s.coPay}>Pay <Money n={13500} /></div>
         </div>
       </div>},
       {kicker: 'Progress', title: 'Keep going every day', detail: 'Progress bars and streaks that make finishing easy.', screen: <div className={s.appFrame}>

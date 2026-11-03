@@ -4,7 +4,8 @@ import Link from 'next/link';
 import {useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowLeft01Icon, ArrowRight01Icon, Clock01Icon, StarIcon} from '@hugeicons/core-free-icons';
-import {categoryNames, courses, naira, type Category, type Course} from '@/lib/courses';
+import {categoryNames, courses, type Category, type Course} from '@/lib/courses';
+import {useMoney} from '@/lib/prefs';
 import s from './Explore.module.css';
 
 /** Pick a goal, slide through matching courses. Arrows scroll the rail; on phones it's a swipeable row. */
@@ -29,6 +30,7 @@ export function GoalCourses() {
 }
 
 function CourseCard({course: c, index}: {course: Course; index: number}) {
+  const money = useMoney();
   return <Link href={`/courses/${c.id}`} className={s.card} style={{['--i' as string]: index + 1}}>
     <div className={s.thumb} data-tone={c.tone}>
       <span className={s.topic}>{c.topic}</span>
@@ -41,7 +43,7 @@ function CourseCard({course: c, index}: {course: Course; index: number}) {
         <span className={s.rating}><b>{c.rating.toFixed(1)}</b><HugeiconsIcon icon={StarIcon} size={13} /> ({c.reviews.toLocaleString()})</span>
         <span><HugeiconsIcon icon={Clock01Icon} size={13} />{c.hours}h · {c.level}</span>
       </div>
-      <div className={s.price}><b>{naira(c.price)}</b>{c.was && <s>{naira(c.was)}</s>}</div>
+      <div className={s.price}><b>{money(c.price)}</b>{c.was && <s>{money(c.was)}</s>}</div>
     </div>
   </Link>;
 }

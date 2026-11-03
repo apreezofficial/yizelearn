@@ -6,7 +6,8 @@ import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
-import {categories, courses, naira} from '@/lib/courses';
+import {categories, courses} from '@/lib/courses';
+import {useMoney} from '@/lib/prefs';
 import s from './Nav.module.css';
 
 const links = [{label: 'Courses', href: '/courses'}, {label: 'FAQ', href: '/faq'}, {label: 'Teach', href: '/teach'}, {label: 'About', href: '/about'}];
@@ -19,6 +20,7 @@ const topics = ['Python', 'React', 'SQL', 'AI agents', 'SEO', 'TikTok', 'Postgre
  */
 export function SiteNav() {
   const router = useRouter();
+  const money = useMoney();
   const [scrolled, setScrolled] = useState(false);
   const [explore, setExplore] = useState(false);
   const [query, setQuery] = useState('');
@@ -66,7 +68,7 @@ export function SiteNav() {
     {q ? (results.length ? results.map(c => <button key={c.id} role="option" aria-selected={false} onMouseDown={e => e.preventDefault()} onClick={() => go(`/courses/${c.id}`)}>
       <span className={s.sIcon}><HugeiconsIcon icon={Search01Icon} size={16} /></span>
       <span className={s.sText}><b>{c.title}</b><i>{c.topic} · {c.level} · {c.instructor}</i></span>
-      <em>{naira(c.price)}</em>
+      <em>{money(c.price)}</em>
     </button>) : <p className={s.none}>No courses match &ldquo;{query}&rdquo; yet. Try Python, SQL or SEO.</p>)
       : <div className={s.popular}><p>Popular right now</p><div>{topics.map(t => <button key={t} onMouseDown={e => e.preventDefault()} onClick={() => { setQuery(t); (phoneSearch ? phoneInput : input).current?.focus(); }}>{t}</button>)}</div></div>}
   </div>;

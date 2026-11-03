@@ -1,5 +1,6 @@
 import type {Metadata, Viewport} from 'next';
 import {Fredoka, Inter} from 'next/font/google';
+import {CookieConsent} from '@/components/CookieConsent';
 import {Help} from '@/components/Help';
 import './globals.css';
 
@@ -17,5 +18,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
-  return <html lang="en" className={`${sans.variable} ${logo.variable}`}><body>{children}<Help /></body></html>;
+  return <html lang="en" className={`${sans.variable} ${logo.variable}`}><body>{children}<Help /><CookieConsent /></body></html>;
 }

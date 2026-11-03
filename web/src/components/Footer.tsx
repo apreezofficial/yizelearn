@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import {SUPPORT_EMAIL} from '@/lib/faq';
+import {FooterPrefs} from './FooterPrefs';
 import s from './Footer.module.css';
 
 const columns: {title: string; links: {label: string; href: string}[]}[] = [
@@ -19,6 +20,7 @@ export function Footer() {
           <ul>{c.links.map(l => <li key={l.label}><Link href={l.href}>{l.label}</Link></li>)}</ul>
         </div>)}
       </div>
+      <div className={s.prefs}><FooterPrefs /></div>
       <div className={s.legal}><span>© 2026 yizelearn</span><span><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></span></div>
     </div>
     {/* The logo's wordmark, huge and cut off by the page edge like pxxl's: "Yize" in sky, "learn" in yellow,

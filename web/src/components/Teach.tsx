@@ -5,6 +5,7 @@ import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowRight01Icon, Cancel01Icon, CheckmarkCircle02Icon} from '@hugeicons/core-free-icons';
 import {categories} from '@/lib/courses';
+import {useMoney} from '@/lib/prefs';
 import s from './Teach.module.css';
 
 /** Plays a muted background video only while it is on screen, and not at all with reduced motion. */
@@ -74,7 +75,7 @@ export function TeachBand() {
 const ways = [
   {tab: 'Teach short courses', title: 'Teach short courses', video: '/video/teach.mp4', text: 'Break what you know into short lessons. Record on your phone, add a quiz after each lesson and publish when you are ready.', cta: 'Start a course', note: ['Short lessons', 'Learners can finish one in a few minutes.']},
   {tab: 'Reach learners', title: 'Reach learners', video: '/video/learn.mp4', text: 'Learners take your course in the yizelearn app on iPhone and Android, follow their progress and earn a certificate when they finish.', cta: 'Become an instructor', note: ['iPhone and Android', 'Learners follow your course in the app.']},
-  {tab: 'Get paid in naira', title: 'Get paid in naira', video: '', text: 'Learners pay once in naira, by card or bank transfer. You choose the price of your course.', cta: 'Set up your account', note: ['Priced in naira', 'Card or bank transfer at checkout.']},
+  {tab: 'Get paid your way', title: 'Get paid your way', video: '', text: 'Learners pay once, by card or bank transfer, in the currency they choose. You withdraw in the currency you choose. You set the price of your course.', cta: 'Set up your account', note: ['Any currency', 'Pay and withdraw in the one you pick.']},
 ];
 
 /**
@@ -82,6 +83,7 @@ const ways = [
  * the panel in view (like Lifted's "One supplier, every model"); clicking an option scrolls to its panel.
  */
 export function TeachWays() {
+  const money = useMoney();
   const [on, setOn] = useState(0);
   const stages = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -112,7 +114,7 @@ export function TeachWays() {
           {i === 0 && <div className={`${s.card} ${s.mA}`} aria-hidden><b>Lesson 3 · First project</b><div className={s.cRow}><span>Quiz added</span><em>5 questions</em></div></div>}
           {i === 1 && <><div className={`${s.card} ${s.mA}`} aria-hidden><b>Progress</b><div className={s.bar}><i /></div><div className={s.cRow}><span>Intro to databases</span><em>72%</em></div></div>
             <div className={`${s.card} ${s.mB}`} aria-hidden><div className={s.cert}><HugeiconsIcon icon={CheckmarkCircle02Icon} size={18} />Certificate earned</div></div></>}
-          {i === 2 && <div className={`${s.card} ${s.mC}`} aria-hidden><b>Checkout</b><div className={s.kv}><span>Course</span><b>₦15,000</b></div><div className={s.kv}><span>Pay with</span><b>Card or transfer</b></div><div className={s.payBtn}>Pay ₦15,000</div></div>}
+          {i === 2 && <div className={`${s.card} ${s.mC}`} aria-hidden><b>Checkout</b><div className={s.kv}><span>Course</span><b>{money(15000)}</b></div><div className={s.kv}><span>Pay with</span><b>Card or transfer</b></div><div className={s.payBtn}>Pay {money(15000)}</div></div>}
         </div>
         <div className={s.under}>
           <div><p>{w.text}</p><Link href="/signup?as=teach" className={s.black}>{w.cta} {arrow}</Link></div>

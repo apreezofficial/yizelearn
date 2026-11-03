@@ -5,12 +5,13 @@ import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowLeft01Icon, ArrowRight01Icon, GridViewIcon, Search01Icon} from '@hugeicons/core-free-icons';
 import {categories, courses, type Category, type Course} from '@/lib/courses';
+import {useMoney} from '@/lib/prefs';
 import {CardSkeleton, CourseCard, categoryIcon} from './CourseCard';
 import s from './Catalog.module.css';
 
 type Tab = 'All' | Category;
 const levels = ['Any level', 'Beginner', 'Intermediate', 'Advanced'];
-const prices = [['Any price', 0], ['Up to ₦10,000', 10000], ['Up to ₦15,000', 15000], ['Up to ₦20,000', 20000]] as const;
+const prices = [0, 10000, 15000, 20000] as const;
 
 function Row({title, sub, items, onMore}: {title: string; sub?: string; items: Course[]; onMore?: () => void}) {
   const rail = useRef<HTMLDivElement>(null);
@@ -41,6 +42,7 @@ export function Catalog() {
 }
 
 function CatalogView() {
+  const money = useMoney();
   const params = useSearchParams();
   const cat = params.get('category');
   const [tab, setTabRaw] = useState<Tab>(categories.some(c => c.name === cat) ? (cat as Category) : 'All');
@@ -77,7 +79,7 @@ function CatalogView() {
     <form className={s.pill} role="search" onSubmit={e => e.preventDefault()}>
       <label className={s.seg}><span>What</span><input value={q} onChange={e => setQ(e.target.value)} placeholder="Search skills or topics" aria-label="Search courses" /></label>
       <label className={s.seg}><span>Level</span><select value={level} onChange={e => setLevel(e.target.value)}>{levels.map(l => <option key={l}>{l}</option>)}</select></label>
-      <label className={s.seg}><span>Price</span><select value={price} onChange={e => setPrice(Number(e.target.value))}>{prices.map(([l, v]) => <option key={l} value={v}>{l}</option>)}</select></label>
+      <label className={s.seg}><span>Price</span><select value={price} onChange={e => setPrice(Number(e.target.value))}>{prices.map(v => <option key={v} value={v}>{v ? `Up to ${money(v)}` : 'Any price'}</option>)}</select></label>
       <button className={s.searchBtn} aria-label="Search"><HugeiconsIcon icon={Search01Icon} size={20} strokeWidth={2.4} /></button>
     </form>
 
