@@ -1,5 +1,5 @@
 /* Stripe-style landing in yizelearn colours: a silky diagonal ribbon hero, clean sans type, product bento, a dark stats band. */
-.page { --wrap: 1160px; --ink2: #0B1A2E; --coral: #F08A6B; --violet: #6E7FE0; --primary: #2F6DB5; font-family: var(--font-sans), system-ui, sans-serif; overflow-x: clip; background: var(--surface); }
+.page { --wrap: 1160px; --ink2: #0B1A2E; --primary: #2F6DB5; font-family: var(--font-sans), system-ui, sans-serif; overflow-x: clip; background: var(--surface); }
 .section { max-width: var(--wrap); margin: 0 auto; padding: 96px 24px 0; }
 .arrow { transition: transform 0.2s; }
 a:hover .arrow { transform: translateX(3px); }
@@ -17,7 +17,7 @@ a:hover .arrow { transform: translateX(3px); }
 .reveal[data-shown='true'] { opacity: 1; transform: none; }
 
 /* Section intro */
-.kicker { margin: 0 0 12px; font-weight: 700; font-size: 15px; background: linear-gradient(90deg, #2F6DB5, #6E7FE0, #E86A4A); -webkit-background-clip: text; background-clip: text; color: transparent; width: fit-content; }
+.kicker { margin: 0 0 12px; font-weight: 700; font-size: 15px; background: linear-gradient(90deg, #2F6DB5, #74A7E3); -webkit-background-clip: text; background-clip: text; color: transparent; width: fit-content; }
 .sub { font-size: 18px; line-height: 1.6; color: #42506A; max-width: 620px; margin: 18px 0 0; }
 
 /* Paths */
@@ -31,17 +31,19 @@ a:hover .arrow { transform: translateX(3px); }
 .path p { position: relative; margin: 0; opacity: 0.9; font-size: 15px; }
 .path ul { position: relative; list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .path li { font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 999px; background: rgba(255,255,255,0.22); backdrop-filter: blur(4px); }
+.pathLight { color: #17335A; }
+.pathLight li { background: rgba(23, 51, 90, 0.1); }
 .pathFoot { position: relative; margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; }
 
 /* Stories */
 .stories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
 .story { position: relative; display: flex; flex-direction: column; gap: 18px; padding: 26px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
-.quoteMark { font-size: 64px; line-height: 0.6; font-weight: 800; background: linear-gradient(135deg, #2F6DB5, #E86A4A); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.quoteMark { font-size: 64px; line-height: 0.6; font-weight: 800; background: linear-gradient(135deg, #2F6DB5, #F0B74A); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .story blockquote { margin: 0; font-size: 17px; line-height: 1.55; color: var(--ink2); }
 .who { display: flex; align-items: center; gap: 12px; margin-top: auto; }
 .who b { display: block; color: var(--ink2); }
 .who span:not(.avatar) { font-size: 13px; color: var(--muted); }
-.avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; color: #fff; font-weight: 800; background: linear-gradient(135deg, #2F6DB5, #6E7FE0); }
+.avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; color: #fff; font-weight: 800; background: linear-gradient(135deg, #17335A, #2F6DB5); }
 .story small { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
 
 /* Teach / teams */
@@ -163,7 +165,7 @@ a:hover .arrow { transform: translateX(3px); }
 .closing p { font-size: 18px; color: #42506A; margin: 16px 0 0; max-width: 480px; }
 .closingRibbon { position: absolute; inset: -60% -20% -60% 55%; transform: skewY(-12deg); }
 .closingRibbon span { position: absolute; inset: 0; clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%); }
-.closingRibbon span:first-child { background: linear-gradient(100deg, #2F6DB5 0%, #74A7E3 18%, #6E7FE0 34%, #C886E0 48%, #F08A6B 64%, #F0B74A 80%, #E86A4A 100%); background-size: 130% 100%; animation: flow 12s ease-in-out infinite alternate; }
+.closingRibbon span:first-child { background: linear-gradient(100deg, #17335A 0%, #2F6DB5 22%, #74A7E3 44%, #9CC6E0 60%, #F5EFA8 80%, #F0B74A 100%); background-size: 130% 100%; animation: flow 12s ease-in-out infinite alternate; }
 .closingRibbon span:last-child { background: repeating-linear-gradient(105deg, transparent 0 6px, rgba(255,255,255,0.28) 7px, transparent 9px 14px); mix-blend-mode: overlay; animation: drift 9s linear infinite; }
 
 /* Footer */

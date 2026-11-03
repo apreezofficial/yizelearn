@@ -30,7 +30,7 @@ export function GoalCourses() {
 
 function CourseCard({course: c, index}: {course: Course; index: number}) {
   return <Link href="#" className={s.card} style={{animationDelay: `${index * 70}ms`}}>
-    <div className={s.thumb} style={{['--h' as string]: c.hue}}>
+    <div className={s.thumb} data-tone={c.tone}>
       <span className={s.topic}>{c.topic}</span>
       {c.tag && <span className={c.tag === 'New' ? s.tagNew : s.tag}>{c.tag}</span>}
     </div>

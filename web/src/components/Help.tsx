@@ -25,7 +25,7 @@ function answer(text: string) {
   return hit?.a ?? `I don't have an answer for that yet. Email ${SUPPORT_EMAIL} and a person from our team will reply within a day.`;
 }
 
-/** "Need help?" pill fixed to the bottom-left, opening a chat-style panel with suggested questions. */
+/** "Need help?" pill fixed to the bottom-right, opening a chat-style panel with suggested questions. */
 export function Help() {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);

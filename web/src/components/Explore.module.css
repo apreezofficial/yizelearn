@@ -11,8 +11,16 @@
 .card { scroll-snap-align: start; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); overflow: hidden; animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s; }
 .card:hover { transform: translateY(-4px); box-shadow: 0 24px 40px -24px rgba(11, 26, 46, 0.35); }
 
-/* Thumbnail: a striped gradient in the course's own hue, echoing the hero ribbon */
-.thumb { position: relative; aspect-ratio: 16 / 9; background: linear-gradient(120deg, hsl(var(--h) 60% 42%), hsl(calc(var(--h) + 40) 70% 62%) 60%, hsl(calc(var(--h) + 80) 80% 72%)); overflow: hidden; }
+/* Thumbnail: a striped brand gradient */
+.thumb { position: relative; aspect-ratio: 16 / 9; background: linear-gradient(120deg, #17335A, #2F6DB5); overflow: hidden; }
+/* Covers in brand gradients only: app blues, the logo's sky and yellow, and marigold */
+.thumb[data-tone='1'] { background: linear-gradient(120deg, #2F6DB5, #74A7E3); }
+.thumb[data-tone='2'] { background: linear-gradient(120deg, #24508F, #9CC6E0); }
+.thumb[data-tone='3'] { background: linear-gradient(120deg, #1C1F33, #24508F); }
+.thumb[data-tone='4'] { background: linear-gradient(120deg, #F0B74A, #F5EFA8); }
+.thumb[data-tone='4'] .topic { color: #17335A; text-shadow: none; }
+.thumb[data-tone='3'] .topic { color: #F5EFA8; }
+.thumb[data-tone='4'] .tag { background: #17335A; color: #F5EFA8; }
 .thumb::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(105deg, transparent 0 6px, rgba(255,255,255,0.22) 7px, transparent 9px 14px); mix-blend-mode: overlay; transition: transform 0.6s; }
 .card:hover .thumb::after { transform: translateX(14px); }
 .topic { position: absolute; left: 14px; bottom: 10px; z-index: 1; color: #fff; font-size: 26px; font-weight: 800; letter-spacing: -0.03em; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.18); }

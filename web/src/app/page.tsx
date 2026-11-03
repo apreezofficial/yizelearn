@@ -114,7 +114,7 @@ export default function Home() {
       </Reveal>
       <div className={s.paths}>
         {paths.map((p, i) => <Reveal key={p.title} delay={i * 80} className={s.reveal}>
-          <Link href="#" className={s.path} style={{['--from' as string]: p.from, ['--to' as string]: p.to}}>
+          <Link href="#" className={`${s.path} ${p.light ? s.pathLight : ''}`} style={{['--from' as string]: p.from, ['--to' as string]: p.to}}>
             <span className={s.pathGlow} aria-hidden />
             <h3>{p.title}</h3>
             <p>{p.outcome}</p>

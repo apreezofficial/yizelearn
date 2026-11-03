@@ -1,5 +1,9 @@
 /* Same palette as the mobile apps (src/theme/tokens.ts), with the dark values under prefers-color-scheme. */
 :root {
+  /* yizelearn logo: navy plate, sky blue "Yize" and swoosh, soft yellow "learn" */
+  --logo-navy: #1C1F33;
+  --logo-sky: #9CC6E0;
+  --logo-yellow: #F5EFA8;
   --cream: #FDF8F1;
   --sand: #F4EFE7;
   --sand-line: #DCD5CA;
@@ -30,6 +34,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+  /* yizelearn logo: navy plate, sky blue "Yize" and swoosh, soft yellow "learn" */
+  --logo-navy: #1C1F33;
+  --logo-sky: #9CC6E0;
+  --logo-yellow: #F5EFA8;
     --cream: #15171B;
     --sand: #1E2127;
     --sand-line: #353A43;
