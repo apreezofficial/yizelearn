@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {Add01Icon, ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, FireIcon, PlayIcon, UserAdd01Icon, Video01Icon} from '@hugeicons/core-free-icons';
+import {ArrowRight01Icon} from '@hugeicons/core-free-icons';
 import s from './SwitchCta.module.css';
 
 type Side = 'learn' | 'teach';
@@ -13,28 +13,40 @@ const sides: Record<Side, {tab: string; title: string; text: string; cta: string
 };
 
 /**
- * Closing call to action after Upwork's hero: a dark rounded card with a full-bleed looping video and a
- * Learn / Teach switch that swaps the copy, button and video. If a video file is missing, the brand
- * gradient behind it shows instead. Reduced motion: videos stay paused on their first frame.
+ * Closing call to action after Upwork's hero: a rounded card whose background is a looping video,
+ * with a Learn / Teach switch that swaps the copy, button and video (cross-faded). The brand gradient
+ * shows while a video loads. Reduced motion: videos stay paused on their first frame.
+ * Clips: Pexels (free to use), see public/video/CREDITS.md.
  */
 export function SwitchCta() {
   const [side, setSide] = useState<Side>('learn');
+  const [onScreen, setOnScreen] = useState(false);
+  const card = useRef<HTMLElement>(null);
   const vids = useRef<Partial<Record<Side, HTMLVideoElement | null>>>({});
+
+  // Only play while the card is on screen: saves battery and mobile data.
+  useEffect(() => {
+    const el = card.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting), {threshold: 0.2});
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     (Object.keys(sides) as Side[]).forEach(k => {
       const v = vids.current[k];
       if (!v) return;
-      if (k === side && !still) v.play().catch(() => undefined); else v.pause();
+      if (k === side && onScreen && !still) v.play().catch(() => undefined); else v.pause();
     });
-  }, [side]);
+  }, [side, onScreen]);
 
   const c = sides[side];
-  return <section className={s.card} aria-label="Get started">
+  return <section ref={card} className={s.card} aria-label="Get started">
     <div className={s.media} aria-hidden>
       {(Object.keys(sides) as Side[]).map(k => <video key={k} ref={el => { vids.current[k] = el; }} className={k === side ? s.videoOn : s.video}
-        src={sides[k].video} muted loop playsInline preload={k === 'learn' ? 'auto' : 'metadata'} />)}
+        src={sides[k].video} muted loop playsInline preload="auto" />)}
     </div>
     <div className={s.shade} aria-hidden />
     <div className={s.content}>
@@ -47,30 +59,6 @@ export function SwitchCta() {
         <p>{c.text}</p>
         <Link href={c.href} className={s.cta}>{c.cta} <HugeiconsIcon icon={ArrowRight01Icon} size={18} strokeWidth={2.2} /></Link>
       </div>
-    </div>
-    {/* Floating product moments on the right; they swap with the switch and sit over the video when there is one */}
-    <div key={`art-${side}`} className={s.stage} aria-hidden>
-      {side === 'learn' ? <>
-        <div className={`${s.float} ${s.main}`}>
-          <div className={s.cover}><span className={s.play}><HugeiconsIcon icon={PlayIcon} size={18} /></span><b>Excel</b></div>
-          <div className={s.mainBody}>
-            <strong>Data analysis in Excel</strong>
-            <span>Module 2 · Lookup functions</span>
-            <div className={s.track}><i style={{width: '68%'}} /></div>
-            <small>68% complete · 12 min left today</small>
-          </div>
-        </div>
-        <div className={`${s.float} ${s.chip} ${s.chipTop}`}><span className={s.chipIcon} data-tone="gold"><HugeiconsIcon icon={FireIcon} size={16} /></span><div><b>5-day streak</b><span>Keep it going</span></div></div>
-        <div className={`${s.float} ${s.chip} ${s.chipBottom}`}><span className={s.chipIcon} data-tone="green"><HugeiconsIcon icon={Award01Icon} size={16} /></span><div><b>Certificate earned</b><span>Business writing</span></div></div>
-      </> : <>
-        <div className={`${s.float} ${s.main}`}>
-          <div className={s.builderHead}><strong>Your course</strong><span>Draft</span></div>
-          {['Welcome and setup', 'Formulas that matter', 'Lookups in practice'].map((t, i) => <div key={t} className={s.lesson}><HugeiconsIcon icon={CheckmarkCircle02Icon} size={16} /><span>{t}</span><em>{6 + i * 2} min</em></div>)}
-          <div className={s.addLesson}><HugeiconsIcon icon={Add01Icon} size={16} />Add a lesson</div>
-        </div>
-        <div className={`${s.float} ${s.chip} ${s.chipTop}`}><span className={s.chipIcon} data-tone="sky"><HugeiconsIcon icon={UserAdd01Icon} size={16} /></span><div><b>New learner enrolled</b><span>Just now</span></div></div>
-        <div className={`${s.float} ${s.chip} ${s.chipBottom}`}><span className={s.chipIcon} data-tone="red"><HugeiconsIcon icon={Video01Icon} size={16} /></span><div><b>Your live class</b><span>Thursday, 6:00 PM</span></div></div>
-      </>}
     </div>
   </section>;
 }

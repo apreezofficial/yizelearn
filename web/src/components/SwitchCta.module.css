@@ -1,80 +1,40 @@
-/* Dark rounded card with a full-bleed video, after Upwork's hero. Brand gradient underneath as the fallback. */
-.card { position: relative; isolation: isolate; overflow: hidden; max-width: 1160px; min-height: 560px; margin: 120px auto 0; border-radius: 28px; color: #fff; display: flex; align-items: flex-end;
-  background: radial-gradient(60% 80% at 85% 20%, rgba(156, 198, 224, 0.45), transparent 60%), radial-gradient(50% 60% at 20% 90%, rgba(240, 183, 74, 0.3), transparent 60%), linear-gradient(135deg, #17335A, #0B1A2E); }
+/* Full-bleed video card, after Upwork's hero. The brand gradient is the fallback while a video loads. */
+.card { position: relative; isolation: isolate; overflow: hidden; max-width: 1160px; min-height: min(640px, 82vh); margin: 120px auto 0; border-radius: 28px; color: #fff; display: flex; align-items: flex-end;
+  background: radial-gradient(60% 80% at 85% 20%, rgba(156, 198, 224, 0.45), transparent 60%), linear-gradient(135deg, #17335A, #0B1A2E); }
 .media { position: absolute; inset: 0; z-index: -2; }
-.video, .videoOn { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.9s ease, transform 6s ease; }
-.video { opacity: 0; transform: scale(1.06); }
+.video, .videoOn { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.9s ease, transform 8s ease-out; }
+.video { opacity: 0; transform: scale(1.05); }
 .videoOn { opacity: 1; transform: scale(1); }
-/* Darken the left and bottom so the copy always reads over any frame */
-.shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(11, 26, 46, 0.88) 0%, rgba(11, 26, 46, 0.55) 45%, rgba(11, 26, 46, 0.1) 75%), linear-gradient(0deg, rgba(11, 26, 46, 0.6), transparent 50%); }
-.content { padding: 56px; max-width: 640px; }
+/* Darker on the left where the copy sits, easing off to the right so the video shows, as on Upwork */
+.shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(8, 20, 36, 0.86) 0%, rgba(8, 20, 36, 0.62) 38%, rgba(8, 20, 36, 0.12) 72%, rgba(8, 20, 36, 0) 100%), linear-gradient(0deg, rgba(8, 20, 36, 0.5), transparent 45%); }
+.content { padding: 56px; max-width: 700px; }
 
-/* Glassy two-option switch with a sliding white thumb */
-.toggle { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-.thumb { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: #fff; box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.5); transition: transform 0.45s cubic-bezier(0.34, 1.3, 0.64, 1); }
+/* Glassy two-option switch with a sliding thumb */
+.toggle { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.24); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.thumb { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: #0B1A2E; box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.6); transition: transform 0.45s cubic-bezier(0.34, 1.3, 0.64, 1); }
 .thumb[data-side='teach'] { transform: translateX(100%); }
-.tab, .tabOn { position: relative; z-index: 1; min-width: 96px; height: 38px; padding: 0 22px; border: 0; border-radius: 999px; background: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: color 0.3s; }
-.tab { color: rgba(255, 255, 255, 0.85); }
-.tab:hover { color: #fff; }
-.tabOn { color: #17335A; }
+.tab, .tabOn { position: relative; z-index: 1; min-width: 96px; height: 40px; padding: 0 24px; border: 0; border-radius: 999px; background: none; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.3s; }
+.tab { opacity: 0.85; }
+.tab:hover { opacity: 1; }
 
-.copy { margin-top: 26px; }
+.copy { margin-top: 28px; }
 .copy > * { animation: swap 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .copy p { animation-delay: 60ms; }
 .copy a { animation-delay: 120ms; }
 @keyframes swap { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
-.copy h2 { margin: 0; font-size: clamp(34px, 4.6vw, 60px); line-height: 1.04; letter-spacing: -0.035em; font-weight: 600; }
-.copy p { margin: 18px 0 0; max-width: 520px; font-size: 18px; line-height: 1.55; color: rgba(255, 255, 255, 0.86); }
-.cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 28px; height: 52px; padding: 0 24px; border-radius: 999px; background: #F0B74A; color: #17335A; font-weight: 700; font-size: 16px;
-  box-shadow: 0 0 0 0 rgba(240, 183, 74, 0.5), 0 14px 30px -14px rgba(240, 183, 74, 0.9); transition: transform 0.15s, box-shadow 0.3s, background 0.2s; }
-.cta:hover { transform: translateY(-2px); background: #F5C76A; box-shadow: 0 0 0 6px rgba(240, 183, 74, 0.18), 0 18px 34px -14px rgba(240, 183, 74, 1); }
+.copy h2 { margin: 0; font-size: clamp(36px, 5vw, 68px); line-height: 1.04; letter-spacing: -0.038em; font-weight: 600; text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35); }
+.copy p { margin: 20px 0 0; max-width: 540px; font-size: 19px; line-height: 1.5; color: rgba(255, 255, 255, 0.92); text-shadow: 0 1px 14px rgba(0, 0, 0, 0.4); }
+/* Glowing brand button, like Upwork's green one in our marigold */
+.cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 30px; height: 54px; padding: 0 26px; border-radius: 999px; background: #F0B74A; color: #17335A; font-weight: 700; font-size: 16px;
+  box-shadow: 0 0 0 3px rgba(240, 183, 74, 0.28), 0 0 28px rgba(240, 183, 74, 0.55); transition: transform 0.15s, box-shadow 0.3s, background 0.2s; }
+.cta:hover { transform: translateY(-2px); background: #F5C76A; box-shadow: 0 0 0 5px rgba(240, 183, 74, 0.3), 0 0 38px rgba(240, 183, 74, 0.75); }
 .cta svg { transition: transform 0.2s; }
 .cta:hover svg { transform: translateX(3px); }
 
-/* Right-hand stage: a main product card with two chips around it, gently floating */
-.stage { position: absolute; right: 56px; top: 50%; width: min(420px, 38%); height: 380px; transform: translateY(-50%); }
-.float { position: absolute; animation: pop 0.7s cubic-bezier(0.16, 1, 0.3, 1) both, bob 6s ease-in-out 0.7s infinite; }
-@keyframes bob { 50% { translate: 0 -8px; } }
-.main { left: 0; right: 0; top: 50px; border-radius: 20px; background: rgba(255, 255, 255, 0.96); color: #0B1A2E; box-shadow: 0 40px 70px -30px rgba(0, 0, 0, 0.7); overflow: hidden; animation-delay: 0.05s, 0.7s; }
-.cover { position: relative; height: 130px; display: flex; align-items: flex-end; padding: 14px 16px; background: repeating-linear-gradient(105deg, transparent 0 7px, rgba(255,255,255,0.14) 8px, transparent 10px 15px), linear-gradient(120deg, #17335A, #2F6DB5 60%, #74A7E3); color: #fff; }
-.cover b { font-size: 28px; letter-spacing: -0.03em; }
-.play { position: absolute; right: 16px; top: 16px; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #2F6DB5; box-shadow: 0 0 0 0 rgba(255,255,255,0.6); animation: ring 2.2s ease-out infinite; }
-@keyframes ring { 70% { box-shadow: 0 0 0 14px rgba(255,255,255,0); } 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); } }
-.mainBody { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 4px; }
-.mainBody strong { font-size: 17px; }
-.mainBody span { font-size: 13px; color: #6A7487; }
-.track { height: 8px; margin-top: 10px; border-radius: 4px; background: #E6E9EE; overflow: hidden; }
-.track i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #2F6DB5, #9CC6E0); transform-origin: left; animation: fillIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
-@keyframes fillIn { from { transform: scaleX(0); } }
-.mainBody small { margin-top: 6px; font-size: 12px; color: #6A7487; }
-.builderHead { display: flex; justify-content: space-between; align-items: center; padding: 18px 18px 10px; }
-.builderHead strong { font-size: 17px; }
-.builderHead span { font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #FBF0DA; color: #9A6A12; }
-.lesson { display: flex; align-items: center; gap: 10px; margin: 0 14px 8px; padding: 11px 12px; border-radius: 12px; background: #F4F6F9; font-size: 14px; animation: pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.lesson:nth-child(2) { animation-delay: 0.25s; } .lesson:nth-child(3) { animation-delay: 0.4s; } .lesson:nth-child(4) { animation-delay: 0.55s; }
-.lesson svg { color: #2E8B67; flex: none; }
-.lesson em { margin-left: auto; font-style: normal; font-size: 12px; color: #6A7487; }
-.addLesson { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 14px 16px; padding: 11px; border-radius: 12px; border: 1.5px dashed #C9D3E2; color: #2F6DB5; font-size: 14px; font-weight: 600; }
-.chip { z-index: 2; display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 10px; border-radius: 16px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.24); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6); }
-.chip b { display: block; font-size: 14px; }
-.chip div span { font-size: 12px; color: rgba(255, 255, 255, 0.75); }
-.chipTop { top: 0; right: -24px; animation-delay: 0.25s, 1s; animation-duration: 0.7s, 7s; }
-.chipBottom { bottom: -10px; left: -40px; animation-delay: 0.4s, 1.3s; animation-duration: 0.7s, 5.5s; }
-.chipIcon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; }
-.chipIcon[data-tone='gold'] { background: #F0B74A; color: #17335A; }
-.chipIcon[data-tone='green'] { background: #2E8B67; color: #fff; }
-.chipIcon[data-tone='sky'] { background: #9CC6E0; color: #17335A; }
-.chipIcon[data-tone='red'] { background: #B53A3A; color: #fff; }
-
-@media (prefers-reduced-motion: reduce) { .copy > * { animation: none; } .float, .lesson, .track i, .play { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .copy > * { animation: none; } .video, .videoOn { transition: opacity 0.3s; } }
 @media (max-width: 900px) {
-  .card { margin: 72px 12px 0; min-height: 520px; border-radius: 22px; }
+  .card { margin: 72px 12px 0; min-height: 600px; border-radius: 22px; }
   .content { padding: 28px 22px; }
   .copy p { font-size: 16px; }
-  .shade { background: linear-gradient(0deg, rgba(11, 26, 46, 0.92) 10%, rgba(11, 26, 46, 0.5) 60%, rgba(11, 26, 46, 0.2)); }
-  /* Phones: the product moments sit above the copy */
-  .card { flex-direction: column-reverse; align-items: stretch; }
-  .stage { position: relative; right: auto; top: auto; transform: none; width: auto; height: 372px; margin: 24px 34px 8px 22px; }
-  .chipTop { right: -18px; }
-  .chipBottom { left: -10px; bottom: 0; }
+  .shade { background: linear-gradient(0deg, rgba(8, 20, 36, 0.92) 8%, rgba(8, 20, 36, 0.6) 55%, rgba(8, 20, 36, 0.15)); }
 }
