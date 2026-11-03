@@ -9,7 +9,7 @@ import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Menu01Icon, Search01Ico
 import {categories, courses, naira} from '@/lib/courses';
 import s from './Nav.module.css';
 
-const links = [{label: 'Courses', href: '/#courses'}, {label: 'FAQ', href: '/#faq'}, {label: 'Teach', href: '/signup?as=teach'}, {label: 'About', href: '/about'}];
+const links = [{label: 'Courses', href: '/#courses'}, {label: 'FAQ', href: '/#faq'}, {label: 'Teach', href: '/teach'}, {label: 'About', href: '/about'}];
 const topics = ['Python', 'React', 'SQL', 'AI agents', 'SEO', 'TikTok', 'PostgreSQL', 'Computer technician'];
 
 /**
