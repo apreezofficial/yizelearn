@@ -1,0 +1,4 @@
+.logo { display: inline-block; line-height: 0; }
+.logo img { height: auto; }
+.logo .dark { display: none; }
+@media (prefers-color-scheme: dark) { .logo .light { display: none; } .logo .dark { display: inline-block; } }

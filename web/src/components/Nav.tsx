@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import {Logo} from './Logo';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
@@ -80,7 +80,7 @@ export function SiteNav() {
 
   return <header ref={bar} className={`${s.bar} ${scrolled ? s.scrolled : ''} ${drawer ? s.barOpen : ''}`}>
     <div className={s.inner}>
-      <Link href="/" className={s.brand}><Image src="/logo.png" alt="yizelearn home" width={104} height={40} priority /></Link>
+      <Link href="/" className={s.brand}><Logo alt="yizelearn home" width={104} height={40} priority /></Link>
 
       <button className={`${s.exploreBtn} ${explore ? s.exploreOn : ''}`} aria-expanded={explore} aria-haspopup="true" onClick={() => { setExplore(v => !v); setFocus(false); }}>
         Explore <HugeiconsIcon icon={ArrowDown01Icon} size={16} strokeWidth={2.2} className={s.caret} />
@@ -121,7 +121,7 @@ export function SiteNav() {
     {drawer && <div className={s.drawerWrap} role="dialog" aria-modal aria-label="Menu">
       <button className={s.scrim} aria-label="Close menu" onClick={() => setDrawer(false)} />
       <div className={s.drawer}>
-        <div className={s.drawerHead}><Image src="/logo.png" alt="yizelearn" width={96} height={37} /><button className={s.iconBtn} aria-label="Close menu" onClick={() => setDrawer(false)}><HugeiconsIcon icon={Cancel01Icon} size={22} strokeWidth={2} /></button></div>
+        <div className={s.drawerHead}><Logo alt="yizelearn" width={96} height={37} /><button className={s.iconBtn} aria-label="Close menu" onClick={() => setDrawer(false)}><HugeiconsIcon icon={Cancel01Icon} size={22} strokeWidth={2} /></button></div>
         <nav aria-label="Menu">
           {links.map(l => <Link key={l.label} href={l.href} onClick={() => setDrawer(false)}>{l.label}<HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>)}
         </nav>

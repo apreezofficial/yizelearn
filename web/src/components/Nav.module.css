@@ -3,8 +3,7 @@
 .barOpen { z-index: 90; }
 .scrolled { box-shadow: 0 10px 30px -22px rgba(11, 26, 46, 0.45); }
 .inner { display: flex; align-items: center; gap: 14px; max-width: 1280px; height: 72px; margin: 0 auto; padding: 0 24px; }
-.brand { flex: none; display: block; margin-right: 6px; }
-.brand img { display: block; height: auto; }
+.brand { flex: none; display: block; margin-right: 6px; line-height: 0; }
 
 .exploreBtn { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 40px; padding: 0 12px; border: 0; border-radius: 10px; background: none; color: var(--ink); font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.15s, color 0.15s; }
 .exploreBtn:hover, .exploreOn { background: var(--grey); color: var(--blue700); }

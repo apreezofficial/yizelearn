@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import {Logo} from './Logo';
 import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
 import {useEffect, useRef, useState} from 'react';
@@ -70,7 +70,7 @@ export function Auth({mode, teach}: {mode: 'login' | 'signup'; teach?: boolean})
   return <main className={s.page}>
     <Link href="/" className={s.back} aria-label="Back to home"><HugeiconsIcon icon={ArrowLeft01Icon} size={20} strokeWidth={2} /></Link>
     <div className={s.card} key={step}>
-      <Link href="/" className={s.logo}><Image src="/logo.png" alt="yizelearn" width={132} height={41} priority /></Link>
+      <Link href="/" className={s.logo}><Logo alt="yizelearn" width={132} height={41} priority /></Link>
 
       {step === 'form' && <form onSubmit={send} noValidate>
         <h1>{signup ? (teach ? 'Create your instructor account' : 'Create your account') : 'Welcome back'}</h1>
