@@ -8,7 +8,7 @@
 
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 20px 32px; flex-wrap: wrap; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line); }
 .left { display: flex; align-items: center; gap: 16px; font-size: 13.5px; color: var(--muted); }
-.right { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.right { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-right: 168px; } /* room for the Need help button, which sits at the bottom right of every page */
 .social { display: flex; align-items: center; gap: 18px; margin: 0; padding: 0 22px 0 0; list-style: none; border-right: 1px solid var(--line); }
 .social a { display: grid; place-items: center; color: var(--ink); transition: color 0.15s, transform 0.15s; }
 .social a:hover { color: var(--blue700); transform: translateY(-1px); }
@@ -18,4 +18,5 @@
   .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
   .bar { margin-top: 36px; flex-direction: column; align-items: flex-start; }
   .social { padding-right: 0; border-right: 0; }
+  .right { margin-right: 0; }
 }
