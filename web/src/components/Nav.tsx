@@ -6,17 +6,11 @@ import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
-import {courses, naira} from '@/lib/courses';
+import {categories, courses, naira} from '@/lib/courses';
 import s from './Nav.module.css';
 
-const goals = [
-  {title: 'Get a better job', detail: 'Excel, finance, writing and speaking'},
-  {title: 'Work faster', detail: 'Python, macros and spreadsheets for teams'},
-  {title: 'Start something', detail: 'Design, branding and bookkeeping'},
-  {title: 'Look after yourself', detail: 'Healthy habits and personal money'},
-];
 const links = [{label: 'Courses', href: '/#courses'}, {label: 'FAQ', href: '/#faq'}, {label: 'Teach', href: '/signup?as=teach'}, {label: 'About', href: '/about'}];
-const topics = [...new Set(courses.map(c => c.topic))].slice(0, 8);
+const topics = ['Python', 'React', 'SQL', 'AI agents', 'SEO', 'TikTok', 'PostgreSQL', 'Computer technician'];
 
 /**
  * Top bar after Udemy, Coursera and Skillshare: logo, an Explore menu, a wide grey search bar with live
@@ -73,7 +67,7 @@ export function SiteNav() {
       <span className={s.sIcon}><HugeiconsIcon icon={Search01Icon} size={16} /></span>
       <span className={s.sText}><b>{c.title}</b><i>{c.topic} · {c.level} · {c.instructor}</i></span>
       <em>{naira(c.price)}</em>
-    </button>) : <p className={s.none}>No courses match &ldquo;{query}&rdquo; yet. Try Excel, Python or writing.</p>)
+    </button>) : <p className={s.none}>No courses match &ldquo;{query}&rdquo; yet. Try Python, SQL or SEO.</p>)
       : <div className={s.popular}><p>Popular right now</p><div>{topics.map(t => <button key={t} onMouseDown={e => e.preventDefault()} onClick={() => { setQuery(t); (phoneSearch ? phoneInput : input).current?.focus(); }}>{t}</button>)}</div></div>}
   </div>;
 
@@ -113,8 +107,8 @@ export function SiteNav() {
     {explore && <div className={s.mega}>
       <div className={s.megaInner}>
         <div>
-          <p className={s.megaHead}>Learn to&hellip;</p>
-          {goals.map(g => <button key={g.title} className={s.goal} onClick={() => go('/#courses')}><span><b>{g.title}</b><i>{g.detail}</i></span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>)}
+          <p className={s.megaHead}>Categories</p>
+          {categories.map(g => <button key={g.name} className={s.goal} onClick={() => go('/#courses')}><span><b>{g.name}</b><i>{g.topics.slice(0, 4).join(', ')} and more</i></span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>)}
         </div>
         <div>
           <p className={s.megaHead}>Popular topics</p>
@@ -131,8 +125,8 @@ export function SiteNav() {
         <nav aria-label="Menu">
           {links.map(l => <Link key={l.label} href={l.href} onClick={() => setDrawer(false)}>{l.label}<HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>)}
         </nav>
-        <p className={s.megaHead}>Learn to&hellip;</p>
-        <div className={s.chips}>{goals.map(g => <button key={g.title} onClick={() => go('/#courses')}>{g.title}</button>)}</div>
+        <p className={s.megaHead}>Categories</p>
+        <div className={s.chips}>{categories.map(g => <button key={g.name} onClick={() => go('/#courses')}>{g.name}</button>)}</div>
         <div className={s.drawerActions}>
           <Link href="/login" className={s.login} onClick={() => setDrawer(false)}>Log in</Link>
           <Link href="/signup" className={s.signup} onClick={() => setDrawer(false)}>Sign up</Link>
