@@ -1,0 +1,4 @@
+.page { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 10px; padding: 24px 16px; text-align: center; }
+.logo { height: auto; animation: pop 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.title { margin: 14px 0 0; font-size: clamp(26px, 5vw, 40px); font-weight: 800; animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+.sub { margin: 0; color: var(--muted); animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }

@@ -1,0 +1,76 @@
+/* Same palette as the mobile apps (src/theme/tokens.ts), with the dark values under prefers-color-scheme. */
+:root {
+  --cream: #FDF8F1;
+  --sand: #F4EFE7;
+  --sand-line: #DCD5CA;
+  --surface: #FFFFFF;
+  --blue50: #EFF5FC;
+  --blue100: #DFEBF9;
+  --sky: #74A7E3;
+  --blue600: #4F8BCD;
+  --blue700: #2F6DB5;
+  --navy: #24508F;
+  --blue900: #17335A;
+  --ink: #242A36;
+  --muted: #5C6472;
+  --line: #E6E7E5;
+  --on-accent: #FFFFFF;
+  --on-sky: #17335A;
+  --marigold: #F0B74A;
+  --danger: #B53A3A;
+  --danger-soft: #FBE6E6;
+  --success: #2E8B67;
+  --success-soft: #E6F3EC;
+  --warning: #9A6A12;
+  --warning-soft: #FBF0DA;
+  --radius-card: 16px;
+  --radius-field: 14px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cream: #15171B;
+    --sand: #1E2127;
+    --sand-line: #353A43;
+    --surface: #1E2127;
+    --blue50: #18263A;
+    --blue100: #213452;
+    --sky: #6E9FDB;
+    --blue600: #6E9FDB;
+    --blue700: #8DB6EA;
+    --blue900: #D9E6F7;
+    --ink: #ECEEF2;
+    --muted: #A2A9B5;
+    --line: #2A2E35;
+    --on-sky: #0E1A2C;
+    --danger: #E27272;
+    --danger-soft: #3A2224;
+    --success: #55BE92;
+    --success-soft: #1E3229;
+    --warning: #E8B860;
+    --warning-soft: #3A3020;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--blue700); outline-offset: 2px; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes pop { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
