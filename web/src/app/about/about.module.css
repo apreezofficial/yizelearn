@@ -1,10 +1,19 @@
-.page { font-family: var(--font-sans), system-ui, sans-serif; background: #0B1A2E; }
-.intro { min-height: calc(100vh - 140px); min-height: calc(100dvh - 140px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px 24px 80px; background: #0B1A2E; color: #FDF8F1;  }
-.kicker { margin: 0 0 18px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.08em; color: #8796AE; animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.page { font-family: var(--font-sans), system-ui, sans-serif; background: #F4F1EA; }
+.intro { min-height: calc(100vh - 140px); min-height: calc(100dvh - 140px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px 24px 80px; background: #EAF1FA; color: #17335A;  }
+.kicker { margin: 0 0 18px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.08em; color: #5C6472; animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .intro h1 { margin: 0; max-width: 620px; font-size: clamp(20px, 2.2vw, 26px); line-height: 1.45; font-weight: 500; letter-spacing: -0.01em; animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
-.team { position: relative; z-index: 10; padding: 96px max(24px, calc((100vw - 1160px) / 2)); background: linear-gradient(180deg, #24508F, #17335A); color: #FDF8F1; }
+.team { position: relative; z-index: 10; padding: 96px max(24px, calc((100vw - 1160px) / 2)); background: #E3ECF7; color: #17335A; }
 .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
 .person { display: flex; flex-direction: column; gap: 4px; }
 .person b { font-size: 18px; margin-top: 12px; }
-.person span:last-child { color: #C7CEDA; font-size: 14px; }
+.person span:last-child { color: #5C6472; font-size: 14px; }
 .avatar { width: 100%; aspect-ratio: 4 / 5; border-radius: 14px; display: grid; place-items: center; font-size: 48px; font-weight: 800; background: linear-gradient(135deg, #2F6DB5, #9CC6E0); color: #17335A; }
+
+/* Dark mode keeps the deep navy look; light mode above is the default. */
+@media (prefers-color-scheme: dark) {
+  .page, .intro { background: #0B1A2E; }
+  .intro { color: #FDF8F1; }
+  .kicker { color: #8796AE; }
+  .team { background: linear-gradient(180deg, #24508F, #17335A); color: #FDF8F1; }
+  .person span:last-child { color: #C7CEDA; }
+}

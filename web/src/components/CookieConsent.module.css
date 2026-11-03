@@ -1,0 +1,46 @@
+.card { position: fixed; left: 16px; bottom: 16px; z-index: 100; width: min(420px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; border-radius: 22px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 40px 90px -30px rgba(11, 26, 46, 0.55); animation: in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.out { animation: out 0.38s cubic-bezier(0.7, 0, 0.84, 0) both; }
+@keyframes in { from { opacity: 0; transform: translateY(40px) scale(0.96); } }
+@keyframes out { to { opacity: 0; transform: translateY(40px) scale(0.96); } }
+
+/* Scene: the man stands on a soft blue floor and sways in 3D */
+.scene { position: relative; height: 210px; border-radius: 22px 22px 0 0; background: #EAF1FA; overflow: hidden; }
+.bubble { position: absolute; z-index: 2; top: 14px; right: 14px; max-width: 170px; padding: 8px 12px; border-radius: 14px 14px 4px 14px; background: #fff; color: #17335A; font-size: 13px; font-weight: 700; box-shadow: 0 6px 18px -8px rgba(11, 26, 46, 0.4); animation: pop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes pop { from { opacity: 0; transform: scale(0.8) translateY(6px); } }
+
+.panel { padding: 18px 20px 18px; }
+.panel h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.panel > p { margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.list { list-style: none; margin: 14px 0 0; padding: 0; border: 1px solid var(--line); border-radius: 14px; }
+.list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; }
+.list li + li { border-top: 1px solid var(--line); }
+.list li > span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.list b { font-size: 14px; font-weight: 700; }
+.list i { font-style: normal; font-size: 12.5px; color: var(--muted); }
+.sw { flex: none; position: relative; width: 44px; height: 26px; border: 0; border-radius: 999px; background: #C9D0DB; cursor: pointer; transition: background 0.25s; }
+.sw > span { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.sw.on { background: var(--blue700); }
+.sw.on > span { transform: translateX(18px); }
+.sw:disabled { opacity: 0.6; cursor: not-allowed; }
+.btns { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; margin-top: 14px; }
+.btns button { height: 44px; padding: 0 8px; border-radius: 10px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: transform 0.15s, background 0.2s, filter 0.2s; }
+.btns button:active:not(:disabled) { transform: scale(0.97); }
+.btns button:disabled { opacity: 0.6; cursor: default; }
+.reject { border: 1px solid var(--line); background: none; color: var(--ink); }
+.reject:hover:not(:disabled) { background: var(--blue50); }
+.saveBtn { border: 1px solid var(--ink); background: none; color: var(--ink); }
+.saveBtn:hover:not(:disabled) { background: var(--blue50); }
+.accept { border: 0; background: var(--blue700); color: #fff; }
+.accept:hover:not(:disabled) { filter: brightness(1.1); }
+.more { margin: 12px 0 0; text-align: center; font-size: 12.5px; }
+.more a { color: var(--blue700); text-decoration: underline; text-underline-offset: 3px; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+@media (prefers-color-scheme: dark) { .scene { background: #1B2A44; } .bubble { background: #ECEEF2; } .sw { background: #4A5160; } }
+@media (prefers-reduced-motion: reduce) { .card, .out, .bubble { animation: none; } .sw > span { transition: none; } }
+@media (max-width: 560px) {
+  .card { left: 0; right: 0; bottom: 0; width: 100%; max-height: 92dvh; border-radius: 22px 22px 0 0; border-bottom: 0; }
+  .scene { height: 170px; border-radius: 22px 22px 0 0; }
+  .panel { padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); }
+  .panel h2 { font-size: 20px; }
+}

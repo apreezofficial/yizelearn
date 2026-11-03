@@ -4,7 +4,8 @@ import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {Award01Icon, ArrowDown01Icon, Calendar03Icon, CheckmarkCircle02Icon, Clock01Icon, FavouriteIcon, Globe02Icon, InfinityIcon, PlayIcon, SmartPhone01Icon, StarIcon, Tick02Icon, VideoReplayIcon} from '@hugeicons/core-free-icons';
-import {naira, type Course} from '@/lib/courses';
+import {type Course} from '@/lib/courses';
+import {useMoney} from '@/lib/prefs';
 import {totalLectures, totalMinutes, type Detail} from '@/lib/courseDetail';
 import {CourseCard, Heart, categoryIcon, useWish} from './CourseCard';
 import s from './CoursePage.module.css';
@@ -30,6 +31,7 @@ function Skeleton() {
 
 /** Single course page after Udemy's: dark header, sticky purchase card, what you'll learn, content list, requirements, instructor. */
 export function CoursePage({course: c, detail: d, more}: {course: Course; detail: Detail; more: Course[]}) {
+  const money = useMoney();
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState<number[]>([0]);
   const [bar, setBar] = useState(false);
@@ -73,10 +75,10 @@ export function CoursePage({course: c, detail: d, more}: {course: Course; detail
       </button>}
     </div>
     <div className={s.buyBody}>
-      <p className={s.price}><b>{naira(c.price)}</b>{c.was && <><s>{naira(c.was)}</s><span>{off}% off</span></>}</p>
+      <p className={s.price}><b>{money(c.price)}</b>{c.was && <><s>{money(c.was)}</s><span>{off}% off</span></>}</p>
       <Link href="/signup" className={s.enroll}>Enroll now</Link>
       <button className={s.wish} onClick={toggleWish} aria-pressed={wished}><HugeiconsIcon icon={wished ? Tick02Icon : FavouriteIcon} size={18} strokeWidth={2} />{wished ? 'Saved to wishlist' : 'Save to wishlist'}</button>
-      <p className={s.fine}>Pay once in naira. Keep access after you finish. <Link href="/terms">Refund policy</Link></p>
+      <p className={s.fine}>Pay once, in the currency you choose. Keep access after you finish. <Link href="/terms">Refund policy</Link></p>
       <button className={s.code} onClick={copyCode}>Use code <b>WELCOME10</b> for 10% off your first course<span>{copied ? 'Copied' : 'Copy'}</span></button>
       <h4>This course includes</h4>
       <ul>
@@ -91,7 +93,7 @@ export function CoursePage({course: c, detail: d, more}: {course: Course; detail
   return <div className={s.page}>
     <div className={`${s.mini} ${bar ? s.miniOn : ''}`} aria-hidden={!bar}>
       <div className={s.miniIn}><div><b>{c.title}</b><span><HugeiconsIcon icon={StarIcon} size={13} />{c.rating.toFixed(1)} ({c.reviews.toLocaleString()} ratings) · {students(c)} learners</span></div>
-        <p>{naira(c.price)}</p><Link href="/signup" className={s.miniBtn} tabIndex={bar ? 0 : -1}>Enroll now</Link></div>
+        <p>{money(c.price)}</p><Link href="/signup" className={s.miniBtn} tabIndex={bar ? 0 : -1}>Enroll now</Link></div>
     </div>
 
     <header ref={head} className={s.header}>
@@ -163,7 +165,7 @@ export function CoursePage({course: c, detail: d, more}: {course: Course; detail
     </section>}
 
     <div className={s.phoneBar}>
-      <div><b>{naira(c.price)}</b>{c.was && <s>{naira(c.was)}</s>}</div>
+      <div><b>{money(c.price)}</b>{c.was && <s>{money(c.was)}</s>}</div>
       <Heart id={c.id} className={s.phoneHeart} />
       <Link href="/signup" className={s.phoneBtn}>Enroll now</Link>
     </div>

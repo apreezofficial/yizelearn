@@ -47,7 +47,7 @@ export default function BrandPage() {
         <p>The yizelearn logo is the name written by hand, with a leaf over the &ldquo;i&rdquo; and a swoosh under &ldquo;ze&rdquo;. &ldquo;Yize&rdquo; is in sky blue and &ldquo;learn&rdquo; in soft yellow, set on a deep navy plate.</p>
         <p>It is how we sign our work across the app, the web and print. Use the artwork from this page and keep its geometry intact.</p>
         <div className={s.tiles}>
-          <figure className={s.tileLight}><Image src="/logo.png" alt="yizelearn logo on a light background" width={288} height={90} /></figure>
+          <figure className={s.tileLight}><Image src="/logo-light.png" alt="yizelearn logo on a light background" width={288} height={90} /></figure>
           <figure className={s.tileDark}><Image src="/logo.png" alt="yizelearn logo on a dark background" width={288} height={90} /></figure>
         </div>
         <p className={s.small}>The file is 192 × 60 px. Need a larger version or a vector (SVG)? Email us and we will send one.</p>

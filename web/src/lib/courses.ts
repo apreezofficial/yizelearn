@@ -31,7 +31,7 @@ export const courses: Course[] = [
   {id: 'office', title: 'Office suite clerk: Word, Excel and more', instructor: 'Kemi Adebayo', rating: 4.7, reviews: 1120, price: 8000, hours: 4, level: 'Beginner', category: 'IT tech skills', topic: 'Office suite clerk', tone: 4, tag: 'Bestseller'},
 ];
 
-export const naira = (n: number) => `₦${n.toLocaleString('en-NG')}`;
+// Prices are in naira here (the base) and converted for display with useMoney() in lib/prefs.ts.
 
 // Path cards use brand gradients; `light` ones are pale enough to need navy text.
 export const paths: {title: string; courses: number; hours: number; outcome: string; skills: string[]; from: string; to: string; light?: boolean}[] = [

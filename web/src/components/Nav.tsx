@@ -1,12 +1,15 @@
 'use client';
 
-import Image from 'next/image';
+import {openPrefs} from './FooterPrefs';
+import {Logo} from './Logo';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
-import {categories, courses, naira} from '@/lib/courses';
+import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Globe02Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
+import {categories, courses} from '@/lib/courses';
+import {findLang} from '@/lib/languages';
+import {useMoney, usePrefs} from '@/lib/prefs';
 import s from './Nav.module.css';
 
 const links = [{label: 'Courses', href: '/courses'}, {label: 'FAQ', href: '/faq'}, {label: 'Teach', href: '/teach'}, {label: 'About', href: '/about'}];
@@ -19,6 +22,9 @@ const topics = ['Python', 'React', 'SQL', 'AI agents', 'SEO', 'TikTok', 'Postgre
  */
 export function SiteNav() {
   const router = useRouter();
+  const money = useMoney();
+  const lang = findLang(usePrefs().language);
+  const short = lang.code.split('-')[0].toUpperCase();
   const [scrolled, setScrolled] = useState(false);
   const [explore, setExplore] = useState(false);
   const [query, setQuery] = useState('');
@@ -66,7 +72,7 @@ export function SiteNav() {
     {q ? (results.length ? results.map(c => <button key={c.id} role="option" aria-selected={false} onMouseDown={e => e.preventDefault()} onClick={() => go(`/courses/${c.id}`)}>
       <span className={s.sIcon}><HugeiconsIcon icon={Search01Icon} size={16} /></span>
       <span className={s.sText}><b>{c.title}</b><i>{c.topic} · {c.level} · {c.instructor}</i></span>
-      <em>{naira(c.price)}</em>
+      <em>{money(c.price)}</em>
     </button>) : <p className={s.none}>No courses match &ldquo;{query}&rdquo; yet. Try Python, SQL or SEO.</p>)
       : <div className={s.popular}><p>Popular right now</p><div>{topics.map(t => <button key={t} onMouseDown={e => e.preventDefault()} onClick={() => { setQuery(t); (phoneSearch ? phoneInput : input).current?.focus(); }}>{t}</button>)}</div></div>}
   </div>;
@@ -80,7 +86,7 @@ export function SiteNav() {
 
   return <header ref={bar} className={`${s.bar} ${scrolled ? s.scrolled : ''} ${drawer ? s.barOpen : ''}`}>
     <div className={s.inner}>
-      <Link href="/" className={s.brand}><Image src="/logo.png" alt="yizelearn home" width={104} height={40} priority /></Link>
+      <Link href="/" className={s.brand}><Logo alt="yizelearn home" width={104} height={40} priority /></Link>
 
       <button className={`${s.exploreBtn} ${explore ? s.exploreOn : ''}`} aria-expanded={explore} aria-haspopup="true" onClick={() => { setExplore(v => !v); setFocus(false); }}>
         Explore <HugeiconsIcon icon={ArrowDown01Icon} size={16} strokeWidth={2.2} className={s.caret} />
@@ -89,6 +95,7 @@ export function SiteNav() {
       <div className={s.searchWrap}>{searchBox(input, 'nav-search')}</div>
 
       <nav className={s.links} aria-label="Main">{links.map(l => <Link key={l.label} href={l.href}>{l.label}</Link>)}</nav>
+      <button className={s.lang} onClick={() => openPrefs('language')} aria-label={`Language: ${lang.name}. Change language`}><HugeiconsIcon icon={Globe02Icon} size={18} strokeWidth={1.8} /><span translate="no">{short}</span></button>
       <div className={s.actions}>
         <Link href="/login" className={s.login}>Log in</Link>
         <Link href="/signup" className={s.signup}>Sign up</Link>
@@ -121,12 +128,13 @@ export function SiteNav() {
     {drawer && <div className={s.drawerWrap} role="dialog" aria-modal aria-label="Menu">
       <button className={s.scrim} aria-label="Close menu" onClick={() => setDrawer(false)} />
       <div className={s.drawer}>
-        <div className={s.drawerHead}><Image src="/logo.png" alt="yizelearn" width={96} height={37} /><button className={s.iconBtn} aria-label="Close menu" onClick={() => setDrawer(false)}><HugeiconsIcon icon={Cancel01Icon} size={22} strokeWidth={2} /></button></div>
+        <div className={s.drawerHead}><Logo alt="yizelearn" width={96} height={37} /><button className={s.iconBtn} aria-label="Close menu" onClick={() => setDrawer(false)}><HugeiconsIcon icon={Cancel01Icon} size={22} strokeWidth={2} /></button></div>
         <nav aria-label="Menu">
           {links.map(l => <Link key={l.label} href={l.href} onClick={() => setDrawer(false)}>{l.label}<HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>)}
         </nav>
         <p className={s.megaHead}>Categories</p>
         <div className={s.chips}>{categories.map(g => <button key={g.name} onClick={() => go(`/courses?category=${encodeURIComponent(g.name)}`)}>{g.name}</button>)}</div>
+        <button className={s.drawerLang} onClick={() => { setDrawer(false); openPrefs('language'); }}><HugeiconsIcon icon={Globe02Icon} size={20} strokeWidth={1.8} /><span translate="no">{lang.name}</span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>
         <div className={s.drawerActions}>
           <Link href="/login" className={s.login} onClick={() => setDrawer(false)}>Log in</Link>
           <Link href="/signup" className={s.signup} onClick={() => setDrawer(false)}>Sign up</Link>

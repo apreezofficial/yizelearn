@@ -3,8 +3,7 @@
 .back { position: absolute; left: 20px; top: 20px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 1px solid var(--sand-line); color: var(--ink); transition: transform 0.15s; }
 .back:hover { transform: translateX(-2px); }
 .card { width: 100%; max-width: 420px; animation: pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.logo { display: block; width: fit-content; margin: 0 auto 28px; }
-.logo img { display: block; height: auto; }
+.logo { display: block; width: fit-content; margin: 0 auto 28px; line-height: 0; }
 .card h1 { margin: 0; text-align: center; font-size: 30px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
 .sub { margin: 8px 0 26px; text-align: center; color: var(--muted); font-size: 15px; line-height: 1.5; }
 .sub b { color: var(--ink); }

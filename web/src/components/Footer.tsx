@@ -1,31 +1,39 @@
 import Link from 'next/link';
+import {HugeiconsIcon} from '@hugeicons/react';
+import {categories} from '@/lib/courses';
 import {SUPPORT_EMAIL} from '@/lib/faq';
+import {socials} from '@/lib/social';
+import {FooterPrefs} from './FooterPrefs';
+import {Logo} from './Logo';
 import s from './Footer.module.css';
 
-const columns: {title: string; links: {label: string; href: string}[]}[] = [
-  {title: 'Learn', links: [{label: 'Courses', href: '/courses'}, {label: 'How it works', href: '/#how-it-works'}, {label: 'FAQ', href: '/faq'}, {label: 'Create an account', href: '/signup'}]},
-  {title: 'Teach', links: [{label: 'Become an instructor', href: '/teach'}]},
-  {title: 'Company', links: [{label: 'About', href: '/about'}, {label: 'Brand', href: '/brand'}, {label: 'Contact', href: `mailto:${SUPPORT_EMAIL}`}]},
-  {title: 'Legal', links: [{label: 'Terms of Service', href: '/terms'}, {label: 'Privacy Policy', href: '/privacy'}]},
+type Col = {title: string; links: {label: string; href: string}[]};
+const columns: Col[] = [
+  {title: 'Categories', links: [...categories.map(c => ({label: c.name, href: `/courses?category=${encodeURIComponent(c.name)}`})), {label: 'All courses', href: '/courses'}]},
+  {title: 'For Learners', links: [{label: 'How yizelearn works', href: '/#how-it-works'}, {label: 'Courses', href: '/courses'}, {label: 'Create an account', href: '/signup'}, {label: 'Log in', href: '/login'}, {label: 'FAQ', href: '/faq'}]},
+  {title: 'For Instructors', links: [{label: 'Become an instructor', href: '/teach'}, {label: 'Start teaching', href: '/signup?as=teach'}]},
+  {title: 'Support', links: [{label: 'Help and FAQ', href: '/faq'}, {label: 'Contact support', href: `mailto:${SUPPORT_EMAIL}`}]},
+  {title: 'Company', links: [{label: 'About yizelearn', href: '/about'}, {label: 'Brand', href: '/brand'}, {label: 'Terms of Service', href: '/terms'}, {label: 'Privacy Policy', href: '/privacy'}]},
 ];
 
-/** Dark footer after Cencori's: link columns, a small legal row and a giant faded wordmark. */
+/** Footer laid out like Fiverr's: five link columns, then one bar with the logo and copyright on the left and, on the right, social icons, language, currency and the cookie button. */
 export function Footer() {
+  const links = socials.filter(x => x.href);
   return <footer className={s.footer}>
     <div className={s.inner}>
       <div className={s.cols}>
-        {columns.map(c => <div key={c.title}>
-          <p className={s.head}>{c.title}</p>
+        {columns.map(c => <nav key={c.title} aria-label={c.title}>
+          <h2>{c.title}</h2>
           <ul>{c.links.map(l => <li key={l.label}><Link href={l.href}>{l.label}</Link></li>)}</ul>
-        </div>)}
+        </nav>)}
       </div>
-      <div className={s.legal}><span>© 2026 yizelearn</span><span><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></span></div>
-    </div>
-    {/* The logo's wordmark, huge and cut off by the page edge like pxxl's: "Yize" in sky, "learn" in yellow,
-        a leaf for the i's dot and the swoosh under "ze". Stripes run through the letters. */}
-    <div className={s.mark} aria-hidden>
-      <span className={s.sky}>Y<span className={s.i}>ı<svg className={s.leaf} viewBox="0 0 40 52"><path d="M20 50 C4 38 2 16 18 2 C34 14 36 36 20 50 Z" /><path d="M20 48 C18 34 18 20 19 8" className={s.vein} /></svg></span>ze</span><span className={s.yellow}>learn</span>
-      <svg className={s.swoosh} viewBox="0 0 600 120" preserveAspectRatio="none"><path d="M8 6 C60 120 380 130 592 14" /></svg>
+      <div className={s.bar}>
+        <div className={s.left}><Link href="/" aria-label="yizelearn home"><Logo alt="yizelearn" width={92} height={29} /></Link><span>© yizelearn 2026</span></div>
+        <div className={s.right}>
+          {links.length > 0 && <ul className={s.social}>{links.map(x => <li key={x.name}><a href={x.href} target="_blank" rel="noopener noreferrer" aria-label={x.name}><HugeiconsIcon icon={x.icon} size={18} strokeWidth={1.8} /></a></li>)}</ul>}
+          <FooterPrefs />
+        </div>
+      </div>
     </div>
   </footer>;
 }

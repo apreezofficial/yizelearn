@@ -3,7 +3,8 @@
 export const SUPPORT_EMAIL = 'support@yizelearn.com';
 
 export const faqs: {q: string; a: string}[] = [
-  {q: 'How do I pay?', a: 'In naira, by card or bank transfer. Pick Bank transfer at checkout and we show you the account to send to. Your course unlocks as soon as the transfer is confirmed, usually within minutes.'},
+  {q: 'How do I pay?', a: 'In the currency you choose, by card or bank transfer. Pick Bank transfer at checkout and we show you the account to send to. Your course unlocks as soon as the transfer is confirmed, usually within minutes.'},
+  {q: 'Which currencies can I use?', a: 'You can pay, and instructors can withdraw, in any currency you choose. Pick yours in the footer and prices on the site convert to it. The exact amount is shown at checkout before you pay.'},
   {q: 'Do I keep access after I finish?', a: 'Yes. You pay once and keep the course, including any updates the instructor adds later.'},
   {q: 'How do I get my certificate?', a: 'Finish every lesson and pass the final quiz. Your certificate then appears in your account, ready to download as a PDF or share on LinkedIn.'},
   {q: 'Can I get a refund?', a: 'If a course is not right for you, ask within 14 days of buying it and before you have finished more than a quarter of it, and we will refund you.'},
