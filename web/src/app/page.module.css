@@ -16,6 +16,10 @@ a:hover .arrow { transform: translateX(3px); }
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
 .reveal[data-shown='true'] { opacity: 1; transform: none; }
 
+/* Sections that follow a ScrollWords statement sit closer to it */
+.afterWords { padding-top: 56px; }
+.wordsGap { height: 96px; }
+
 /* Section intro */
 .kicker { margin: 0 0 12px; font-weight: 700; font-size: 15px; background: linear-gradient(90deg, #2F6DB5, #74A7E3); -webkit-background-clip: text; background-clip: text; color: transparent; width: fit-content; }
 .sub { font-size: 18px; line-height: 1.6; color: #42506A; max-width: 620px; margin: 18px 0 0; }

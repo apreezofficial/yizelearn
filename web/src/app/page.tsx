@@ -5,7 +5,7 @@ import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Clock01Icon, Maxim
 import {OfferBar, SiteNav} from '@/components/Chrome';
 import {Hero} from '@/components/Hero';
 import {GoalCourses} from '@/components/Explore';
-import {CountUp, QuizDemo, Reveal} from '@/components/Live';
+import {CountUp, QuizDemo, Reveal, ScrollWords} from '@/components/Live';
 import {paths, stories} from '@/lib/courses';
 import s from './page.module.css';
 
@@ -24,12 +24,10 @@ export default function Home() {
       <div className={s.track}>{[...topics, ...topics].map((t, i) => <span key={i} aria-hidden={i >= topics.length}>{t}</span>)}</div>
     </div>
 
-    {/* Course browser by goal */}
-    <section className={s.section}>
-      <Reveal className={s.reveal}>
-        <p className={s.kicker}>Find your next course</p>
-        <h2 className={s.h2}>What do you want to get better at?</h2>
-      </Reveal>
+    {/* Course browser by goal, introduced by a statement that fills in as you scroll */}
+    <ScrollWords label="Find your next course" text="Pick a goal and we line up short, practical courses that get you there, taught by people who do the work every day." accent={['goal', 'practical']} />
+    <section className={`${s.section} ${s.afterWords}`}>
+      <Reveal className={s.reveal}><h2 className={s.h2}>What do you want to get better at?</h2></Reveal>
       <GoalCourses />
     </section>
 
@@ -105,13 +103,11 @@ export default function Home() {
       </div>
     </section>
 
-    {/* Career paths */}
-    <section className={s.section}>
-      <Reveal className={s.reveal}>
-        <p className={s.kicker}>Paths</p>
-        <h2 className={s.h2}>Follow a path, not a pile of courses.</h2>
-        <p className={s.sub}>Each path lines up the right courses in the right order, with a project at the end you can show.</p>
-      </Reveal>
+    {/* Career paths, introduced by a dark statement that fills in as you scroll */}
+    <div className={s.wordsGap} />
+    <ScrollWords dark label="Paths" text="Follow a path, not a pile of courses. Each one lines up the right courses in the right order, with a project at the end you can show." accent={['path', 'project']} />
+    <section className={`${s.section} ${s.afterWords}`}>
+      <Reveal className={s.reveal}><h2 className={s.h2}>Pick where you want to go.</h2></Reveal>
       <div className={s.paths}>
         {paths.map((p, i) => <Reveal key={p.title} delay={i * 80} className={s.reveal}>
           <Link href="#" className={`${s.path} ${p.light ? s.pathLight : ''}`} style={{['--from' as string]: p.from, ['--to' as string]: p.to}}>

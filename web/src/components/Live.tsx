@@ -79,3 +79,42 @@ export function QuizDemo() {
     })}
   </div>;
 }
+
+/**
+ * A pinned statement whose words fill in from pale to full colour as you scroll through it,
+ * after Cencori's "For developers" section. `accent` words fill in brand blue instead of navy.
+ * With reduced motion it renders fully filled and doesn't pin.
+ */
+export function ScrollWords({label, text, accent = [], dark = false}: {label: string; text: string; accent?: string[]; dark?: boolean}) {
+  const wrap = useRef<HTMLDivElement>(null);
+  const words = text.split(' ');
+  useEffect(() => {
+    const el = wrap.current;
+    if (!el) return;
+    const spans = [...el.querySelectorAll<HTMLSpanElement>('[data-w]')];
+    if (reduced()) { el.dataset.still = 'true'; spans.forEach(s => s.style.setProperty('--p', '1')); return; }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const r = el.getBoundingClientRect();
+      // 0 when the block reaches the top, 1 when its pinned stretch is used up; finish a little early so the last words settle.
+      const progress = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight) * 1.15));
+      const lit = progress * spans.length;
+      spans.forEach((s, i) => s.style.setProperty('--p', String(Math.min(1, Math.max(0, lit - i)))));
+    };
+    const queue = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', queue, {passive: true});
+    window.addEventListener('resize', queue);
+    return () => { window.removeEventListener('scroll', queue); window.removeEventListener('resize', queue); cancelAnimationFrame(frame); };
+  }, [text]);
+  return <div ref={wrap} className="scrollWords" data-dark={dark}>
+    <div className="scrollWordsPin">
+      <p className="scrollWordsLabel">{label}</p>
+      <p className="scrollWordsText">
+        <span className="srOnly">{text}</span>
+        {words.map((w, i) => <span key={i} data-w aria-hidden className={accent.includes(w.replace(/[^\w']/g, '')) ? 'accent' : undefined}>{w} </span>)}
+      </p>
+    </div>
+  </div>;
+}

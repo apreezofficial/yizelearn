@@ -82,3 +82,21 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Pinned statement that fills in word by word on scroll (components/Live.tsx ScrollWords) */
+.scrollWords { --from: #C9D3E2; --to: #17335A; --accent: #2F6DB5; --bg: #F4F1EA; position: relative; height: 220vh; background: var(--bg); }
+.scrollWords[data-dark='true'] { --from: #2A3A55; --to: #FDF8F1; --accent: #9CC6E0; --bg: #0B1A2E; }
+.scrollWordsPin { position: sticky; top: 0; height: 100vh; height: 100dvh; max-width: 1160px; margin: 0 auto; padding: 96px 24px 0; display: flex; flex-direction: column; justify-content: center; }
+.scrollWordsLabel { position: absolute; top: 112px; left: 24px; margin: 0; font-size: 15px; font-weight: 500; color: color-mix(in srgb, var(--to) 55%, transparent); }
+.scrollWordsText { margin: 0; max-width: 980px; font-size: clamp(30px, 4.4vw, 56px); line-height: 1.18; letter-spacing: -0.03em; font-weight: 600; }
+.scrollWordsText span { --p: 0; color: color-mix(in srgb, var(--to) calc(var(--p) * 100%), var(--from)); transition: color 0.12s linear; }
+.scrollWordsText span.accent { color: color-mix(in srgb, var(--accent) calc(var(--p) * 100%), var(--from)); }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (prefers-color-scheme: dark) { .scrollWords:not([data-dark='true']) { --from: #2A2E35; --to: #ECEEF2; --accent: #8DB6EA; --bg: #15171B; } }
+.scrollWords[data-still='true'] { height: auto; }
+.scrollWords[data-still='true'] .scrollWordsPin { position: static; height: auto; padding: 120px 24px; }
+@media (max-width: 900px) {
+  .scrollWords { height: 180vh; }
+  .scrollWordsPin { padding: 80px 16px 0; }
+  .scrollWordsLabel { top: 96px; left: 16px; }
+}
