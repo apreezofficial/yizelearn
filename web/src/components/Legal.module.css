@@ -8,7 +8,6 @@
 .kicker { margin: 0 0 10px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
 .title h1 { margin: 0; font-size: clamp(34px, 4.4vw, 52px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.05; color: var(--ink2, #0B1A2E); }
 .meta { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 18px 0 0; font-size: 13px; color: var(--muted); }
-.draft { margin: 18px 0 0; display: inline-block; padding: 8px 12px; border-radius: 8px; background: var(--warning-soft); color: var(--warning); font-size: 12.5px; font-weight: 600; }
 
 .body { display: grid; grid-template-columns: minmax(0, 1fr) 280px; }
 .doc { padding: 24px 48px 80px 40px; }

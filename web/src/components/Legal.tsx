@@ -62,7 +62,6 @@ export function LegalPage({doc}: {doc: LegalDoc}) {
         <p className={s.kicker}>{doc.kicker}</p>
         <h1>{doc.title}</h1>
         <p className={s.meta}><span>Version {doc.version}</span><span>Last updated: {doc.updated}</span><span>Effective: {doc.effective}</span></p>
-        {process.env.NODE_ENV !== 'production' && <p className={s.draft}>Draft for preview. Have this reviewed by a lawyer before launch; this notice only shows in development.</p>}
       </div>
     </header>
     <div className={s.body}>
