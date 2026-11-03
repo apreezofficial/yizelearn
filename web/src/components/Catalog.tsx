@@ -34,7 +34,13 @@ function Row({title, sub, items, onMore}: {title: string; sub?: string; items: C
  * The course catalogue after Airbnb's /homes: a tab bar with an icon per category, one big search pill
  * (What / Level / Price), then rows you scroll sideways. Everything shimmers for a moment while it "loads".
  */
+/** Reads the URL and restarts the catalogue when it changes, so menu links like /courses?category=AI work while you are already here. */
 export function Catalog() {
+  const params = useSearchParams();
+  return <CatalogView key={params.toString()} />;
+}
+
+function CatalogView() {
   const params = useSearchParams();
   const cat = params.get('category');
   const [tab, setTabRaw] = useState<Tab>(categories.some(c => c.name === cat) ? (cat as Category) : 'All');

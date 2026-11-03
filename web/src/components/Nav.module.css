@@ -90,3 +90,8 @@
 .drawerActions .login, .drawerActions .signup { height: 48px; }
 @keyframes slide { from { transform: translateX(100%); } }
 @keyframes fade { from { opacity: 0; } }
+
+/* Phone menu: easier to tap, and clear of the home bar */
+.drawer { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+.drawer .chips button { padding: 10px 16px; font-size: 15px; }
+.drawer nav a { padding: 17px 4px; }
