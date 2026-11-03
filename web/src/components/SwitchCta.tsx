@@ -8,8 +8,8 @@ import s from './SwitchCta.module.css';
 
 type Side = 'learn' | 'teach';
 const sides: Record<Side, {tab: string; title: string; text: string; cta: string; href: string; video: string}> = {
-  learn: {tab: 'Learn', title: 'Learn the skills your next role needs', text: 'Short, practical courses from people who do the work. Pay once, keep access, and finish with a certificate you can show.', cta: 'Start learning', href: '#', video: '/video/learn.mp4'},
-  teach: {tab: 'Teach', title: 'Teach what you know, to people who need it', text: 'Turn your experience into a course. We help with the outline, filming tips and getting your first learners.', cta: 'Become an instructor', href: '#', video: '/video/teach.mp4'},
+  learn: {tab: 'Learn', title: 'Learn the skills your next role needs', text: 'Short, practical courses from people who do the work. Pay once, keep access, and finish with a certificate you can show.', cta: 'Start learning', href: '/signup', video: '/video/learn.mp4'},
+  teach: {tab: 'Teach', title: 'Teach what you know, to people who need it', text: 'Turn your experience into a course. We help with the outline, filming tips and getting your first learners.', cta: 'Become an instructor', href: '/signup?as=teach', video: '/video/teach.mp4'},
 };
 
 /**

@@ -1,0 +1,47 @@
+.wrap { --hair: rgba(23, 51, 90, 0.12); max-width: 1160px; margin: 0 auto; border-inline: 1px solid var(--hair); }
+.head { display: grid; grid-template-columns: 300px 1fr; border-bottom: 1px solid var(--hair); background: linear-gradient(90deg, var(--blue50), transparent 70%); }
+.artBox { display: grid; place-items: center; border-right: 1px solid var(--hair); padding: 28px; background-image: radial-gradient(rgba(23, 51, 90, 0.14) 1px, transparent 1.2px); background-size: 14px 14px; }
+.art { width: 100%; max-width: 220px; }
+.flag { animation: sway 5s ease-in-out infinite; transform-origin: 20px 70px; }
+@keyframes sway { 50% { transform: rotate(-3deg); } }
+.title { padding: 56px 40px; }
+.kicker { margin: 0 0 10px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+.title h1 { margin: 0; font-size: clamp(34px, 4.4vw, 52px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.05; color: var(--ink2, #0B1A2E); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 18px 0 0; font-size: 13px; color: var(--muted); }
+.draft { margin: 18px 0 0; display: inline-block; padding: 8px 12px; border-radius: 8px; background: var(--warning-soft); color: var(--warning); font-size: 12.5px; font-weight: 600; }
+
+.body { display: grid; grid-template-columns: minmax(0, 1fr) 280px; }
+.doc { padding: 24px 48px 80px 40px; }
+.section { padding: 40px 0 8px; border-bottom: 1px solid var(--hair); scroll-margin-top: 96px; }
+.section:last-child { border-bottom: 0; }
+.section h2 { display: flex; align-items: baseline; gap: 14px; margin: 0 0 18px; font-size: 26px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink2, #0B1A2E); }
+.num { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--muted); transform: translateY(-4px); }
+.copy { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--hair); background: none; color: var(--muted); font-size: 12px; font-weight: 500; letter-spacing: 0; cursor: pointer; opacity: 0; transition: opacity 0.2s, color 0.2s; }
+.section:hover .copy, .copy:focus-visible { opacity: 1; }
+.copy:hover { color: var(--blue700); }
+.section p { margin: 0 0 16px; max-width: 680px; line-height: 1.7; color: var(--ink); opacity: 0.88; }
+.section ul { margin: 0 0 18px; padding-left: 22px; max-width: 680px; line-height: 1.7; opacity: 0.88; }
+.section li { margin-bottom: 6px; padding-left: 4px; }
+.section li::marker { color: var(--blue700); }
+
+.toc { position: sticky; top: 88px; align-self: start; padding: 40px 28px 40px 0; max-height: calc(100dvh - 100px); overflow-y: auto; }
+.toc p { margin: 0 0 14px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.toc ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--hair); }
+.toc a { display: block; margin-left: -1px; padding: 7px 14px; border-left: 2px solid transparent; font-size: 13.5px; line-height: 1.35; color: var(--muted); transition: color 0.2s, border-color 0.2s, background 0.2s; }
+.toc a:hover { color: var(--ink); }
+.toc .tocOn { color: var(--blue700); border-left-color: var(--blue700); background: linear-gradient(90deg, color-mix(in srgb, var(--blue700) 8%, transparent), transparent); font-weight: 600; }
+
+@media (prefers-color-scheme: dark) { .wrap { --hair: rgba(255, 255, 255, 0.1); } .title h1, .section h2 { color: #ECEEF2; } .artBox { background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1.2px); } }
+@media (prefers-reduced-motion: reduce) { .flag { animation: none; } }
+@media (max-width: 900px) {
+  .wrap { border-inline: 0; }
+  .head { grid-template-columns: 1fr; }
+  .artBox { border-right: 0; border-bottom: 1px solid var(--hair); padding: 28px 16px 16px; }
+  .art { max-width: 160px; }
+  .title { padding: 28px 16px 32px; }
+  .body { grid-template-columns: minmax(0, 1fr); }
+  .toc { display: none; }
+  .doc { padding: 8px 16px 56px; }
+  .section h2 { font-size: 22px; }
+  .copy { opacity: 1; }
+}

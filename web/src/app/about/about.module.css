@@ -1,5 +1,5 @@
 .page { font-family: var(--font-sans), system-ui, sans-serif; background: #0B1A2E; }
-.intro { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 24px 80px; background: #0B1A2E; color: #FDF8F1; margin-top: -84px; }
+.intro { min-height: calc(100vh - 140px); min-height: calc(100dvh - 140px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px 24px 80px; background: #0B1A2E; color: #FDF8F1;  }
 .kicker { margin: 0 0 18px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.08em; color: #8796AE; animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .intro h1 { margin: 0; max-width: 620px; font-size: clamp(20px, 2.2vw, 26px); line-height: 1.45; font-weight: 500; letter-spacing: -0.01em; animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
 .team { position: relative; z-index: 10; padding: 96px max(24px, calc((100vw - 1160px) / 2)); background: linear-gradient(180deg, #24508F, #17335A); color: #FDF8F1; }
@@ -8,4 +8,3 @@
 .person b { font-size: 18px; margin-top: 12px; }
 .person span:last-child { color: #C7CEDA; font-size: 14px; }
 .avatar { width: 100%; aspect-ratio: 4 / 5; border-radius: 14px; display: grid; place-items: center; font-size: 48px; font-weight: 800; background: linear-gradient(135deg, #2F6DB5, #9CC6E0); color: #17335A; }
-@media (max-width: 900px) { .intro { margin-top: -76px; } }

@@ -1,13 +1,13 @@
 import Link from 'next/link';
+import {SUPPORT_EMAIL} from '@/lib/faq';
 import s from './Footer.module.css';
 
-const columns = [
-  {title: 'Learn', links: ['Courses', 'Paths', 'Live classes', 'Certificates']},
-  {title: 'Teach', links: ['Become an instructor', 'Instructor guide', 'Teams']},
-  {title: 'Company', links: ['About', 'Careers', 'Press', 'Contact']},
-  {title: 'Help', links: ['Help centre', 'Refunds', 'Privacy', 'Terms']},
+const columns: {title: string; links: {label: string; href: string}[]}[] = [
+  {title: 'Learn', links: [{label: 'Courses', href: '/#courses'}, {label: 'How it works', href: '/#how-it-works'}, {label: 'FAQ', href: '/#faq'}, {label: 'Create an account', href: '/signup'}]},
+  {title: 'Teach', links: [{label: 'Become an instructor', href: '/signup?as=teach'}]},
+  {title: 'Company', links: [{label: 'About', href: '/about'}, {label: 'Brand', href: '/brand'}, {label: 'Contact', href: `mailto:${SUPPORT_EMAIL}`}]},
+  {title: 'Legal', links: [{label: 'Terms of Service', href: '/terms'}, {label: 'Privacy Policy', href: '/privacy'}]},
 ];
-const hrefFor = (l: string) => (l === 'About' ? '/about' : '#');
 
 /** Dark footer after Cencori's: link columns, a small legal row and a giant faded wordmark. */
 export function Footer() {
@@ -16,10 +16,10 @@ export function Footer() {
       <div className={s.cols}>
         {columns.map(c => <div key={c.title}>
           <p className={s.head}>{c.title}</p>
-          <ul>{c.links.map(l => <li key={l}><Link href={hrefFor(l)}>{l}</Link></li>)}</ul>
+          <ul>{c.links.map(l => <li key={l.label}><Link href={l.href}>{l.label}</Link></li>)}</ul>
         </div>)}
       </div>
-      <div className={s.legal}><span>© 2026 yizelearn</span><span><Link href="#">Privacy</Link><Link href="#">Terms</Link></span></div>
+      <div className={s.legal}><span>© 2026 yizelearn</span><span><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></span></div>
     </div>
     {/* The logo's wordmark, huge and cut off by the page edge like pxxl's: "Yize" in sky, "learn" in yellow,
         a leaf for the i's dot and the swoosh under "ze". Stripes run through the letters. */}

@@ -13,7 +13,7 @@
 @keyframes mist { from { transform: translateX(0); } to { transform: translateX(170%); } }
 
 .frame { position: relative; max-width: 1160px; margin: 0 auto; border-inline: 1px dashed rgba(23, 51, 90, 0.18); }
-.copy { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 120px 24px 72px; }
+.copy { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 72px 24px 72px; }
 .copy > * { animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 /* Stripe-style live counter as a pill */
@@ -60,7 +60,7 @@
 }
 
 @media (max-width: 900px) {
-  .copy { padding: 84px 16px 48px; }
+  .copy { padding: 44px 16px 48px; }
   .copy h1 br { display: none; }
   .lede { font-size: 16px; }
   .statsWrap { grid-template-columns: 1fr; }

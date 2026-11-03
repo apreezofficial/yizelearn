@@ -1,0 +1,143 @@
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import {useRouter} from 'next/navigation';
+import {useEffect, useMemo, useRef, useState} from 'react';
+import {HugeiconsIcon} from '@hugeicons/react';
+import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
+import {courses, naira} from '@/lib/courses';
+import s from './Nav.module.css';
+
+const goals = [
+  {title: 'Get a better job', detail: 'Excel, finance, writing and speaking'},
+  {title: 'Work faster', detail: 'Python, macros and spreadsheets for teams'},
+  {title: 'Start something', detail: 'Design, branding and bookkeeping'},
+  {title: 'Look after yourself', detail: 'Healthy habits and personal money'},
+];
+const links = [{label: 'Courses', href: '/#courses'}, {label: 'FAQ', href: '/#faq'}, {label: 'Teach', href: '/signup?as=teach'}, {label: 'About', href: '/about'}];
+const topics = [...new Set(courses.map(c => c.topic))].slice(0, 8);
+
+/**
+ * Top bar after Udemy, Coursera and Skillshare: logo, an Explore menu, a wide grey search bar with live
+ * suggestions, a few links and Log in / Sign up. On phones it collapses to a search button and a slide-in menu.
+ * There is no course page on the web yet, so picking a suggestion goes to sign-up.
+ */
+export function SiteNav() {
+  const router = useRouter();
+  const [scrolled, setScrolled] = useState(false);
+  const [explore, setExplore] = useState(false);
+  const [query, setQuery] = useState('');
+  const [focus, setFocus] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [phoneSearch, setPhoneSearch] = useState(false);
+  const bar = useRef<HTMLElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const phoneInput = useRef<HTMLInputElement>(null);
+
+  const q = query.trim().toLowerCase();
+  const results = useMemo(() => (q ? courses.filter(c => `${c.title} ${c.topic} ${c.instructor}`.toLowerCase().includes(q)).slice(0, 5) : []), [q]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener('scroll', onScroll, {passive: true});
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Close menus on outside click or Escape; "/" jumps to the search bar like on most sites.
+  useEffect(() => {
+    const down = (e: MouseEvent) => { if (bar.current && !bar.current.contains(e.target as Node)) { setExplore(false); setFocus(false); } };
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setExplore(false); setFocus(false); setDrawer(false); setPhoneSearch(false); input.current?.blur(); }
+      const t = e.target;
+      const typing = t instanceof Element && t.closest('input, textarea, select, [contenteditable]');
+      if (e.key === '/' && !typing && !e.metaKey && !e.ctrlKey) { e.preventDefault(); input.current?.focus(); }
+    };
+    document.addEventListener('mousedown', down);
+    document.addEventListener('keydown', key);
+    return () => { document.removeEventListener('mousedown', down); document.removeEventListener('keydown', key); };
+  }, []);
+
+  // Stop the page scrolling behind the open drawer.
+  useEffect(() => {
+    document.body.style.overflow = drawer ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [drawer]);
+
+  const go = (href: string) => { setExplore(false); setFocus(false); setDrawer(false); setPhoneSearch(false); setQuery(''); router.push(href); };
+  const submit = (e: React.FormEvent) => { e.preventDefault(); if (q) go('/signup'); };
+
+  const suggestions = <div className={s.suggest} role="listbox" aria-label="Suggestions">
+    {q ? (results.length ? results.map(c => <button key={c.id} role="option" aria-selected={false} onMouseDown={e => e.preventDefault()} onClick={() => go('/signup')}>
+      <span className={s.sIcon}><HugeiconsIcon icon={Search01Icon} size={16} /></span>
+      <span className={s.sText}><b>{c.title}</b><i>{c.topic} · {c.level} · {c.instructor}</i></span>
+      <em>{naira(c.price)}</em>
+    </button>) : <p className={s.none}>No courses match &ldquo;{query}&rdquo; yet. Try Excel, Python or writing.</p>)
+      : <div className={s.popular}><p>Popular right now</p><div>{topics.map(t => <button key={t} onMouseDown={e => e.preventDefault()} onClick={() => { setQuery(t); (phoneSearch ? phoneInput : input).current?.focus(); }}>{t}</button>)}</div></div>}
+  </div>;
+
+  const searchBox = (ref: React.RefObject<HTMLInputElement | null>, id: string) => <form className={s.search} onSubmit={submit} role="search">
+    <HugeiconsIcon icon={Search01Icon} size={18} strokeWidth={2} className={s.sMag} />
+    <input ref={ref} id={id} value={query} onChange={e => setQuery(e.target.value)} onFocus={() => { setFocus(true); setExplore(false); }} placeholder="Search for anything" aria-label="Search courses" autoComplete="off" />
+    {query ? <button type="button" className={s.clear} aria-label="Clear search" onClick={() => { setQuery(''); ref.current?.focus(); }}><HugeiconsIcon icon={Cancel01Icon} size={14} strokeWidth={2.4} /></button> : <kbd className={s.kbd} aria-hidden>/</kbd>}
+    {focus && suggestions}
+  </form>;
+
+  return <header ref={bar} className={`${s.bar} ${scrolled ? s.scrolled : ''} ${drawer ? s.barOpen : ''}`}>
+    <div className={s.inner}>
+      <Link href="/" className={s.brand}><Image src="/logo.png" alt="yizelearn home" width={104} height={40} priority /></Link>
+
+      <button className={`${s.exploreBtn} ${explore ? s.exploreOn : ''}`} aria-expanded={explore} aria-haspopup="true" onClick={() => { setExplore(v => !v); setFocus(false); }}>
+        Explore <HugeiconsIcon icon={ArrowDown01Icon} size={16} strokeWidth={2.2} className={s.caret} />
+      </button>
+
+      <div className={s.searchWrap}>{searchBox(input, 'nav-search')}</div>
+
+      <nav className={s.links} aria-label="Main">{links.map(l => <Link key={l.label} href={l.href}>{l.label}</Link>)}</nav>
+      <div className={s.actions}>
+        <Link href="/login" className={s.login}>Log in</Link>
+        <Link href="/signup" className={s.signup}>Sign up</Link>
+      </div>
+
+      {/* Phones */}
+      <div className={s.phone}>
+        <button className={s.iconBtn} aria-label="Search" aria-expanded={phoneSearch} onClick={() => { setPhoneSearch(v => !v); setTimeout(() => phoneInput.current?.focus(), 60); }}><HugeiconsIcon icon={phoneSearch ? Cancel01Icon : Search01Icon} size={22} strokeWidth={2} /></button>
+        <Link href="/signup" className={s.signup}>Sign up</Link>
+        <button className={s.iconBtn} aria-label="Open menu" onClick={() => setDrawer(true)}><HugeiconsIcon icon={Menu01Icon} size={24} strokeWidth={2} /></button>
+      </div>
+    </div>
+
+    {phoneSearch && <div className={s.phoneSearch}>{searchBox(phoneInput, 'nav-search-phone')}</div>}
+
+    {explore && <div className={s.mega}>
+      <div className={s.megaInner}>
+        <div>
+          <p className={s.megaHead}>Learn to&hellip;</p>
+          {goals.map(g => <button key={g.title} className={s.goal} onClick={() => go('/#courses')}><span><b>{g.title}</b><i>{g.detail}</i></span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>)}
+        </div>
+        <div>
+          <p className={s.megaHead}>Popular topics</p>
+          <div className={s.chips}>{topics.map(t => <button key={t} onClick={() => go('/#courses')}>{t}</button>)}</div>
+          <Link href="/#courses" className={s.all} onClick={() => setExplore(false)}>Browse all courses <HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>
+        </div>
+      </div>
+    </div>}
+
+    {drawer && <div className={s.drawerWrap} role="dialog" aria-modal aria-label="Menu">
+      <button className={s.scrim} aria-label="Close menu" onClick={() => setDrawer(false)} />
+      <div className={s.drawer}>
+        <div className={s.drawerHead}><Image src="/logo.png" alt="yizelearn" width={96} height={37} /><button className={s.iconBtn} aria-label="Close menu" onClick={() => setDrawer(false)}><HugeiconsIcon icon={Cancel01Icon} size={22} strokeWidth={2} /></button></div>
+        <nav aria-label="Menu">
+          {links.map(l => <Link key={l.label} href={l.href} onClick={() => setDrawer(false)}>{l.label}<HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>)}
+        </nav>
+        <p className={s.megaHead}>Learn to&hellip;</p>
+        <div className={s.chips}>{goals.map(g => <button key={g.title} onClick={() => go('/#courses')}>{g.title}</button>)}</div>
+        <div className={s.drawerActions}>
+          <Link href="/login" className={s.login} onClick={() => setDrawer(false)}>Log in</Link>
+          <Link href="/signup" className={s.signup} onClick={() => setDrawer(false)}>Sign up</Link>
+        </div>
+      </div>
+    </div>}
+  </header>;
+}
