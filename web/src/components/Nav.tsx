@@ -1,13 +1,15 @@
 'use client';
 
+import {openPrefs} from './FooterPrefs';
 import {Logo} from './Logo';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
+import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Globe02Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
 import {categories, courses} from '@/lib/courses';
-import {useMoney} from '@/lib/prefs';
+import {findLang} from '@/lib/languages';
+import {useMoney, usePrefs} from '@/lib/prefs';
 import s from './Nav.module.css';
 
 const links = [{label: 'Courses', href: '/courses'}, {label: 'FAQ', href: '/faq'}, {label: 'Teach', href: '/teach'}, {label: 'About', href: '/about'}];
@@ -21,6 +23,8 @@ const topics = ['Python', 'React', 'SQL', 'AI agents', 'SEO', 'TikTok', 'Postgre
 export function SiteNav() {
   const router = useRouter();
   const money = useMoney();
+  const lang = findLang(usePrefs().language);
+  const short = lang.code.split('-')[0].toUpperCase();
   const [scrolled, setScrolled] = useState(false);
   const [explore, setExplore] = useState(false);
   const [query, setQuery] = useState('');
@@ -91,6 +95,7 @@ export function SiteNav() {
       <div className={s.searchWrap}>{searchBox(input, 'nav-search')}</div>
 
       <nav className={s.links} aria-label="Main">{links.map(l => <Link key={l.label} href={l.href}>{l.label}</Link>)}</nav>
+      <button className={s.lang} onClick={() => openPrefs('language')} aria-label={`Language: ${lang.name}. Change language`}><HugeiconsIcon icon={Globe02Icon} size={18} strokeWidth={1.8} /><span translate="no">{short}</span></button>
       <div className={s.actions}>
         <Link href="/login" className={s.login}>Log in</Link>
         <Link href="/signup" className={s.signup}>Sign up</Link>
@@ -129,6 +134,7 @@ export function SiteNav() {
         </nav>
         <p className={s.megaHead}>Categories</p>
         <div className={s.chips}>{categories.map(g => <button key={g.name} onClick={() => go(`/courses?category=${encodeURIComponent(g.name)}`)}>{g.name}</button>)}</div>
+        <button className={s.drawerLang} onClick={() => { setDrawer(false); openPrefs('language'); }}><HugeiconsIcon icon={Globe02Icon} size={20} strokeWidth={1.8} /><span translate="no">{lang.name}</span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>
         <div className={s.drawerActions}>
           <Link href="/login" className={s.login} onClick={() => setDrawer(false)}>Log in</Link>
           <Link href="/signup" className={s.signup} onClick={() => setDrawer(false)}>Sign up</Link>

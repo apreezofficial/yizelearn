@@ -6,8 +6,8 @@ export function readConsent(): (Consent & {at: number}) | null {
   try { const raw = localStorage.getItem(CONSENT_KEY); return raw ? JSON.parse(raw) : null; } catch { return null; }
 }
 
-/** Saved language, currency and wishlist only persist while "preferences" has not been turned off. */
-export const preferencesAllowed = () => readConsent()?.preferences !== false;
+/** Saved language, currency and wishlist are written to this device only after the visitor accepted Preferences cookies. */
+export const preferencesAllowed = () => readConsent()?.preferences === true;
 
 export function saveConsent(c: Consent) {
   try {

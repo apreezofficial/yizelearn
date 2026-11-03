@@ -1,7 +1,9 @@
 import type {Metadata, Viewport} from 'next';
 import {Fredoka, Inter} from 'next/font/google';
 import {CookieConsent} from '@/components/CookieConsent';
+import {PrefsHost} from '@/components/FooterPrefs';
 import {Help} from '@/components/Help';
+import {Translator} from '@/components/Translator';
 import './globals.css';
 
 const sans = Inter({subsets: ['latin'], variable: '--font-sans', display: 'swap'});
@@ -18,5 +20,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
-  return <html lang="en" className={`${sans.variable} ${logo.variable}`}><body>{children}<Help /><CookieConsent /></body></html>;
+  return <html lang="en" className={`${sans.variable} ${logo.variable}`}><body>{children}<Help /><CookieConsent /><PrefsHost /><Translator /></body></html>;
 }

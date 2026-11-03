@@ -17,15 +17,6 @@ export const currencies: Currency[] = [
   {code: 'INR', name: 'Indian Rupee', symbol: '₹', per: 0.054},
 ];
 
-export const languages: {code: string; name: string; ready: boolean}[] = [
-  {code: 'en', name: 'English', ready: true},
-  {code: 'fr', name: 'Français', ready: false},
-  {code: 'pt', name: 'Português', ready: false},
-  {code: 'es', name: 'Español', ready: false},
-  {code: 'ar', name: 'العربية', ready: false},
-  {code: 'de', name: 'Deutsch', ready: false},
-];
-
 export const DEFAULT_CURRENCY = 'USD';
 export const find = (code: string) => currencies.find(c => c.code === code) ?? currencies[0];
 

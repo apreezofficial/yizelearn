@@ -39,6 +39,8 @@
 .links { display: flex; align-items: center; margin-left: auto; font-size: 15px; font-weight: 600; color: var(--ink); }
 .links a { padding: 8px 12px; border-radius: 10px; white-space: nowrap; transition: background 0.15s, color 0.15s; }
 .links a:hover { background: var(--grey); color: var(--blue700); }
+.lang { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 10px; border: 0; border-radius: 10px; background: none; color: var(--ink); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.lang:hover { background: var(--grey); color: var(--blue700); }
 .actions { flex: none; display: flex; align-items: center; gap: 10px; margin-left: 6px; }
 .login, .signup { display: inline-flex; align-items: center; justify-content: center; height: 42px; padding: 0 18px; border-radius: 10px; font-size: 15px; font-weight: 700; white-space: nowrap; transition: background 0.15s, color 0.15s, transform 0.12s, border-color 0.15s; }
 .login { border: 1.5px solid var(--blue700); color: var(--blue700); }
@@ -64,10 +66,10 @@
 @media (prefers-color-scheme: dark) { .bar { --grey: #262A31; } }
 @media (prefers-reduced-motion: reduce) { .suggest, .mega, .drawer { animation: none; } }
 
-@media (max-width: 1100px) { .links { display: none; } .actions { margin-left: auto; } }
+@media (max-width: 1100px) { .links { display: none; } .lang { margin-left: auto; } .actions { margin-left: 0; } }
 @media (max-width: 860px) {
   .inner { height: 62px; gap: 8px; padding: 0 12px; }
-  .exploreBtn, .searchWrap, .actions { display: none; }
+  .exploreBtn, .searchWrap, .actions, .lang { display: none; }
   .phone { display: flex; align-items: center; gap: 4px; margin-left: auto; }
   .phone .signup { height: 38px; padding: 0 14px; font-size: 14px; margin: 0 2px; }
   .iconBtn { display: grid; place-items: center; width: 42px; height: 42px; border: 0; border-radius: 12px; background: none; color: var(--ink); cursor: pointer; }
@@ -94,3 +96,6 @@
 .drawer { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
 .drawer .chips button { padding: 10px 16px; font-size: 15px; }
 .drawer nav a { padding: 17px 4px; }
+
+.drawerLang { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 8px; padding: 14px 4px; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: none; color: var(--ink); font: inherit; font-size: 16px; font-weight: 600; text-align: left; cursor: pointer; }
+.drawerLang span { flex: 1; }

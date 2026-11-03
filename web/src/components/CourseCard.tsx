@@ -15,8 +15,10 @@ export const categoryIcon: Record<Category, typeof SourceCodeIcon> = {
 
 const KEY = 'yz-wish';
 const listeners = new Set<() => void>();
-const read = (): string => { try { return localStorage.getItem(KEY) ?? '[]'; } catch { return '[]'; } };
-const subscribe = (fn: () => void) => { listeners.add(fn); window.addEventListener('storage', fn); return () => { listeners.delete(fn); window.removeEventListener('storage', fn); }; };
+let memory = '[]'; // this visit's list; written to localStorage only after Preferences cookies are accepted
+const read = (): string => { try { return localStorage.getItem(KEY) ?? memory; } catch { return memory; } };
+const persist = () => { try { if (memory !== '[]' && preferencesAllowed()) localStorage.setItem(KEY, memory); } catch { /* ignore */ } };
+const subscribe = (fn: () => void) => { listeners.add(fn); window.addEventListener('storage', fn); window.addEventListener('yz-consent', persist); return () => { listeners.delete(fn); window.removeEventListener('storage', fn); window.removeEventListener('yz-consent', persist); }; };
 
 /** Saved courses live in this browser only (no account needed). */
 export function useWish(id: string) {
@@ -25,7 +27,8 @@ export function useWish(id: string) {
   const toggle = () => {
     const list = JSON.parse(read()) as string[];
     const next = list.includes(id) ? list.filter(x => x !== id) : [...list, id];
-    try { if (preferencesAllowed()) localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* private mode: nothing is kept */ }
+    memory = JSON.stringify(next);
+    try { if (preferencesAllowed()) localStorage.setItem(KEY, memory); } catch { /* private mode: nothing is kept */ }
     listeners.forEach(fn => fn());
   };
   return [on, toggle] as const;
