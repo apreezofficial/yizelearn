@@ -1,0 +1,72 @@
+/* Hero after Aceternity's: dashed side rails, a drawn mountain scene fading to white, centred headline with a solid highlight. */
+.hero { --mx: 0; --sy: 0; position: relative; overflow: hidden; }
+.scene { position: absolute; inset: 0 0 auto; height: 620px; -webkit-mask-image: linear-gradient(#000 45%, transparent 92%); mask-image: linear-gradient(#000 45%, transparent 92%); }
+.mountains { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mountains g { transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.mountains g[data-layer='far'] { transform: translate(calc(var(--mx) * -6px), calc(var(--sy) * 0.05px)); }
+.mountains g[data-layer='mid'] { transform: translate(calc(var(--mx) * -14px), calc(var(--sy) * 0.12px)); }
+.mountains g[data-layer='near'] { transform: translate(calc(var(--mx) * -24px), calc(var(--sy) * 0.2px)); }
+/* Soft white wash so the headline reads over the peaks */
+.scene::after { content: ''; position: absolute; inset: 0; background: radial-gradient(55% 45% at 50% 52%, rgba(255,255,255,0.85), rgba(255,255,255,0.35) 60%, transparent 80%); }
+.mist { position: absolute; left: -20%; width: 70%; height: 120px; top: 300px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,255,255,0.85), transparent); filter: blur(10px); animation: mist 28s linear infinite; }
+.mist2 { top: 380px; width: 55%; animation-duration: 36s; animation-delay: -14s; opacity: 0.8; }
+@keyframes mist { from { transform: translateX(0); } to { transform: translateX(170%); } }
+
+.frame { position: relative; max-width: 1160px; margin: 0 auto; border-inline: 1px dashed rgba(23, 51, 90, 0.18); }
+.copy { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 120px 24px 72px; }
+.copy > * { animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Stripe-style live counter as a pill */
+.live { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 26px; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,0.75); border: 1px solid rgba(23, 51, 90, 0.12); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 14px; color: #42506A; box-shadow: 0 6px 20px -14px rgba(11, 26, 46, 0.4); }
+.live b { color: #0B1A2E; font-weight: 700; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #2E8B67; box-shadow: 0 0 0 0 rgba(46, 139, 103, 0.6); animation: ping 1.8s ease-out infinite; }
+@keyframes ping { 70% { box-shadow: 0 0 0 8px rgba(46, 139, 103, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 139, 103, 0); } }
+
+.copy h1 { margin: 0; font-size: clamp(36px, 5.6vw, 68px); line-height: 1.12; letter-spacing: -0.035em; font-weight: 700; color: #2A3446; animation-delay: 60ms; }
+.copy mark { position: relative; display: inline-block; padding: 0 12px; margin-top: 6px; color: #fff; background: #2F6DB5; border-radius: 4px; animation: highlight 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; box-shadow: 0 14px 30px -16px rgba(47, 109, 181, 0.8); }
+/* The highlight block wipes in from the left, then a light shimmer runs across it */
+@keyframes highlight { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.copy mark::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%); transform: translateX(-100%); animation: shimmer 3.5s ease-in-out 1.6s infinite; border-radius: inherit; }
+@keyframes shimmer { 60%, 100% { transform: translateX(100%); } }
+
+.lede { max-width: 600px; margin: 26px 0 0; font-size: 17px; line-height: 1.6; color: #4A5468; animation-delay: 140ms; }
+.ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 30px; animation-delay: 220ms; }
+.primary, .secondary { display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 8px 0 18px; border-radius: 12px; font-weight: 600; font-size: 15px; transition: transform 0.15s, box-shadow 0.15s; }
+.primary { background: #2F6DB5; color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 0 0 1px #255EA1, 0 10px 24px -12px rgba(47, 109, 181, 0.9); }
+.primary:hover { transform: translateY(-1px); }
+.avatar { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #F0B74A, #E86A4A); color: #fff; font-weight: 800; font-size: 14px; }
+.secondary { padding: 0 18px; background: #fff; color: #2A3446; box-shadow: 0 0 0 1px rgba(23, 51, 90, 0.14), 0 6px 16px -12px rgba(11, 26, 46, 0.4); }
+.secondary:hover { transform: translateY(-1px); }
+
+/* Stats in dashed cells, where Aceternity has its client logos */
+.statsWrap { display: grid; grid-template-columns: 220px 1fr; align-items: center; border-top: 1px dashed rgba(23, 51, 90, 0.18); border-bottom: 1px dashed rgba(23, 51, 90, 0.18); background: rgba(255,255,255,0.6); }
+.statsTitle { margin: 0; padding: 20px 24px; font-size: 14px; font-weight: 700; color: #2A3446; text-align: center; border-right: 1px dashed rgba(23, 51, 90, 0.18); }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); }
+.stat { display: flex; align-items: center; gap: 10px; padding: 18px 20px; font-size: 13px; animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.stat + .stat { border-left: 1px dashed rgba(23, 51, 90, 0.12); }
+.stat b { display: block; color: #0B1A2E; }
+.stat span:not(.statIcon) { color: #6A7487; font-size: 12px; }
+.statIcon { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: #EEF3FA; color: #2F6DB5; border: 1px solid rgba(23, 51, 90, 0.08); }
+
+@media (prefers-color-scheme: dark) {
+  .scene { opacity: 0.55; }
+  .scene::after { background: radial-gradient(55% 45% at 50% 52%, rgba(21,23,27,0.9), rgba(21,23,27,0.5) 60%, transparent 80%); }
+  .frame, .statsWrap, .statsTitle, .stat + .stat { border-color: rgba(255,255,255,0.12); }
+  .copy h1, .statsTitle, .stat b, .live b { color: #ECEEF2; }
+  .lede, .live { color: #C7CEDA; }
+  .live, .statsWrap { background: rgba(30, 33, 39, 0.75); border-color: rgba(255,255,255,0.12); }
+  .secondary { background: #1E2127; color: #ECEEF2; }
+  .statIcon { background: #213452; color: #8DB6EA; }
+}
+
+@media (max-width: 900px) {
+  .copy { padding: 84px 16px 48px; }
+  .copy h1 br { display: none; }
+  .lede { font-size: 16px; }
+  .statsWrap { grid-template-columns: 1fr; }
+  .statsTitle { border-right: 0; border-bottom: 1px dashed rgba(23, 51, 90, 0.18); }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .stat:nth-child(3) { border-left: 0; }
+  .stat:nth-child(n+3) { border-top: 1px dashed rgba(23, 51, 90, 0.12); }
+  .frame { border-inline: 0; }
+}

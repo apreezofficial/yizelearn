@@ -1,5 +1,6 @@
 import type {Metadata, Viewport} from 'next';
 import {Inter} from 'next/font/google';
+import {Help} from '@/components/Help';
 import './globals.css';
 
 const sans = Inter({subsets: ['latin'], variable: '--font-sans', display: 'swap'});
@@ -14,5 +15,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
-  return <html lang="en" className={sans.variable}><body>{children}</body></html>;
+  return <html lang="en" className={sans.variable}><body>{children}<Help /></body></html>;
 }

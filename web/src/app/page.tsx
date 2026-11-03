@@ -3,8 +3,9 @@ import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Clock01Icon, Maximize02Icon, Mic01Icon, PlayIcon, SentIcon, UserGroupIcon, Video01Icon} from '@hugeicons/core-free-icons';
 import {OfferBar, SiteNav} from '@/components/Chrome';
+import {Hero} from '@/components/Hero';
 import {GoalCourses} from '@/components/Explore';
-import {CountUp, QuizDemo, Reveal, Ticker} from '@/components/Live';
+import {CountUp, QuizDemo, Reveal} from '@/components/Live';
 import {paths, stories} from '@/lib/courses';
 import s from './page.module.css';
 
@@ -16,19 +17,7 @@ export default function Home() {
   return <div className={s.page}>
     <OfferBar />
     <SiteNav />
-    {/* Hero with the diagonal silk ribbon */}
-    <section className={s.hero}>
-      <div className={s.ribbon} aria-hidden><span /><span /><span /></div>
-      <div className={s.heroCopy}>
-        <p className={s.live}>Lessons finished on yizelearn today: <b><Ticker start={48213} perSecond={0.9} /></b></p>
-        <h1>Skills that move your career <span>forward.</span></h1>
-        <p className={s.lede}>Short, practical courses from people who do the work. Learn in minutes a day, join live classes, and earn a certificate you can show.</p>
-        <div className={s.ctas}>
-          <Link href="#" className={s.primary}>Start learning <Arrow /></Link>
-          <Link href="#courses" className={s.secondary}>Browse courses</Link>
-        </div>
-      </div>
-    </section>
+    <Hero />
 
     {/* Topic marquee */}
     <div className={s.marquee} aria-label="Popular topics">
