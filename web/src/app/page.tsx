@@ -1,9 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Clock01Icon, Maximize02Icon, Mic01Icon, PlayIcon, SentIcon, Video01Icon} from '@hugeicons/core-free-icons';
+import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Clock01Icon, Maximize02Icon, Mic01Icon, PlayIcon, SentIcon, UserGroupIcon, Video01Icon} from '@hugeicons/core-free-icons';
 import {OfferBar, SiteNav} from '@/components/Chrome';
+import {GoalCourses} from '@/components/Explore';
 import {CountUp, QuizDemo, Reveal, Ticker} from '@/components/Live';
+import {paths, stories} from '@/lib/courses';
 import s from './page.module.css';
 
 const topics = ['Excel', 'Financial modelling', 'Python', 'Business writing', 'Design basics', 'Data analysis', 'Public speaking', 'Project management', 'Macros', 'Healthy habits'];
@@ -32,6 +34,15 @@ export default function Home() {
     <div className={s.marquee} aria-label="Popular topics">
       <div className={s.track}>{[...topics, ...topics].map((t, i) => <span key={i} aria-hidden={i >= topics.length}>{t}</span>)}</div>
     </div>
+
+    {/* Course browser by goal */}
+    <section className={s.section}>
+      <Reveal className={s.reveal}>
+        <p className={s.kicker}>Find your next course</p>
+        <h2 className={s.h2}>What do you want to get better at?</h2>
+      </Reveal>
+      <GoalCourses />
+    </section>
 
     {/* Bento of product moments */}
     <section className={s.section} id="courses">
@@ -105,6 +116,26 @@ export default function Home() {
       </div>
     </section>
 
+    {/* Career paths */}
+    <section className={s.section}>
+      <Reveal className={s.reveal}>
+        <p className={s.kicker}>Paths</p>
+        <h2 className={s.h2}>Follow a path, not a pile of courses.</h2>
+        <p className={s.sub}>Each path lines up the right courses in the right order, with a project at the end you can show.</p>
+      </Reveal>
+      <div className={s.paths}>
+        {paths.map((p, i) => <Reveal key={p.title} delay={i * 80} className={s.reveal}>
+          <Link href="#" className={s.path} style={{['--from' as string]: p.from, ['--to' as string]: p.to}}>
+            <span className={s.pathGlow} aria-hidden />
+            <h3>{p.title}</h3>
+            <p>{p.outcome}</p>
+            <ul>{p.skills.map(k => <li key={k}>{k}</li>)}</ul>
+            <div className={s.pathFoot}><span>{p.courses} courses · {p.hours}h</span><Arrow /></div>
+          </Link>
+        </Reveal>)}
+      </div>
+    </section>
+
     {/* Dark numbers section */}
     <section className={s.dark}>
       <div className={s.darkInner}>
@@ -119,6 +150,38 @@ export default function Home() {
           </Reveal>)}
         </div>
       </div>
+    </section>
+
+    {/* Learner stories */}
+    <section className={s.section}>
+      <Reveal className={s.reveal}>
+        <p className={s.kicker}>Learner stories</p>
+        <h2 className={s.h2}>People moving forward, one short lesson at a time.</h2>
+      </Reveal>
+      <div className={s.stories}>
+        {stories.map((t, i) => <Reveal key={t.name} delay={i * 90} className={`${s.story} ${s.reveal}`}>
+          <span className={s.quoteMark} aria-hidden>“</span>
+          <blockquote>{t.quote}</blockquote>
+          <div className={s.who}><span className={s.avatar} aria-hidden>{t.name[0]}</span><div><b>{t.name}</b><span>{t.role}</span></div></div>
+          <small>Took: {t.course}</small>
+        </Reveal>)}
+      </div>
+    </section>
+
+    {/* Teach and teams */}
+    <section className={`${s.section} ${s.pair}`}>
+      <Reveal className={`${s.pairCard} ${s.reveal}`}>
+        <span className={s.pairIcon}><HugeiconsIcon icon={Mic01Icon} size={22} /></span>
+        <h3>Teach what you know</h3>
+        <p>Turn your experience into a course. We help with the outline, filming tips and getting your first learners.</p>
+        <Link href="#" className={s.textLink}>Become an instructor <Arrow /></Link>
+      </Reveal>
+      <Reveal className={`${s.pairCard} ${s.pairDark} ${s.reveal}`} delay={80}>
+        <span className={s.pairIcon}><HugeiconsIcon icon={UserGroupIcon} size={22} /></span>
+        <h3>Train your whole team</h3>
+        <p>Give your staff the same courses, track progress in one dashboard and pay on one invoice.</p>
+        <Link href="#" className={s.textLink}>Talk to us about teams <Arrow /></Link>
+      </Reveal>
     </section>
 
     {/* Closing call to action */}
