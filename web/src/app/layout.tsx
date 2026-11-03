@@ -1,8 +1,12 @@
 import type {Metadata, Viewport} from 'next';
+import {Fraunces} from 'next/font/google';
 import './globals.css';
 
+// Serif for headlines, as in the reference design. Body text stays on the system font.
+const serif = Fraunces({subsets: ['latin'], variable: '--font-serif', display: 'swap', axes: ['SOFT', 'opsz']});
+
 export const metadata: Metadata = {
-  title: {default: 'yizelearn', template: '%s · yizelearn'},
+  title: {default: 'yizelearn: short, practical courses', template: '%s · yizelearn'},
   description: 'Short, practical courses with live classes and certificates.',
 };
 
@@ -11,5 +15,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en" className={serif.variable}><body>{children}</body></html>;
 }
