@@ -20,7 +20,7 @@ export function GoalCourses() {
     <div className={s.railWrap}>
       <div ref={rail} className={s.rail} key={goal}>
         {shown.map((c, i) => <CourseCard key={c.id} course={c} index={i} />)}
-        <Link href="/signup" className={s.more} style={{['--i' as string]: shown.length + 1}}>See all {goal} courses <HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>
+        <Link href={`/courses?category=${encodeURIComponent(goal)}`} className={s.more} style={{['--i' as string]: shown.length + 1}}>See all {goal} courses <HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>
       </div>
       <button className={`${s.nav} ${s.prev}`} onClick={() => scroll(-1)} aria-label="Previous courses"><HugeiconsIcon icon={ArrowLeft01Icon} size={18} /></button>
       <button className={`${s.nav} ${s.next}`} onClick={() => scroll(1)} aria-label="More courses"><HugeiconsIcon icon={ArrowRight01Icon} size={18} /></button>
@@ -29,7 +29,7 @@ export function GoalCourses() {
 }
 
 function CourseCard({course: c, index}: {course: Course; index: number}) {
-  return <Link href="/signup" className={s.card} style={{['--i' as string]: index + 1}}>
+  return <Link href={`/courses/${c.id}`} className={s.card} style={{['--i' as string]: index + 1}}>
     <div className={s.thumb} data-tone={c.tone}>
       <span className={s.topic}>{c.topic}</span>
       {c.tag && <span className={c.tag === 'New' ? s.tagNew : s.tag}>{c.tag}</span>}

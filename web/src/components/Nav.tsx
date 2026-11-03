@@ -9,7 +9,7 @@ import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Menu01Icon, Search01Ico
 import {categories, courses, naira} from '@/lib/courses';
 import s from './Nav.module.css';
 
-const links = [{label: 'Courses', href: '/#courses'}, {label: 'FAQ', href: '/#faq'}, {label: 'Teach', href: '/teach'}, {label: 'About', href: '/about'}];
+const links = [{label: 'Courses', href: '/courses'}, {label: 'FAQ', href: '/#faq'}, {label: 'Teach', href: '/teach'}, {label: 'About', href: '/about'}];
 const topics = ['Python', 'React', 'SQL', 'AI agents', 'SEO', 'TikTok', 'PostgreSQL', 'Computer technician'];
 
 /**
@@ -60,10 +60,10 @@ export function SiteNav() {
   }, [drawer]);
 
   const go = (href: string) => { setExplore(false); setFocus(false); setDrawer(false); setPhoneSearch(false); setQuery(''); router.push(href); };
-  const submit = (e: React.FormEvent) => { e.preventDefault(); if (q) go('/signup'); };
+  const submit = (e: React.FormEvent) => { e.preventDefault(); if (q) go(`/courses?q=${encodeURIComponent(query.trim())}`); };
 
   const suggestions = <div className={s.suggest} role="listbox" aria-label="Suggestions">
-    {q ? (results.length ? results.map(c => <button key={c.id} role="option" aria-selected={false} onMouseDown={e => e.preventDefault()} onClick={() => go('/signup')}>
+    {q ? (results.length ? results.map(c => <button key={c.id} role="option" aria-selected={false} onMouseDown={e => e.preventDefault()} onClick={() => go(`/courses/${c.id}`)}>
       <span className={s.sIcon}><HugeiconsIcon icon={Search01Icon} size={16} /></span>
       <span className={s.sText}><b>{c.title}</b><i>{c.topic} · {c.level} · {c.instructor}</i></span>
       <em>{naira(c.price)}</em>
@@ -108,12 +108,12 @@ export function SiteNav() {
       <div className={s.megaInner}>
         <div>
           <p className={s.megaHead}>Categories</p>
-          {categories.map(g => <button key={g.name} className={s.goal} onClick={() => go('/#courses')}><span><b>{g.name}</b><i>{g.topics.slice(0, 4).join(', ')} and more</i></span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>)}
+          {categories.map(g => <button key={g.name} className={s.goal} onClick={() => go(`/courses?category=${encodeURIComponent(g.name)}`)}><span><b>{g.name}</b><i>{g.topics.slice(0, 4).join(', ')} and more</i></span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>)}
         </div>
         <div>
           <p className={s.megaHead}>Popular topics</p>
-          <div className={s.chips}>{topics.map(t => <button key={t} onClick={() => go('/#courses')}>{t}</button>)}</div>
-          <Link href="/#courses" className={s.all} onClick={() => setExplore(false)}>Browse all courses <HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>
+          <div className={s.chips}>{topics.map(t => <button key={t} onClick={() => go(`/courses?q=${encodeURIComponent(t)}`)}>{t}</button>)}</div>
+          <Link href="/courses" className={s.all} onClick={() => setExplore(false)}>Browse all courses <HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>
         </div>
       </div>
     </div>}
@@ -126,7 +126,7 @@ export function SiteNav() {
           {links.map(l => <Link key={l.label} href={l.href} onClick={() => setDrawer(false)}>{l.label}<HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>)}
         </nav>
         <p className={s.megaHead}>Categories</p>
-        <div className={s.chips}>{categories.map(g => <button key={g.name} onClick={() => go('/#courses')}>{g.name}</button>)}</div>
+        <div className={s.chips}>{categories.map(g => <button key={g.name} onClick={() => go(`/courses?category=${encodeURIComponent(g.name)}`)}>{g.name}</button>)}</div>
         <div className={s.drawerActions}>
           <Link href="/login" className={s.login} onClick={() => setDrawer(false)}>Log in</Link>
           <Link href="/signup" className={s.signup} onClick={() => setDrawer(false)}>Sign up</Link>

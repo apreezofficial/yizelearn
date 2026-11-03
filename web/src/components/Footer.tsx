@@ -3,7 +3,7 @@ import {SUPPORT_EMAIL} from '@/lib/faq';
 import s from './Footer.module.css';
 
 const columns: {title: string; links: {label: string; href: string}[]}[] = [
-  {title: 'Learn', links: [{label: 'Courses', href: '/#courses'}, {label: 'How it works', href: '/#how-it-works'}, {label: 'FAQ', href: '/#faq'}, {label: 'Create an account', href: '/signup'}]},
+  {title: 'Learn', links: [{label: 'Courses', href: '/courses'}, {label: 'How it works', href: '/#how-it-works'}, {label: 'FAQ', href: '/#faq'}, {label: 'Create an account', href: '/signup'}]},
   {title: 'Teach', links: [{label: 'Become an instructor', href: '/teach'}]},
   {title: 'Company', links: [{label: 'About', href: '/about'}, {label: 'Brand', href: '/brand'}, {label: 'Contact', href: `mailto:${SUPPORT_EMAIL}`}]},
   {title: 'Legal', links: [{label: 'Terms of Service', href: '/terms'}, {label: 'Privacy Policy', href: '/privacy'}]},
