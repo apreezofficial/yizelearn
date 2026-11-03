@@ -1,4 +1,6 @@
 .faq { --hair: rgba(23, 51, 90, 0.12); display: grid; grid-template-columns: 380px minmax(0, 1fr); max-width: 1160px; margin: 120px auto 0; border: 1px solid var(--hair); background: var(--surface); }
+.page { margin-top: 0; border-top: 0; }
+.sub a { color: var(--blue700); text-decoration: underline; text-underline-offset: 3px; }
 .head { padding: 48px 36px; border-right: 1px solid var(--hair); align-self: start; position: sticky; top: 96px; }
 .kicker { margin: 0 0 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.08em; color: var(--muted); }
 .head h2 { margin: 0; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 600; color: var(--ink2, #0B1A2E); }
@@ -26,6 +28,7 @@
 @media (prefers-reduced-motion: reduce) { .panel, .panel p, .plus { transition: none; } }
 @media (max-width: 900px) {
   .faq { grid-template-columns: minmax(0, 1fr); margin: 72px 16px 0; }
+  .page { margin-top: 0; }
   .head { position: static; border-right: 0; border-bottom: 1px solid var(--hair); padding: 32px 20px; }
   .item button, .itemOn button { padding: 20px; font-size: 17px; }
   .panel p { padding: 0 20px 22px; }

@@ -3,18 +3,18 @@
 import {useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {Add01Icon, ArrowRight01Icon} from '@hugeicons/core-free-icons';
-import {faqs} from '@/lib/faq';
+import {faqs, SUPPORT_EMAIL} from '@/lib/faq';
 import {Reveal} from './Live';
 import s from './Faq.module.css';
 
 /** Hairline-framed FAQ after the Journey section's style: heading on the left, accordion on the right. One answer open at a time. */
-export function Faq() {
+export function Faq({page}: {page?: boolean}) {
   const [open, setOpen] = useState(0);
-  return <section className={s.faq} id="faq" aria-labelledby="faq-title">
+  return <section className={`${s.faq} ${page ? s.page : ''}`} id="faq" aria-labelledby="faq-title">
     <Reveal className={s.head}>
-      <p className={s.kicker}>FAQ</p>
-      <h2 id="faq-title">Questions, answered.</h2>
-      <p className={s.sub}>The things people ask before they pay. Don&apos;t see yours? Ask us.</p>
+      <p className={s.kicker}>{page ? 'NEED MORE HELP?' : 'FAQ'}</p>
+      <h2 id="faq-title">{page ? 'Still have a question?' : 'Questions, answered.'}</h2>
+      <p className={s.sub}>{page ? <>Chat with us in the app, or email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</> : <>The things people ask before they pay. Don&apos;t see yours? Ask us.</>}</p>
       <button className={s.ask} onClick={() => window.dispatchEvent(new Event('yz-help-open'))}>Ask in chat <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={2.2} /></button>
     </Reveal>
     <ul className={s.list}>
