@@ -85,7 +85,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* Cencori-style pinned section (components/Live.tsx ScrollWords).
    --lift: 0 = statement big and centred, 1 = small beside the label. --enter drives the cards. */
-.scrollWords { --from: #C9D3E2; --to: #17335A; --accent: #2F6DB5; --bg: #F4F1EA; --lift: 0; --enter: 0; position: relative; height: 380vh; background: var(--bg); }
+.scrollWords { --from: #C9D3E2; --to: #17335A; --accent: #2F6DB5; --bg: #F4F1EA; --lift: 0; --enter: 0; position: relative; height: 210vh; background: var(--bg); }
 .scrollWords[data-dark='true'] { --from: #2A3A55; --to: #FDF8F1; --accent: #9CC6E0; --bg: #0B1A2E; }
 @media (prefers-color-scheme: dark) { .scrollWords:not([data-dark='true']) { --from: #2A2E35; --to: #ECEEF2; --accent: #8DB6EA; --bg: #15171B; } }
 .scrollWordsPin { position: sticky; top: 0; height: 100vh; height: 100dvh; max-width: 1160px; margin: 0 auto; padding: 104px 24px 24px; display: flex; flex-direction: column; gap: 28px; overflow: hidden; }
@@ -104,13 +104,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .scrollWords[data-still='true'] { height: auto; }
 .scrollWords[data-still='true'] .scrollWordsPin { position: static; height: auto; padding: 96px 24px; }
 @media (max-width: 900px) {
-  .scrollWords { height: 340vh; }
+  .scrollWords { height: 190vh; }
   .scrollWordsPin { padding: 88px 16px 16px; gap: 20px; }
   .scrollWordsHead { transform: none; }
   .scrollWordsLabel { position: static; margin-bottom: 10px; transform: none; }
   .scrollWordsText { padding-left: 0; max-width: none; font-size: calc(30px - var(--lift) * 8px); }
 }
-
-/* Proximity snapping, switched on by pages with snap points (components/Journey.tsx) */
-html.snapY { scroll-snap-type: y proximity; }
-@media (prefers-reduced-motion: reduce) { html.snapY { scroll-snap-type: none; } }

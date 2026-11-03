@@ -18,7 +18,7 @@
 .stepOn .bar { transform: scaleY(1); }
 
 .screens { padding: 0 0 0 0; background-image: radial-gradient(rgba(23, 51, 90, 0.16) 1px, transparent 1.2px); background-size: 16px 16px; }
-.slot { min-height: 78vh; display: flex; align-items: center; padding: 56px 0 56px 48px; border-bottom: 1px solid var(--hair); scroll-snap-align: center; overflow: hidden; }
+.slot { min-height: 78vh; display: flex; align-items: center; padding: 56px 0 56px 48px; border-bottom: 1px solid var(--hair); overflow: hidden; }
 /* Windows dim and recede until they reach the middle of the screen */
 .window { width: calc(100% + 40px); border-radius: 18px 0 0 18px; background: #0F1F35; color: #ECEEF2; box-shadow: 0 40px 80px -40px rgba(11, 26, 46, 0.7); padding: 22px 0 22px 24px; opacity: 0.45; transform: translateX(28px) scale(0.97); filter: saturate(0.6);
   transition: opacity 0.6s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s; }

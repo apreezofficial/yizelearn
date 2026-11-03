@@ -8,7 +8,6 @@ export type Step = {title: string; detail: string; kicker: string; screen: React
 /**
  * After pxxl.app's "From repo to production": a sticky numbered list on the left and a column of
  * product screens on the right. The list follows the screen in view; clicking a step scrolls to it.
- * Screens snap into place (proximity snapping, so normal scrolling still feels free).
  */
 export function Journey({title, steps}: {title: string; steps: Step[]}) {
   const [active, setActive] = useState(0);
@@ -19,8 +18,7 @@ export function Journey({title, steps}: {title: string; steps: Step[]}) {
       entries.forEach(e => { if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.i)); });
     }, {rootMargin: '-45% 0px -45% 0px'});
     screens.current.forEach(el => el && io.observe(el));
-    document.documentElement.classList.add('snapY');
-    return () => { io.disconnect(); document.documentElement.classList.remove('snapY'); };
+    return () => io.disconnect();
   }, []);
 
   const go = (i: number) => screens.current[i]?.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center'});
