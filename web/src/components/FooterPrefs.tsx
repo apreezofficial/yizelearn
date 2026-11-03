@@ -2,7 +2,7 @@
 
 import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {Cancel01Icon, Globe02Icon} from '@hugeicons/core-free-icons';
+import {Cancel01Icon, CookieIcon, Globe02Icon} from '@hugeicons/core-free-icons';
 import {currencies, find, languages} from '@/lib/currency';
 import {setPrefs, usePrefs} from '@/lib/prefs';
 import s from './FooterPrefs.module.css';
@@ -19,7 +19,7 @@ export function FooterPrefs() {
   return <div className={s.row}>
     <button className={s.pill} onClick={() => setOpen('language')}><HugeiconsIcon icon={Globe02Icon} size={16} strokeWidth={1.8} />{lang.name}</button>
     <button className={s.pill} onClick={() => setOpen('currency')}>{cur.symbol} {cur.code}</button>
-    <button className={s.pill} onClick={() => window.dispatchEvent(new Event('yz-cookies-open'))}>Cookie settings</button>
+    <button className={s.cookieBtn} aria-label="Cookie settings" title="Cookie settings" onClick={() => window.dispatchEvent(new Event('yz-cookies-open'))}><HugeiconsIcon icon={CookieIcon} size={18} strokeWidth={1.8} /></button>
     {open && <Popup start={open} onClose={() => setOpen(null)} />}
   </div>;
 }

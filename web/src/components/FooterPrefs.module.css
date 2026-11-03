@@ -1,6 +1,8 @@
-.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 999px; background: none; color: #C7CEDA; font: inherit; font-size: 12.5px; cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s; }
-.pill:hover { background: rgba(255, 255, 255, 0.08); color: #fff; border-color: rgba(255, 255, 255, 0.4); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; }
+.pill { display: inline-flex; align-items: center; gap: 7px; padding: 4px 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: 13.5px; cursor: pointer; transition: color 0.15s; }
+.pill:hover { color: var(--ink); }
+.cookieBtn { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; background: none; color: var(--ink); cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.15s; }
+.cookieBtn:hover { background: var(--blue50); border-color: var(--sand-line); transform: rotate(-12deg); }
 
 .scrim { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 16px; background: rgba(8, 20, 36, 0.55); animation: fade 0.2s both; }
 .box { width: min(560px, 100%); max-height: min(640px, calc(100dvh - 32px)); display: flex; flex-direction: column; border-radius: 14px; background: var(--surface); color: var(--ink); box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.6); outline: 0; animation: pop 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
