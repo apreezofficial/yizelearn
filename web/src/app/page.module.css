@@ -15,17 +15,7 @@ a:hover .arrow { transform: translateX(3px); }
 @keyframes drift { to { background-position: 220px 0; } }
 @keyframes glow { to { transform: translate(-6%, 4%) scale(1.1); } }
 
-.nav { position: relative; z-index: 2; display: flex; align-items: center; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 20px 24px; }
-.brand img { display: block; height: auto; }
-.links { display: flex; gap: 26px; font-size: 15px; font-weight: 600; color: var(--ink2); }
-.links a { opacity: 0.85; transition: opacity 0.15s; }
-.links a:hover { opacity: 1; }
-.navRight { margin-left: auto; display: flex; gap: 10px; align-items: center; }
-.signIn, .navCta { display: inline-flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 600; border-radius: 999px; padding: 8px 16px; }
-.signIn { color: #fff; background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.navCta { background: #fff; color: var(--primary); box-shadow: 0 6px 16px -8px rgba(11, 26, 46, 0.4); }
-
-.heroCopy { position: relative; z-index: 1; max-width: var(--wrap); margin: 0 auto; padding: 96px 24px 120px; }
+.heroCopy { position: relative; z-index: 1; max-width: var(--wrap); margin: 0 auto; padding: 168px 24px 120px; }
 .heroCopy > * { max-width: 620px; animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .live { font-size: 15px; font-weight: 500; color: var(--ink2); margin: 0 0 22px; }
 .live b { font-weight: 600; margin-left: 6px; }
@@ -174,18 +164,14 @@ a:hover .arrow { transform: translateX(3px); }
   .coPay { color: #0B1A2E; }
   .bubbleMe { color: #0B1A2E; }
   .secondary { background: rgba(30, 33, 39, 0.7); }
-  .navCta { background: #0B1A2E; }
 }
 
 @media (max-width: 900px) {
-  .links { display: none; }
-  .signIn { display: none; }
   .hero { min-height: 0; }
   .ribbon { inset: -30% -40% 30% 30%; opacity: 0.85; }
-  .heroCopy { padding: 56px 16px 72px; }
+  .heroCopy { padding: 120px 16px 72px; }
   .lede { font-size: 16px; }
   .section { padding: 64px 16px 0; }
-  .nav { padding: 14px 16px; }
   .bento { grid-template-columns: 1fr; }
   .bento > .card:nth-child(3) { grid-column: auto; }
   .card { min-height: 0; padding: 20px; }

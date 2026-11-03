@@ -1,0 +1,46 @@
+/* Offer bar */
+.offer { position: relative; z-index: 60; display: flex; align-items: center; justify-content: center; gap: 24px; min-height: 52px; padding: 8px 56px; background: linear-gradient(90deg, #17335A, #2F6DB5 55%, #3E6FB0); color: #fff; font-size: 15px; animation: drop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.offer p { margin: 0; text-align: center; }
+.offer b { font-weight: 700; }
+.sep { opacity: 0.6; margin: 0 8px; }
+.code { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255, 255, 255, 0.6); letter-spacing: 0.02em; }
+.offerCta { flex: none; background: #fff; color: #17335A; font-weight: 700; padding: 9px 16px; border-radius: 10px; transition: transform 0.15s, background 0.15s; }
+.offerCta:hover { background: #F0B74A; transform: translateY(-1px); }
+.close { position: absolute; right: 16px; top: 50%; translate: 0 -50%; display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; background: transparent; color: #fff; cursor: pointer; transition: background 0.15s; }
+.close:hover { background: rgba(255, 255, 255, 0.15); }
+@keyframes drop { from { transform: translateY(-100%); } to { transform: none; } }
+
+/* Sticky nav */
+.bar { position: sticky; top: 0; z-index: 50; height: 72px; margin-bottom: -72px; transition: background 0.25s, box-shadow 0.25s, backdrop-filter 0.25s; }
+.scrolled { background: color-mix(in srgb, var(--surface) 86%, transparent); backdrop-filter: saturate(1.8) blur(16px); -webkit-backdrop-filter: saturate(1.8) blur(16px); box-shadow: 0 1px 0 var(--line), 0 10px 30px -20px rgba(11, 26, 46, 0.35); }
+.inner { display: flex; align-items: center; gap: 28px; height: 100%; max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+.brand img { display: block; height: auto; }
+.links { display: flex; gap: 26px; font-size: 15px; font-weight: 600; color: var(--ink2, #0B1A2E); }
+.links a { opacity: 0.85; transition: opacity 0.15s; }
+.links a:hover { opacity: 1; }
+.right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.signIn, .cta { display: inline-flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 600; border-radius: 999px; padding: 8px 16px; transition: background 0.25s, color 0.25s; }
+.signIn { color: #fff; background: rgba(255, 255, 255, 0.18); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.cta { background: #fff; color: #2F6DB5; box-shadow: 0 6px 16px -8px rgba(11, 26, 46, 0.4); }
+/* Once the bar turns solid, the buttons switch to solid brand colours so they stay readable. */
+.scrolled .signIn { color: #2F6DB5; background: var(--blue50); }
+.scrolled .cta { background: #2F6DB5; color: #fff; }
+.arrow { transition: transform 0.2s; }
+a:hover .arrow { transform: translateX(3px); }
+
+@media (prefers-color-scheme: dark) {
+  .links { color: #ECEEF2; }
+  .cta { background: #0B1A2E; color: #8DB6EA; }
+  .scrolled .cta { background: #8DB6EA; color: #0B1A2E; }
+  .scrolled .signIn { color: #8DB6EA; }
+}
+
+@media (max-width: 900px) {
+  .offer { flex-direction: column; gap: 8px; padding: 10px 48px; font-size: 13px; }
+  .sep { display: none; }
+  .offer p b { display: block; }
+  .offerCta { padding: 7px 14px; font-size: 13px; }
+  .links, .signIn { display: none; }
+  .bar { height: 64px; margin-bottom: -64px; }
+  .inner { padding: 0 16px; }
+}

@@ -2,24 +2,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Clock01Icon, Maximize02Icon, Mic01Icon, PlayIcon, SentIcon, Video01Icon} from '@hugeicons/core-free-icons';
+import {OfferBar, SiteNav} from '@/components/Chrome';
 import {CountUp, QuizDemo, Reveal, Ticker} from '@/components/Live';
 import s from './page.module.css';
 
 const topics = ['Excel', 'Financial modelling', 'Python', 'Business writing', 'Design basics', 'Data analysis', 'Public speaking', 'Project management', 'Macros', 'Healthy habits'];
-const nav = ['Courses', 'Live classes', 'Certificates', 'For teams', 'Teach'];
 
 const Arrow = () => <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={2.4} className={s.arrow} />;
 
 export default function Home() {
   return <div className={s.page}>
+    <OfferBar />
+    <SiteNav />
     {/* Hero with the diagonal silk ribbon */}
     <section className={s.hero}>
       <div className={s.ribbon} aria-hidden><span /><span /><span /></div>
-      <header className={s.nav}>
-        <Link href="/" className={s.brand}><Image src="/logo.png" alt="yizelearn" width={104} height={40} priority /></Link>
-        <nav className={s.links} aria-label="Main">{nav.map(n => <Link key={n} href="#">{n}</Link>)}</nav>
-        <div className={s.navRight}><Link href="#" className={s.signIn}>Sign in <Arrow /></Link><Link href="#" className={s.navCta}>Get started <Arrow /></Link></div>
-      </header>
       <div className={s.heroCopy}>
         <p className={s.live}>Lessons finished on yizelearn today: <b><Ticker start={48213} perSecond={0.9} /></b></p>
         <h1>Skills that move your career <span>forward.</span></h1>
