@@ -111,3 +111,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .scrollWordsLabel { position: static; margin-bottom: 12px; transform: none; }
   .scrollWordsText { padding-left: 0; max-width: none; font-size: 27px; line-height: 1.22; }
 }
+
+/* Google's Website Translator adds its own banner and tooltips; our language picker replaces them. */
+body { top: 0 !important; }
+.skiptranslate iframe, iframe.goog-te-banner-frame, #goog-gt-tt, .goog-te-balloon-frame, .goog-tooltip { display: none !important; }
+.goog-text-highlight { background: none !important; box-shadow: none !important; }

@@ -2,11 +2,14 @@
 
 import {useEffect, useState} from 'react';
 import {findLang} from '@/lib/languages';
+import {preferencesAllowed} from '@/lib/consent';
 import {usePrefs} from '@/lib/prefs';
 import s from './Translator.module.css';
 
-// Translates what is on the page when a language other than English is chosen. Strings go to /api/translate
-// (Google Cloud Translation, key kept on the server); the original English is kept so switching back is instant.
+// Translates what is on the page when a language other than English is chosen.
+// 1. With GOOGLE_TRANSLATE_API_KEY set on the server, strings go to /api/translate (Google Cloud Translation); the English
+//    is kept so switching back is instant.
+// 2. Without a key, it uses Google's free Website Translator in the visitor's browser, which needs no key.
 const ATTRS = ['placeholder', 'aria-label', 'title', 'alt'] as const;
 const SKIP = 'script,style,noscript,code,kbd,textarea,svg,canvas,[translate="no"],[data-notranslate]';
 const MAX_BATCH = 100, MAX_CHARS = 9000;
@@ -16,6 +19,69 @@ const text = new Map<Text, Entry>();
 const attrs = new Map<Element, Map<string, Entry>>();
 const memory = new Map<string, Map<string, string>>();
 let titleOrig = '', titleOut = '';
+let noKey = false, widgetOn = false;
+const NOKEY = 'yz-nokey';
+let widgetReady: Promise<HTMLSelectElement> | null = null;
+type Win = Window & {yzGtInit?: () => void; google?: {translate: {TranslateElement: new (o: {pageLanguage: string; autoDisplay: boolean}, id: string) => unknown}}};
+
+/** Google's widget swaps text nodes for <font> wrappers; React then trips over nodes it no longer owns. These two guards make that harmless. */
+let patched = false;
+function patchDom() {
+  if (patched) return;
+  patched = true;
+  const rm = Node.prototype.removeChild;
+  Node.prototype.removeChild = function <T extends Node>(this: Node, child: T): T { if (child.parentNode !== this) return child; return rm.call(this, child) as T; };
+  const ins = Node.prototype.insertBefore;
+  Node.prototype.insertBefore = function <T extends Node>(this: Node, node: T, ref: Node | null): T { if (ref && ref.parentNode !== this) return node; return ins.call(this, node, ref) as T; };
+}
+
+function clearGoogTrans() {
+  const gone = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+  document.cookie = gone;
+  const parts = location.hostname.split('.');
+  for (let i = 0; i < parts.length - 1; i++) document.cookie = `${gone}; domain=.${parts.slice(i).join('.')}`;
+}
+
+function loadWidget(): Promise<HTMLSelectElement> {
+  if (widgetReady) return widgetReady;
+  const p = new Promise<HTMLSelectElement>((resolve, reject) => {
+    patchDom();
+    const holder = document.createElement('div');
+    holder.id = 'yz-gt'; holder.setAttribute('translate', 'no'); holder.className = 'notranslate';
+    holder.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden';
+    document.body.appendChild(holder);
+    (window as Win).yzGtInit = () => {
+      const g = (window as Win).google;
+      if (!g) { reject(new Error('widget')); return; }
+      new g.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'yz-gt');
+      let tries = 0;
+      const iv = setInterval(() => {
+        const sel = holder.querySelector('select.goog-te-combo') as HTMLSelectElement | null;
+        if (sel) { clearInterval(iv); resolve(sel); } else if (++tries > 80) { clearInterval(iv); reject(new Error('widget')); }
+      }, 100);
+    };
+    const sc = document.createElement('script');
+    sc.src = 'https://translate.google.com/translate_a/element.js?cb=yzGtInit'; sc.async = true;
+    sc.onerror = () => reject(new Error('widget'));
+    document.head.appendChild(sc);
+  });
+  widgetReady = p;
+  p.catch(() => { widgetReady = null; });
+  return p;
+}
+
+async function widgetTranslate(code: string) {
+  const sel = await loadWidget();
+  const want = code === 'he' ? 'iw' : code;
+  // Google fills its language list a moment after the select appears, so wait until our language is in it.
+  for (let i = 0; i < 60 && ![...sel.options].some(o => o.value === want); i++) await new Promise(r => setTimeout(r, 100));
+  if (![...sel.options].some(o => o.value === want)) throw new Error('widget');
+  sel.value = want;
+  sel.dispatchEvent(new Event('change'));
+  widgetOn = true;
+  // Google remembers the choice in a cookie; keep it only if the visitor accepted Preferences cookies.
+  if (!preferencesAllowed()) setTimeout(clearGoogTrans, 1500);
+}
 
 const worth = (v: string) => /\p{L}{2,}/u.test(v) && !/^[A-Z0-9_\-·|/•:.,+%$€£₦ ]+$/.test(v.trim());
 
@@ -80,7 +146,17 @@ export function Translator() {
     const lang = findLang(language);
     document.documentElement.lang = lang.code === 'en' ? 'en' : lang.code;
     document.documentElement.dir = lang.rtl ? 'rtl' : 'ltr';
-    if (lang.code === 'en' || lang.ready === false) { restore(); return; }
+    if (lang.code === 'en' || lang.ready === false) {
+      restore();
+      if (widgetOn) { clearGoogTrans(); location.reload(); }
+      return;
+    }
+    if (!noKey) { try { noKey = sessionStorage.getItem(NOKEY) === '1'; } catch { /* ignore */ } }
+    if (noKey) {
+      queueMicrotask(() => setNote(`Translating to ${lang.name}…`));
+      widgetTranslate(lang.code).then(() => setNote(''), () => { setNote('We could not translate the page just now. It stays in English.'); setTimeout(() => setNote(''), 5000); });
+      return () => setNote('');
+    }
 
     const ctl = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -120,9 +196,17 @@ export function Translator() {
         applying = false;
         if ((err as Error).name === 'AbortError') return;
         restore();
-        setNote((err as Error).message === 'not_configured' ? 'Translation is not set up on this server yet, so the page stays in English.' : 'We could not translate the page just now. It stays in English.');
-        setTimeout(() => setNote(''), 5000);
         observer.disconnect();
+        if ((err as Error).message === 'not_configured') {
+          // No API key on this server: fall back to Google's free in-browser translator.
+          noKey = true;
+          try { sessionStorage.setItem(NOKEY, '1'); } catch { /* ignore */ }
+          setNote(`Translating to ${lang.name}…`);
+          widgetTranslate(lang.code).then(() => setNote(''), () => { setNote('We could not translate the page just now. It stays in English.'); setTimeout(() => setNote(''), 5000); });
+          return;
+        }
+        setNote('We could not translate the page just now. It stays in English.');
+        setTimeout(() => setNote(''), 5000);
       } finally {
         busy = false;
         if (again && !ctl.signal.aborted) { again = false; schedule(); }
