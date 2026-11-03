@@ -170,11 +170,6 @@ a:hover .arrow { transform: translateX(3px); }
 .closingRibbon span:first-child { background: linear-gradient(100deg, #17335A 0%, #2F6DB5 22%, #74A7E3 44%, #9CC6E0 60%, #F5EFA8 80%, #F0B74A 100%); background-size: 130% 100%; animation: flow 12s ease-in-out infinite alternate; }
 .closingRibbon span:last-child { background: repeating-linear-gradient(105deg, transparent 0 6px, rgba(255,255,255,0.28) 7px, transparent 9px 14px); mix-blend-mode: overlay; animation: drift 9s linear infinite; }
 
-/* Footer */
-.footer { max-width: var(--wrap); margin: 96px auto 0; padding: 32px 24px 48px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: center; gap: 24px; font-size: 14px; color: var(--muted); }
-.footer img { height: auto; }
-.footer nav { display: flex; flex-wrap: wrap; gap: 20px; margin-right: auto; }
-.footer a:hover { color: var(--ink2); }
 
 @media (prefers-color-scheme: dark) {
   .page { --ink2: #ECEEF2; --primary: #8DB6EA; }

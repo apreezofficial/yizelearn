@@ -26,7 +26,7 @@ export function OfferBar() {
   </div>;
 }
 
-const nav = ['Courses', 'Live classes', 'Certificates', 'Teach'];
+const nav: {label: string; href: string}[] = [{label: 'Courses', href: '/#courses'}, {label: 'Live classes', href: '#'}, {label: 'Teach', href: '#'}, {label: 'About', href: '/about'}];
 
 /** Floating pill nav after Aceternity's: logo, dot-separated links, a blue button. Sticks just below the top and firms up once scrolled. */
 export function SiteNav() {
@@ -39,8 +39,8 @@ export function SiteNav() {
   }, []);
   return <header className={`${s.bar} ${scrolled ? s.scrolled : ''}`}>
     <div className={s.pill}>
-      <Link href="/" className={s.brand}><Image src="/logo.png" alt="yizelearn" width={96} height={37} priority /></Link>
-      <nav className={s.links} aria-label="Main">{nav.map(n => <Link key={n} href="#">{n}</Link>)}</nav>
+      <Link href="/" className={s.brand}><Image src="/logo.png" alt="yizelearn home" width={96} height={37} priority /></Link>
+      <nav className={s.links} aria-label="Main">{nav.map(n => <Link key={n.label} href={n.href}>{n.label}</Link>)}</nav>
       <div className={s.right}>
         <Link href="#" className={s.signIn}>Sign in</Link>
         <Link href="#" className={s.cta}>Get started <HugeiconsIcon icon={ArrowRight01Icon} size={15} strokeWidth={2.4} className={s.arrow} /></Link>

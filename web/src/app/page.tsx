@@ -5,6 +5,7 @@ import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Clock01Icon, Maxim
 import {OfferBar, SiteNav} from '@/components/Chrome';
 import {Hero} from '@/components/Hero';
 import {GoalCourses} from '@/components/Explore';
+import {Footer} from '@/components/Footer';
 import {CountUp, QuizDemo, Reveal, ScrollWords} from '@/components/Live';
 import {paths, stories} from '@/lib/courses';
 import s from './page.module.css';
@@ -176,11 +177,7 @@ export default function Home() {
       </Reveal>
     </section>
 
-    <footer className={s.footer}>
-      <Image src="/logo.png" alt="yizelearn" width={96} height={38} />
-      <nav aria-label="Footer">{['Courses', 'Live classes', 'Teach', 'Help centre', 'Privacy', 'Terms'].map(n => <Link key={n} href="#">{n}</Link>)}</nav>
-      <span>© 2026 yizelearn</span>
-    </footer>
+    <Footer />
   </div>;
 }
 

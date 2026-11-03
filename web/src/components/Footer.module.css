@@ -1,0 +1,13 @@
+.footer { position: relative; z-index: 20; overflow: hidden; background: #0B1A2E; color: #C7CEDA; }
+.inner { max-width: 1160px; margin: 0 auto; padding: 72px 24px 24px; }
+.cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+.head { margin: 0 0 14px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.04em; color: #8796AE; }
+.cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.cols a { color: #ECEEF2; opacity: 0.85; transition: opacity 0.15s, color 0.15s; }
+.cols a:hover { opacity: 1; color: #9CC6E0; }
+.legal { display: flex; justify-content: space-between; margin-top: 56px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #8796AE; }
+.legal span:last-child { display: flex; gap: 16px; }
+/* Giant faded wordmark across the bottom, cut off by the edge */
+.wordmark { margin: 8px 0 -0.22em; text-align: center; font-size: clamp(80px, 21vw, 300px); line-height: 1; font-weight: 800; letter-spacing: -0.05em;
+  background: linear-gradient(180deg, rgba(156, 198, 224, 0.22), rgba(156, 198, 224, 0.02)); -webkit-background-clip: text; background-clip: text; color: transparent; user-select: none; }
+@media (max-width: 700px) { .cols { grid-template-columns: 1fr 1fr; } .inner { padding: 56px 16px 20px; } }
