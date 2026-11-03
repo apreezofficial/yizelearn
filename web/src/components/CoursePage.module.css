@@ -112,7 +112,7 @@
 .miniBtn { padding: 11px 20px; border-radius: 8px; background: var(--marigold); color: #1C1F33; font-weight: 700; }
 
 .more { max-width: 1180px; margin: 0 auto; padding: 0 24px 72px; }
-.moreGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 20px; }
+.moreGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
 .phoneBar { display: none; }
 
 /* Shimmer loading */
@@ -138,7 +138,7 @@
   .learn { padding: 18px; }
   .learn ul { grid-template-columns: minmax(0, 1fr); }
   .mini { display: none; }
-  .moreGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 14px; }
+  .moreGrid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .more { padding: 0 16px 56px; }
   .inst { gap: 14px; }
   .inst > i { width: 60px; height: 60px; font-size: 20px; }

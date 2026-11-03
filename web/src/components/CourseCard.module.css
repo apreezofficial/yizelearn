@@ -1,7 +1,7 @@
-.card { display: block; flex: none; width: 100%; min-width: 0; color: var(--ink); }
-.wide { width: 256px; scroll-snap-align: start; }
-.art { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; display: grid; place-items: center; background: var(--blue700); color: #fff; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
-.card:hover .art { transform: scale(0.985); }
+.card { display: block; flex: none; width: 100%; min-width: 0; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(11, 26, 46, 0.04); transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s; }
+.card:hover { border-color: var(--sand-line); box-shadow: 0 12px 28px -14px rgba(11, 26, 46, 0.3); transform: translateY(-2px); }
+.wide { width: 290px; scroll-snap-align: start; }
+.art { position: relative; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; display: grid; place-items: center; background: var(--blue700); color: #fff; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
 .art[data-tone='0'] { background: #2F6DB5; }
 .art[data-tone='1'] { background: #17335A; }
 .art[data-tone='2'] { background: #74A7E3; color: #17335A; }
@@ -10,30 +10,33 @@
 .glyph { opacity: 0.9; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 .card:hover .glyph { transform: scale(1.12) rotate(-4deg); }
 .topic { position: absolute; left: 12px; bottom: 10px; right: 12px; font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
-.chip { display: inline-block; margin-top: 8px; padding: 4px 8px; border-radius: 4px; background: #F5EFA8; color: #3D3500; font-size: 12px; font-weight: 800; }
 .heart { position: absolute; right: 10px; top: 10px; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: none; color: rgba(255, 255, 255, 0.95); cursor: pointer; transition: transform 0.15s; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45)); }
 .heart svg { fill: rgba(0, 0, 0, 0.35); }
 .heart:hover { transform: scale(1.12); }
 .hearted svg { fill: #E0314B; color: #E0314B; }
 .hearted { animation: beat 0.35s; }
 @keyframes beat { 40% { transform: scale(1.3); } }
-.card h3 { margin: 10px 0 0; font-size: 16px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.by { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rate { display: flex; align-items: center; gap: 4px; margin: 4px 0 0; font-size: 13px; color: var(--muted); }
-.rate b { color: #9A6A12; font-size: 13.5px; }
-.rate i { font-style: normal; }
-.stars { display: inline-flex; gap: 1px; }
+.body { padding: 12px 6px 6px; }
+.card h3 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 3.9em; }
+.by { margin: 6px 0 0; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pills { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 12px; min-height: 24px; }
+.chip { padding: 3px 8px; border-radius: 4px; background: #F5EFA8; color: #3D3500; font-size: 12px; font-weight: 800; }
+.pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border: 1px solid var(--line); border-radius: 4px; font-size: 12px; color: var(--muted); }
+.pill b { color: var(--ink); font-weight: 600; }
 .starOn { color: #E59819; fill: #E59819; }
-.starOff { color: var(--sand-line); }
-.meta { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 0; font-size: 14px; color: var(--muted); }
-.meta b { color: var(--ink); font-size: 16px; font-weight: 800; }
-.meta s { font-size: 14px; }
+.foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; }
+.meta { display: flex; align-items: baseline; gap: 6px; margin: 0; }
+.meta b { color: var(--ink); font-size: 15px; font-weight: 700; }
+.meta s { font-size: 12.5px; color: var(--muted); }
+.btn { flex: none; padding: 7px 12px; border: 1px solid var(--blue700); border-radius: 8px; font-size: 13px; font-weight: 700; color: var(--blue700); transition: background 0.15s; }
+.card:hover .btn { background: var(--blue50); }
 
 .line { height: 14px; margin-top: 10px; border-radius: 6px; }
-.card > .art.shimmer { border-radius: 6px; }
+.body .line:first-child { margin-top: 0; }
+.card > .art.shimmer { border-radius: 8px; }
 .shimmer { background: #ECEEF2; position: relative; overflow: hidden; }
 .shimmer::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent); animation: sweep 1.3s infinite; }
 @keyframes sweep { to { transform: translateX(100%); } }
 @media (prefers-color-scheme: dark) { .shimmer { background: #272B33; } .shimmer::after { background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent); } }
 @media (prefers-reduced-motion: reduce) { .shimmer::after { animation: none; } .card:hover .glyph, .card:hover .art { transform: none; } }
-@media (max-width: 700px) { .wide { width: 220px; } .glyph { width: 44px; height: 44px; } .card h3 { font-size: 15px; } }
+@media (max-width: 700px) { .wide { width: 262px; } .glyph { width: 44px; height: 44px; } .card h3 { font-size: 15px; min-height: 0; } .art { aspect-ratio: 16 / 8; } .btn { padding: 6px 10px; } }

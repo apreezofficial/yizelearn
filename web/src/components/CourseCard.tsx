@@ -37,9 +37,7 @@ export function Heart({id, className}: {id: string; className?: string}) {
   </button>;
 }
 
-const Stars = ({v}: {v: number}) => <span className={s.stars} aria-hidden>{[1, 2, 3, 4, 5].map(i => <HugeiconsIcon key={i} icon={StarIcon} size={12} className={i <= Math.round(v) ? s.starOn : s.starOff} />)}</span>;
-
-/** Udemy-style card: wide picture, bold two-line title, instructor, rating with stars, then price and a badge. */
+/** Udemy home-page card: bordered box, inset picture, bold title, instructor, badge and rating pills, price and a button. */
 export function CourseCard({course: c, wide}: {course: Course; wide?: boolean}) {
   return <Link href={`/courses/${c.id}`} className={`${s.card} ${wide ? s.wide : ''}`}>
     <div className={s.art} data-tone={c.tone}>
@@ -47,11 +45,19 @@ export function CourseCard({course: c, wide}: {course: Course; wide?: boolean}) 
       <span className={s.topic}>{c.topic}</span>
       <Heart id={c.id} />
     </div>
-    <h3>{c.title}</h3>
-    <p className={s.by}>{c.instructor}</p>
-    <p className={s.rate}><b>{c.rating.toFixed(1)}</b><Stars v={c.rating} /><i>({c.reviews.toLocaleString()})</i></p>
-    <p className={s.meta}><b>{naira(c.price)}</b>{c.was && <s>{naira(c.was)}</s>}</p>
-    {c.tag && <span className={s.chip}>{c.tag === 'New' ? 'New' : 'Bestseller'}</span>}
+    <div className={s.body}>
+      <h3>{c.title}</h3>
+      <p className={s.by}>{c.instructor}</p>
+      <div className={s.pills}>
+        {c.tag && <span className={s.chip}>{c.tag === 'New' ? 'New' : 'Bestseller'}</span>}
+        <span className={s.pill}><HugeiconsIcon icon={StarIcon} size={11} className={s.starOn} /><b>{c.rating.toFixed(1)}</b></span>
+        <span className={s.pill}>{c.reviews.toLocaleString()} ratings</span>
+      </div>
+      <div className={s.foot}>
+        <p className={s.meta}><b>{naira(c.price)}</b>{c.was && <s>{naira(c.was)}</s>}</p>
+        <span className={s.btn}>View course</span>
+      </div>
+    </div>
   </Link>;
 }
 
@@ -59,8 +65,11 @@ export function CourseCard({course: c, wide}: {course: Course; wide?: boolean}) 
 export function CardSkeleton({wide}: {wide?: boolean}) {
   return <div className={`${s.card} ${wide ? s.wide : ''}`} aria-hidden>
     <div className={`${s.art} ${s.shimmer}`} />
-    <div className={`${s.line} ${s.shimmer}`} style={{width: '86%'}} />
-    <div className={`${s.line} ${s.shimmer}`} style={{width: '58%'}} />
-    <div className={`${s.line} ${s.shimmer}`} style={{width: '42%'}} />
+    <div className={s.body}>
+      <div className={`${s.line} ${s.shimmer}`} style={{width: '90%'}} />
+      <div className={`${s.line} ${s.shimmer}`} style={{width: '60%'}} />
+      <div className={`${s.line} ${s.shimmer}`} style={{width: '70%', marginTop: 18}} />
+      <div className={`${s.line} ${s.shimmer}`} style={{width: '40%'}} />
+    </div>
   </div>;
 }
