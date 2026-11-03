@@ -89,9 +89,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .scrollWords[data-dark='true'] { --from: #2A3A55; --to: #FDF8F1; --accent: #9CC6E0; --bg: #0B1A2E; }
 @media (prefers-color-scheme: dark) { .scrollWords:not([data-dark='true']) { --from: #2A2E35; --to: #ECEEF2; --accent: #8DB6EA; --bg: #15171B; } }
 .scrollWordsPin { position: sticky; top: 0; height: 100vh; height: 100dvh; max-width: 1160px; margin: 0 auto; padding: 104px 24px 24px; display: flex; flex-direction: column; gap: 28px; overflow: hidden; }
-.scrollWordsHead { position: relative; transform: translateY(calc((1 - var(--lift)) * 24vh)); }
+/* Before the lift the statement sits just under the label; after it, beside the label. */
+.scrollWordsHead { position: relative; transform: translateY(calc((1 - var(--lift)) * 52px)); }
 .scrollWordsLabel { position: absolute; top: 4px; left: 0; margin: 0; font-size: 15px; font-weight: 500; color: color-mix(in srgb, var(--to) 55%, transparent);
-  transform: translateY(calc((1 - var(--lift)) * -24vh)); }
+  transform: translateY(calc((1 - var(--lift)) * -52px)); }
 .scrollWordsText { margin: 0; max-width: calc(980px - var(--lift) * 300px); padding-left: calc(var(--lift) * 200px); font-size: calc(clamp(30px, 4.4vw, 56px) - var(--lift) * (clamp(30px, 4.4vw, 56px) - clamp(22px, 2.3vw, 30px)));
   line-height: 1.18; letter-spacing: -0.03em; font-weight: 600; }
 .scrollWordsText span { --p: 0; color: color-mix(in srgb, var(--to) calc(var(--p) * 100%), var(--from)); }
@@ -105,7 +106,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (max-width: 900px) {
   .scrollWords { height: 340vh; }
   .scrollWordsPin { padding: 88px 16px 16px; gap: 20px; }
-  .scrollWordsHead { transform: translateY(calc((1 - var(--lift)) * 20vh)); }
+  .scrollWordsHead { transform: none; }
   .scrollWordsLabel { position: static; margin-bottom: 10px; transform: none; }
   .scrollWordsText { padding-left: 0; max-width: none; font-size: calc(30px - var(--lift) * 8px); }
 }
