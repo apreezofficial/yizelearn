@@ -1,157 +1,150 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {ArrowRight01Icon, ArrowUpRight01Icon, Award01Icon, BookOpen01Icon, Calendar01Icon, CheckmarkCircle02Icon, Clock01Icon, Globe02Icon, LaptopIcon, UserGroupIcon} from '@hugeicons/core-free-icons';
-import {Balloon, Ball, Learner, Pinwheel, Plane, Scribble, Squiggle, Sun, Target} from '@/components/Art';
+import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Clock01Icon, Maximize02Icon, Mic01Icon, PlayIcon, SentIcon, Video01Icon} from '@hugeicons/core-free-icons';
+import {CountUp, QuizDemo, Reveal, Ticker} from '@/components/Live';
 import s from './page.module.css';
 
-const tracks = [
-  {title: 'Spreadsheet skills that pay', color: s.orange, look: {skin: '#8D5A3B', hair: '#1E2530', top: '#FDF8F1', hairStyle: 'puff', glasses: true, prop: 'books'} as const},
-  {title: 'Ideas you can ship', color: s.green, look: {skin: '#E9B48C', hair: '#6B3E26', top: '#FDF8F1', hairStyle: 'short', prop: 'laptop'} as const},
-  {title: 'Grow into your next role', color: s.blue, look: {skin: '#C68B5E', hair: '#2B1B12', top: '#24508F', hairStyle: 'bun', prop: 'cert'} as const},
-];
+const topics = ['Excel', 'Financial modelling', 'Python', 'Business writing', 'Design basics', 'Data analysis', 'Public speaking', 'Project management', 'Macros', 'Healthy habits'];
+const nav = ['Courses', 'Live classes', 'Certificates', 'For teams', 'Teach'];
 
-const categories = [
-  {title: 'Business', detail: 'Excel, finance and writing', bg: '#74A7E3', look: {skin: '#8D5A3B', hair: '#1E2530', top: '#F0B74A', hairStyle: 'braids', prop: 'books'} as const},
-  {title: 'Tech', detail: 'Python and automation', bg: '#E86A4A', look: {skin: '#E9B48C', hair: '#3A2418', top: '#2F6DB5', hairStyle: 'long', glasses: true, prop: 'laptop'} as const},
-  {title: 'Design', detail: 'Slides, posters, social', bg: '#2E8B67', look: {skin: '#C68B5E', hair: '#1E2530', top: '#FDF8F1', hairStyle: 'short', prop: 'tablet'} as const},
-  {title: 'Health', detail: 'Habits for busy people', bg: '#F0B74A', look: {skin: '#A86B45', hair: '#2B1B12', top: '#B53A3A', hairStyle: 'puff', prop: 'none'} as const},
-];
-
-const nav = ['Courses', 'How it works', 'Pricing', 'Teach on yizelearn'];
+const Arrow = () => <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={2.4} className={s.arrow} />;
 
 export default function Home() {
   return <div className={s.page}>
-    <header className={s.nav}>
-      <Link href="/" className={s.brand}><Image src="/logo.png" alt="yizelearn" width={112} height={44} priority /></Link>
-      <nav className={s.links} aria-label="Main">{nav.map(n => <Link key={n} href={`#${n.toLowerCase().replace(/\s+/g, '-')}`}>{n}</Link>)}</nav>
-      <Link href="#start" className={s.navCta}>Get started</Link>
-    </header>
+    {/* Hero with the diagonal silk ribbon */}
+    <section className={s.hero}>
+      <div className={s.ribbon} aria-hidden><span /><span /><span /></div>
+      <header className={s.nav}>
+        <Link href="/" className={s.brand}><Image src="/logo.png" alt="yizelearn" width={104} height={40} priority /></Link>
+        <nav className={s.links} aria-label="Main">{nav.map(n => <Link key={n} href="#">{n}</Link>)}</nav>
+        <div className={s.navRight}><Link href="#" className={s.signIn}>Sign in <Arrow /></Link><Link href="#" className={s.navCta}>Get started <Arrow /></Link></div>
+      </header>
+      <div className={s.heroCopy}>
+        <p className={s.live}>Lessons finished on yizelearn today: <b><Ticker start={48213} perSecond={0.9} /></b></p>
+        <h1>Skills that move your career <span>forward.</span></h1>
+        <p className={s.lede}>Short, practical courses from people who do the work. Learn in minutes a day, join live classes, and earn a certificate you can show.</p>
+        <div className={s.ctas}>
+          <Link href="#" className={s.primary}>Start learning <Arrow /></Link>
+          <Link href="#courses" className={s.secondary}>Browse courses</Link>
+        </div>
+      </div>
+    </section>
 
-    <main>
-      {/* Hero */}
-      <section className={s.hero}>
-        <span className={`${s.float} ${s.balloon}`}><Balloon /></span>
-        <span className={`${s.float} ${s.ball}`}><Ball /></span>
-        <h1 className={s.display}>Putting your <em>skills</em> on a <span className={s.accent}>faster track</span></h1>
-        <ul className={s.checks}>
-          {['Pay once, keep access', 'Certificate on every course', 'Live classes each week'].map(c => <li key={c}><HugeiconsIcon icon={CheckmarkCircle02Icon} size={16} />{c}</li>)}
-        </ul>
-        <div className={s.heroRow}>
-          <figure className={`${s.portrait} ${s.portraitLeft}`}>
-            <span className={`${s.blob} ${s.blobGreen}`} />
-            <span className={s.target}><Target /></span>
-            <Learner skin="#8D5A3B" hair="#1E2530" top="#2E8B67" hairStyle="puff" prop="books" />
-          </figure>
-          <div className={s.heroMid}>
-            <Link href="#start" className={s.primary}>Start learning <HugeiconsIcon icon={ArrowUpRight01Icon} size={16} /></Link>
-            <p>Short, practical lessons from people who do the work, so you use it on Monday.</p>
-            <div className={s.scribble}><Scribble /></div>
+    {/* Topic marquee */}
+    <div className={s.marquee} aria-label="Popular topics">
+      <div className={s.track}>{[...topics, ...topics].map((t, i) => <span key={i} aria-hidden={i >= topics.length}>{t}</span>)}</div>
+    </div>
+
+    {/* Bento of product moments */}
+    <section className={s.section} id="courses">
+      <Reveal className={s.reveal}><h2 className={s.h2}>One place to learn, practise and prove it.</h2></Reveal>
+      <div className={s.bento}>
+        <Reveal className={`${s.card} ${s.wide} ${s.reveal}`}>
+          <CardHead title="Learn from short, sharp lessons" />
+          <div className={s.player}>
+            <div className={s.video}>
+              <span className={s.play}><HugeiconsIcon icon={PlayIcon} size={22} /></span>
+              <div className={s.videoBar}><span /></div>
+            </div>
+            <div className={s.lessons}>
+              <small>Module 2 · Formulas</small>
+              {[['Cell references', true], ['SUMIF and COUNTIF', true], ['Lookup functions', false], ['Text functions', false]].map(([t, done], i) => <div key={t as string} className={`${s.lesson} ${i === 2 ? s.now : ''}`}>
+                <i className={done ? s.done : ''}>{done ? <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} /> : i + 1}</i>{t}<em>{8 + i} min</em>
+              </div>)}
+            </div>
           </div>
-          <figure className={`${s.portrait} ${s.portraitRight}`}>
-            <span className={`${s.blob} ${s.blobGold}`} />
-            <Learner skin="#E9B48C" hair="#6B3E26" top="#B53A3A" hairStyle="long" prop="laptop" />
-          </figure>
-        </div>
-      </section>
+        </Reveal>
 
-      {/* Stats band */}
-      <section className={s.stats} aria-label="yizelearn in numbers">
-        {[
-          {icon: BookOpen01Icon, value: '300+', label: 'Courses across business, tech, design and health', tone: s.toneRed},
-          {icon: UserGroupIcon, value: '12K+', label: 'Learners growing their careers with us', tone: s.toneGold},
-          {icon: Award01Icon, value: '8K+', label: 'Certificates earned and shared', tone: s.toneGreen},
-        ].map(x => <div key={x.value} className={s.stat}>
-          <span className={`${s.statIcon} ${x.tone}`}><HugeiconsIcon icon={x.icon} size={18} /></span>
-          <div><strong>{x.value}</strong><p>{x.label}</p></div>
-        </div>)}
-        <span className={s.plane}><Plane color="#74A7E3" /></span>
-      </section>
+        <Reveal className={`${s.card} ${s.reveal}`} delay={80}>
+          <CardHead title="Check yourself as you go" />
+          <div className={s.quizWrap}><QuizDemo /></div>
+        </Reveal>
 
-      {/* Tracks */}
-      <section className={s.section} id="courses">
-        <div className={s.sectionHead}>
-          <h2 className={s.h2}>Smart, practical skills <br />ready to <span className={s.accent}>take you far!</span></h2>
-          <p>Learn with us in short lessons. One clear skill per lesson, at your own pace.</p>
-          <Link href="#start" className={s.ghost}>Enrol now <HugeiconsIcon icon={ArrowUpRight01Icon} size={16} /></Link>
-        </div>
-        <div className={s.tracks}>
-          {tracks.map(t => <article key={t.title} className={`${s.track} ${t.color}`}>
-            <span className={s.squiggle}><Squiggle /></span>
-            <h3>{t.title}</h3>
-            <div className={s.trackArt}><Learner {...t.look} /></div>
-          </article>)}
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className={s.section} id="how-it-works">
-        <p className={s.kicker}>Every course, one focused skill</p>
-        <h2 className={`${s.h2} ${s.center}`}><span className={s.sun}><Sun /></span>Shaping the <span className={s.accent}>future</span> of work</h2>
-        <div className={s.cats}>
-          {categories.map(c => <Link key={c.title} href="#courses" className={s.cat}>
-            <span className={s.catArt}><span className={s.catBlob} style={{background: c.bg}} /><Learner {...c.look} /></span>
-            <strong>{c.title}</strong><span>{c.detail}</span>
-          </Link>)}
-        </div>
-      </section>
-
-      {/* Promo pair */}
-      <section className={`${s.section} ${s.promos}`}>
-        <article className={`${s.promo} ${s.promoGold}`}>
-          <div>
-            <h3>Confidence that builds a brighter career.</h3>
-            <p>Quizzes, projects and feedback that prove what you can do.</p>
-            <Link href="#start" className={s.small}>Browse courses <HugeiconsIcon icon={ArrowRight01Icon} size={14} /></Link>
+        <Reveal className={`${s.card} ${s.reveal}`}>
+          <CardHead title="Ask the instructor, live" />
+          <div className={s.liveClass}>
+            <div className={s.ring} aria-hidden />
+            <div className={s.bubbleThem}>How do I lock a cell in a formula?</div>
+            <div className={s.bubbleMe}>Press F4 on the reference. It adds the $ signs for you.</div>
+            <div className={s.liveTag}><HugeiconsIcon icon={Video01Icon} size={14} /> Live · 214 watching <HugeiconsIcon icon={Mic01Icon} size={14} /></div>
+            <div className={s.composer}>Type a question<HugeiconsIcon icon={SentIcon} size={14} /></div>
           </div>
-          <div className={s.promoArt}><Learner skin="#C68B5E" hair="#1E2530" top="#74A7E3" hairStyle="short" glasses prop="books" /></div>
-        </article>
-        <article className={`${s.promo} ${s.promoOrange}`}>
-          <div>
-            <h3>Helping you shoot for your goals.</h3>
-            <p>Track progress and earn a certificate you can share.</p>
-            <Link href="#start" className={s.small}>Learn more <HugeiconsIcon icon={ArrowRight01Icon} size={14} /></Link>
-          </div>
-          <span className={s.pinwheel}><Pinwheel /></span>
-        </article>
-      </section>
+        </Reveal>
 
-      {/* Empower */}
-      <section className={`${s.section} ${s.empower}`}>
-        <div>
-          <span className={s.tag}>Enrolment is open</span>
-          <h2 className={s.h2}>Empower your career to think <span className={s.accent}>smarter</span> and sharper</h2>
-          <p>Hands-on lessons, real projects and an instructor who answers your questions.</p>
-          <Link href="#start" className={s.primary}>Get started <HugeiconsIcon icon={ArrowUpRight01Icon} size={16} /></Link>
+        <Reveal className={`${s.card} ${s.wide} ${s.reveal}`} delay={80}>
+          <CardHead title="Finish with a certificate worth sharing" />
+          <div className={s.certStage}>
+            <div className={s.cert}>
+              <small>Certificate of completion</small>
+              <strong>Mercy Ibe</strong>
+              <span>has completed <b>Data analysis in Excel</b></span>
+              <div className={s.certFoot}><Image src="/logo.png" alt="" width={64} height={25} /><i><HugeiconsIcon icon={Award01Icon} size={18} /></i></div>
+            </div>
+            <div className={s.share}><span>Share to</span><b>LinkedIn</b><b>Download PDF</b></div>
+          </div>
+        </Reveal>
+
+        <Reveal className={`${s.card} ${s.reveal}`}>
+          <CardHead title="Pay once in naira" />
+          <div className={s.checkout}>
+            <div className={s.coRow}><span>Data analysis in Excel</span><b>₦15,000</b></div>
+            <div className={s.coRow}><span>Promo WELCOME10</span><b className={s.green}>−₦1,500</b></div>
+            <div className={`${s.coRow} ${s.coTotal}`}><span>Total</span><b>₦13,500</b></div>
+            <div className={s.coMethods}><span className={s.on}>Card</span><span>Bank transfer</span></div>
+            <div className={s.coPay}>Pay ₦13,500</div>
+          </div>
+        </Reveal>
+
+        <Reveal className={`${s.card} ${s.wide} ${s.reveal}`} delay={80}>
+          <CardHead title="Keep going with streaks and progress" />
+          <div className={s.progress}>
+            {[['Data analysis in Excel', 72], ['Business writing', 40], ['Intro to Python', 18]].map(([t, p], i) => <div key={t as string} className={s.pRow}>
+              <span>{t}</span><div className={s.pTrack}><i style={{width: `${p}%`, animationDelay: `${i * 150}ms`}} /></div><b>{p}%</b>
+            </div>)}
+            <div className={s.streak}>{['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <span key={i} className={i < 5 ? s.lit : ''} style={{animationDelay: `${i * 90}ms`}}>{d}</span>)}<em>5-day streak</em></div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+
+    {/* Dark numbers section */}
+    <section className={s.dark}>
+      <div className={s.darkInner}>
+        <Reveal className={s.reveal}>
+          <p className={s.eyebrow}>Built for busy people</p>
+          <h2 className={s.h2}>Learning that fits around work, family and data plans.</h2>
+          <p className={s.darkLede}>Lessons are short and light on data. Download them on Wi-Fi and watch offline on the bus.</p>
+        </Reveal>
+        <div className={s.stats}>
+          {[{v: 12480, suf: '+', l: 'learners'}, {v: 312, suf: '', l: 'courses'}, {v: 94, suf: '%', l: 'finish what they start'}, {v: 40, suf: '+', l: 'live classes a month'}].map((x, i) => <Reveal key={x.l} className={`${s.stat} ${s.reveal}`} delay={i * 80}>
+            <strong><CountUp to={x.v} suffix={x.suf} /></strong><span>{x.l}</span>
+          </Reveal>)}
         </div>
-        <div className={s.empowerArt}>
-          <span className={`${s.blob} ${s.blobBlue}`} />
-          <Learner skin="#A86B45" hair="#2B1B12" top="#F0B74A" hairStyle="braids" prop="cert" />
-          <div className={s.proof}>
-            <span><HugeiconsIcon icon={Globe02Icon} size={18} /><b>12K+</b>learners across Africa</span>
-            <span><HugeiconsIcon icon={LaptopIcon} size={18} /><b>40+</b>live classes a month</span>
-          </div>
+      </div>
+    </section>
+
+    {/* Closing call to action */}
+    <section className={s.section}>
+      <Reveal className={`${s.closing} ${s.reveal}`}>
+        <div className={s.closingRibbon} aria-hidden><span /><span /></div>
+        <h2 className={s.h2}>Ready to start?</h2>
+        <p>Pick a course, learn at your pace, and keep access after you finish.</p>
+        <div className={s.ctas}>
+          <Link href="#" className={s.primary}>Start learning <Arrow /></Link>
+          <Link href="#" className={s.secondary}><HugeiconsIcon icon={Clock01Icon} size={16} /> See this week&apos;s live classes</Link>
         </div>
-      </section>
+      </Reveal>
+    </section>
 
-      {/* Live class */}
-      <section className={s.section} id="start">
-        <article className={s.event}>
-          <div className={s.eventArt}><Learner skin="#E9B48C" hair="#3A2418" top="#2E8B67" hairStyle="long" glasses prop="laptop" /></div>
-          <div className={s.eventCopy}>
-            <span className={s.tag}>Next live class</span>
-            <h3>Build your first dashboard, one step at a time</h3>
-            <p>Adaeze Okafor walks through a real sales sheet, live, with Q&amp;A at the end.</p>
-            <div className={s.eventMeta}><span><HugeiconsIcon icon={Calendar01Icon} size={16} />14 Nov 2026</span><span><HugeiconsIcon icon={Clock01Icon} size={16} />6:00 PM WAT</span></div>
-          </div>
-        </article>
-      </section>
-    </main>
-
-    <footer className={s.footer} id="pricing">
+    <footer className={s.footer}>
       <Image src="/logo.png" alt="yizelearn" width={96} height={38} />
-      <p>Short, practical courses for people with busy lives.</p>
+      <nav aria-label="Footer">{['Courses', 'Live classes', 'Teach', 'Help centre', 'Privacy', 'Terms'].map(n => <Link key={n} href="#">{n}</Link>)}</nav>
       <span>© 2026 yizelearn</span>
     </footer>
   </div>;
+}
+
+function CardHead({title}: {title: string}) {
+  return <div className={s.cardHead}><h3>{title}</h3><span className={s.expand} aria-hidden><HugeiconsIcon icon={Maximize02Icon} size={16} /></span></div>;
 }
