@@ -1,0 +1,40 @@
+/* Dark rounded card with a full-bleed video, after Upwork's hero. Brand gradient underneath as the fallback. */
+.card { position: relative; isolation: isolate; overflow: hidden; max-width: 1160px; min-height: 560px; margin: 120px auto 0; border-radius: 28px; color: #fff; display: flex; align-items: flex-end;
+  background: radial-gradient(60% 80% at 85% 20%, rgba(156, 198, 224, 0.45), transparent 60%), radial-gradient(50% 60% at 20% 90%, rgba(240, 183, 74, 0.3), transparent 60%), linear-gradient(135deg, #17335A, #0B1A2E); }
+.media { position: absolute; inset: 0; z-index: -2; }
+.video, .videoOn { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.9s ease, transform 6s ease; }
+.video { opacity: 0; transform: scale(1.06); }
+.videoOn { opacity: 1; transform: scale(1); }
+/* Darken the left and bottom so the copy always reads over any frame */
+.shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(11, 26, 46, 0.88) 0%, rgba(11, 26, 46, 0.55) 45%, rgba(11, 26, 46, 0.1) 75%), linear-gradient(0deg, rgba(11, 26, 46, 0.6), transparent 50%); }
+.content { padding: 56px; max-width: 640px; }
+
+/* Glassy two-option switch with a sliding white thumb */
+.toggle { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.thumb { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: #fff; box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.5); transition: transform 0.45s cubic-bezier(0.34, 1.3, 0.64, 1); }
+.thumb[data-side='teach'] { transform: translateX(100%); }
+.tab, .tabOn { position: relative; z-index: 1; min-width: 96px; height: 38px; padding: 0 22px; border: 0; border-radius: 999px; background: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: color 0.3s; }
+.tab { color: rgba(255, 255, 255, 0.85); }
+.tab:hover { color: #fff; }
+.tabOn { color: #17335A; }
+
+.copy { margin-top: 26px; }
+.copy > * { animation: swap 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.copy p { animation-delay: 60ms; }
+.copy a { animation-delay: 120ms; }
+@keyframes swap { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+.copy h2 { margin: 0; font-size: clamp(34px, 4.6vw, 60px); line-height: 1.04; letter-spacing: -0.035em; font-weight: 600; }
+.copy p { margin: 18px 0 0; max-width: 520px; font-size: 18px; line-height: 1.55; color: rgba(255, 255, 255, 0.86); }
+.cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 28px; height: 52px; padding: 0 24px; border-radius: 999px; background: #F0B74A; color: #17335A; font-weight: 700; font-size: 16px;
+  box-shadow: 0 0 0 0 rgba(240, 183, 74, 0.5), 0 14px 30px -14px rgba(240, 183, 74, 0.9); transition: transform 0.15s, box-shadow 0.3s, background 0.2s; }
+.cta:hover { transform: translateY(-2px); background: #F5C76A; box-shadow: 0 0 0 6px rgba(240, 183, 74, 0.18), 0 18px 34px -14px rgba(240, 183, 74, 1); }
+.cta svg { transition: transform 0.2s; }
+.cta:hover svg { transform: translateX(3px); }
+
+@media (prefers-reduced-motion: reduce) { .copy > * { animation: none; } }
+@media (max-width: 900px) {
+  .card { margin: 72px 12px 0; min-height: 520px; border-radius: 22px; }
+  .content { padding: 28px 22px; }
+  .copy p { font-size: 16px; }
+  .shade { background: linear-gradient(0deg, rgba(11, 26, 46, 0.92) 10%, rgba(11, 26, 46, 0.5) 60%, rgba(11, 26, 46, 0.2)); }
+}

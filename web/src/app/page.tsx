@@ -1,11 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Clock01Icon, Mic01Icon, PlayIcon, SentIcon, UserGroupIcon, Video01Icon} from '@hugeicons/core-free-icons';
+import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Mic01Icon, PlayIcon, SentIcon, UserGroupIcon, Video01Icon} from '@hugeicons/core-free-icons';
 import {OfferBar, SiteNav} from '@/components/Chrome';
 import {Hero} from '@/components/Hero';
 import {GoalCourses} from '@/components/Explore';
 import {Journey} from '@/components/Journey';
+import {SwitchCta} from '@/components/SwitchCta';
 import {Footer} from '@/components/Footer';
 import {QuizDemo, Reveal, ScrollWords} from '@/components/Live';
 import {paths} from '@/lib/courses';
@@ -117,18 +118,8 @@ export default function Home() {
       </Reveal>
     </section>
 
-    {/* Closing call to action */}
-    <section className={s.section}>
-      <Reveal className={`${s.closing} ${s.reveal}`}>
-        <div className={s.closingRibbon} aria-hidden><span /><span /></div>
-        <h2 className={s.h2}>Ready to start?</h2>
-        <p>Pick a course, learn at your pace, and keep access after you finish.</p>
-        <div className={s.ctas}>
-          <Link href="#" className={s.primary}>Start learning <Arrow /></Link>
-          <Link href="#" className={s.secondary}><HugeiconsIcon icon={Clock01Icon} size={16} /> See this week&apos;s live classes</Link>
-        </div>
-      </Reveal>
-    </section>
+    {/* Closing call to action: Upwork-style card with a Learn / Teach switch over video */}
+    <SwitchCta />
 
     <Footer />
   </div>;
