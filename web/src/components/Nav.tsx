@@ -4,6 +4,7 @@ import {openPrefs} from './FooterPrefs';
 import {Logo} from './Logo';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
+import {createPortal} from 'react-dom';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Globe02Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
@@ -84,7 +85,7 @@ export function SiteNav() {
     {focus && suggestions}
   </form>;
 
-  return <header ref={bar} className={`${s.bar} ${scrolled ? s.scrolled : ''} ${drawer ? s.barOpen : ''}`}>
+  return <header ref={bar} className={`${s.bar} ${scrolled ? s.scrolled : ''}`}>
     <div className={s.inner}>
       <Link href="/" className={s.brand}><Logo alt="yizelearn home" width={104} height={40} priority /></Link>
 
@@ -125,7 +126,8 @@ export function SiteNav() {
       </div>
     </div>}
 
-    {drawer && <div className={s.drawerWrap} role="dialog" aria-modal aria-label="Menu">
+    {/* Rendered on the page body, not inside the bar: the bar's blur makes iPhone Safari trap fixed children inside it. */}
+    {drawer && createPortal(<div className={s.drawerWrap} role="dialog" aria-modal aria-label="Menu">
       <button className={s.scrim} aria-label="Close menu" onClick={() => setDrawer(false)} />
       <div className={s.drawer}>
         <div className={s.drawerHead}><Logo alt="yizelearn" width={96} height={37} /><button className={s.iconBtn} aria-label="Close menu" onClick={() => setDrawer(false)}><HugeiconsIcon icon={Cancel01Icon} size={22} strokeWidth={2} /></button></div>
@@ -140,6 +142,6 @@ export function SiteNav() {
           <Link href="/signup" className={s.signup} onClick={() => setDrawer(false)}>Sign up</Link>
         </div>
       </div>
-    </div>}
+    </div>, document.body)}
   </header>;
 }
