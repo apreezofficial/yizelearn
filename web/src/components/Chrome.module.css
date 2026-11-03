@@ -36,10 +36,12 @@ a:hover .arrow { transform: translateX(3px); }
 }
 
 @media (max-width: 900px) {
-  .offer { flex-direction: column; gap: 8px; padding: 10px 48px; font-size: 13px; }
+  .offer { justify-content: space-between; gap: 10px; min-height: 0; padding: 8px 52px 8px 14px; font-size: 12px; line-height: 1.35; }
+  .offer p { text-align: left; }
   .sep { display: none; }
   .offer p b { display: block; }
-  .offerCta { padding: 7px 14px; font-size: 13px; }
+  .offerCta { padding: 6px 10px; font-size: 12px; border-radius: 8px; white-space: nowrap; }
+  .close { right: 6px; width: 32px; height: 32px; }
   .links, .signIn { display: none; }
   .bar { top: 8px; padding: 8px 12px 0; height: 76px; margin-bottom: -76px; }
   .brand { border-right: 0; margin-right: auto; }

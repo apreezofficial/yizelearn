@@ -53,5 +53,9 @@
 
 @media (max-width: 600px) {
   .root { right: 12px; bottom: 12px; }
+  /* Phones: just the orb, so it doesn't cover content */
+  .fab { width: 48px; height: 48px; padding: 0; justify-content: center; }
+  .fabLabel { display: none; }
+  .orbSmall { width: 32px; height: 32px; }
   .panel { width: calc(100vw - 24px); height: min(70dvh, 560px); }
 }

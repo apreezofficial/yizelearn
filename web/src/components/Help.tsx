@@ -73,7 +73,7 @@ export function Help() {
       <p className={s.foot}>Don&apos;t share card numbers or passwords here.</p>
     </div>}
     <button className={open ? s.closeFab : s.fab} onClick={() => setOpen(o => !o)} aria-expanded={open} aria-label={open ? 'Close help' : 'Need help?'}>
-      {open ? <HugeiconsIcon icon={Cancel01Icon} size={18} /> : <><span className={s.orbSmall} aria-hidden />Need help?</>}
+      {open ? <HugeiconsIcon icon={Cancel01Icon} size={18} /> : <><span className={s.orbSmall} aria-hidden /><span className={s.fabLabel}>Need help?</span></>}
     </button>
   </div>;
 }

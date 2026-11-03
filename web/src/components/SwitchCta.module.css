@@ -74,7 +74,7 @@
   .shade { background: linear-gradient(0deg, rgba(11, 26, 46, 0.92) 10%, rgba(11, 26, 46, 0.5) 60%, rgba(11, 26, 46, 0.2)); }
   /* Phones: the product moments sit above the copy */
   .card { flex-direction: column-reverse; align-items: stretch; }
-  .stage { position: relative; right: auto; top: auto; transform: none; width: auto; height: 330px; margin: 24px 34px 8px 22px; }
+  .stage { position: relative; right: auto; top: auto; transform: none; width: auto; height: 372px; margin: 24px 34px 8px 22px; }
   .chipTop { right: -18px; }
-  .chipBottom { left: -10px; bottom: -14px; }
+  .chipBottom { left: -10px; bottom: 0; }
 }

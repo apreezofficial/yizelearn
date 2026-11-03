@@ -41,7 +41,7 @@ a:hover .arrow { transform: translateX(3px); }
 .textLink { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-weight: 700; color: #2F6DB5; }
 
 /* Product screens inside the Journey windows: a light app frame so they read like real screenshots */
-.appFrame { background: var(--surface); color: var(--ink2); border-radius: 14px 0 0 14px; padding: 20px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+.appFrame { background: var(--surface); color: var(--ink2); border-radius: 14px; padding: 20px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
 .appFrame .player, .appFrame .quizWrap, .appFrame .liveClass, .appFrame .checkout, .appFrame .progress, .appFrame .certStage { margin-top: 0; padding-top: 0; }
 .certFrame { background: linear-gradient(135deg, #EEF3FA, #F5EFA8); }
 
@@ -132,8 +132,10 @@ a:hover .arrow { transform: translateX(3px); }
 }
 
 @media (max-width: 900px) {
-  .paths { grid-template-columns: 1fr 1fr; }
-    .path { min-height: 240px; }
+  .paths { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: -16px; padding: 4px 16px 8px; }
+  .paths::-webkit-scrollbar { display: none; }
+  .path { flex: 0 0 78%; scroll-snap-align: center; }
+    .path { min-height: 260px; }
     .sub { font-size: 16px; }
   .section { padding: 64px 16px 0; }
   .player { grid-template-columns: 1fr; }
