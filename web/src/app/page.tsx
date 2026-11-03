@@ -1,14 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Mic01Icon, PlayIcon, SentIcon, UserGroupIcon, Video01Icon} from '@hugeicons/core-free-icons';
+import {ArrowRight01Icon, Award01Icon, CheckmarkCircle02Icon, Mic01Icon, PlayIcon, SentIcon, Video01Icon} from '@hugeicons/core-free-icons';
 import {OfferBar, SiteNav} from '@/components/Chrome';
 import {Hero} from '@/components/Hero';
 import {GoalCourses} from '@/components/Explore';
 import {Journey} from '@/components/Journey';
 import {SwitchCta} from '@/components/SwitchCta';
 import {Footer} from '@/components/Footer';
-import {QuizDemo, Reveal, ScrollWords} from '@/components/Live';
+import {QuizDemo, ScrollWords} from '@/components/Live';
 import {paths} from '@/lib/courses';
 import s from './page.module.css';
 
@@ -101,22 +101,6 @@ export default function Home() {
         </Link>)}
       </div>
     </ScrollWords>
-
-    {/* Teach and teams */}
-    <section className={`${s.section} ${s.pair}`}>
-      <Reveal className={`${s.pairCard} ${s.reveal}`}>
-        <span className={s.pairIcon}><HugeiconsIcon icon={Mic01Icon} size={22} /></span>
-        <h3>Teach what you know</h3>
-        <p>Turn your experience into a course. We help with the outline, filming tips and getting your first learners.</p>
-        <Link href="#" className={s.textLink}>Become an instructor <Arrow /></Link>
-      </Reveal>
-      <Reveal className={`${s.pairCard} ${s.pairDark} ${s.reveal}`} delay={80}>
-        <span className={s.pairIcon}><HugeiconsIcon icon={UserGroupIcon} size={22} /></span>
-        <h3>Train your whole team</h3>
-        <p>Give your staff the same courses, track progress in one dashboard and pay on one invoice.</p>
-        <Link href="#" className={s.textLink}>Talk to us about teams <Arrow /></Link>
-      </Reveal>
-    </section>
 
     {/* Closing call to action: Upwork-style card with a Learn / Teach switch over video */}
     <SwitchCta />
