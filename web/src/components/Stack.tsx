@@ -25,8 +25,8 @@ export function StackPanels({panels}: {panels: Panel[]}) {
     const update = () => {
       frame = 0;
       const vh = window.innerHeight;
-      // Fill while the panel is pinned, finishing before the next panel starts covering it.
-      wraps.forEach(w => fill(w, Math.min(1, Math.max(0, (-w.getBoundingClientRect().top + vh * 0.25) / (vh * 0.75)))));
+      // Fill between -10vh and 60vh of the pin; the next panel doesn't appear until 100vh, leaving time to read.
+      wraps.forEach(w => fill(w, Math.min(1, Math.max(0, (-w.getBoundingClientRect().top + vh * 0.1) / (vh * 0.7)))));
     };
     const queue = () => { if (!frame) frame = requestAnimationFrame(update); };
     update();

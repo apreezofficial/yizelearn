@@ -1,6 +1,7 @@
-/* Each wrapper is 175vh; the panel inside pins for the first stretch, then the next wrapper (pulled up 100vh) slides over it. */
+/* Each wrapper is 300vh, so its panel stays pinned for 200vh. The words fill during the first ~60vh,
+   there's a pause to read, and the next wrapper (pulled up 100vh) only appears after 100vh of scrolling. */
 .stack { position: relative; }
-.wrap { position: relative; height: 175vh; }
+.wrap { position: relative; height: 300vh; }
 .wrap + .wrap { margin-top: -100vh; }
 .panel { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; display: grid; grid-template-columns: 1fr 420px; grid-template-rows: auto 1fr; gap: 0 48px; padding: 104px max(24px, calc((100vw - 1160px) / 2)) 48px; box-shadow: 0 -30px 60px -40px rgba(0, 0, 0, 0.45); }
 .panel:not(.withArt) { grid-template-columns: 1fr; }
