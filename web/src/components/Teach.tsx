@@ -77,26 +77,48 @@ const ways = [
   {tab: 'Get paid in naira', title: 'Get paid in naira', video: '', text: 'Learners pay once in naira, by card or bank transfer. You choose the price of your course.', cta: 'Set up your account', note: ['Priced in naira', 'Card or bank transfer at checkout.']},
 ];
 
-/** Sticky option list on the left and a big photo card on the right, like Lifted's "One supplier, every model". */
+/**
+ * Sticky option list on the left, and the three panels stacked on the right. As you scroll, the list follows
+ * the panel in view (like Lifted's "One supplier, every model"); clicking an option scrolls to its panel.
+ */
 export function TeachWays() {
   const [on, setOn] = useState(0);
-  const w = ways[on];
+  const stages = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const update = () => {
+      const line = window.innerHeight * 0.4;
+      let cur = 0;
+      stages.current.forEach((el, i) => { if (el && el.getBoundingClientRect().top <= line) cur = i; });
+      setOn(cur);
+    };
+    update();
+    window.addEventListener('scroll', update, {passive: true});
+    window.addEventListener('resize', update);
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); };
+  }, []);
+
+  const jump = (i: number) => stages.current[i]?.scrollIntoView({behavior: 'smooth', block: 'center'});
+
   return <div className={s.ways} id="ways">
     <div className={s.opts} role="tablist" aria-label="Ways to teach">
-      {ways.map((x, i) => <button key={x.tab} role="tab" aria-selected={i === on} className={i === on ? s.optOn : s.opt} onClick={() => setOn(i)}>{x.tab}</button>)}
+      {ways.map((x, i) => <button key={x.tab} role="tab" aria-selected={i === on} className={i === on ? s.optOn : s.opt} onClick={() => jump(i)}>{x.tab}</button>)}
     </div>
-    <div className={s.stage} key={on} role="tabpanel">
-      <div className={`${s.media} ${w.video ? '' : s.mediaDark}`}>
-        {w.video && <Bg src={w.video} />}
-        {on === 0 && <div className={`${s.card} ${s.mA}`} aria-hidden><b>Lesson 3 · First project</b><div className={s.cRow}><span>Quiz added</span><em>5 questions</em></div></div>}
-        {on === 1 && <><div className={`${s.card} ${s.mA}`} aria-hidden><b>Progress</b><div className={s.bar}><i /></div><div className={s.cRow}><span>Intro to databases</span><em>72%</em></div></div>
-          <div className={`${s.card} ${s.mB}`} aria-hidden><div className={s.cert}><HugeiconsIcon icon={CheckmarkCircle02Icon} size={18} />Certificate earned</div></div></>}
-        {on === 2 && <><div className={`${s.card} ${s.mC}`} aria-hidden><b>Checkout</b><div className={s.kv}><span>Course</span><b>₦15,000</b></div><div className={s.kv}><span>Pay with</span><b>Card or transfer</b></div><div className={s.payBtn}>Pay ₦15,000</div></div></>}
-      </div>
-      <div className={s.under}>
-        <div><p>{w.text}</p><Link href="/signup?as=teach" className={s.black}>{w.cta} {arrow}</Link></div>
-        <div className={s.note}><b>{w.note[0]}</b><span>{w.note[1]}</span></div>
-      </div>
+    <div className={s.stages}>
+      {ways.map((w, i) => <div key={w.tab} ref={el => { stages.current[i] = el; }} className={`${s.stage} ${i === on ? s.stageOn : ''}`}>
+        <h3 className={s.stageTitle}>{w.title}</h3>
+        <div className={`${s.media} ${w.video ? '' : s.mediaDark}`}>
+          {w.video && <Bg src={w.video} />}
+          {i === 0 && <div className={`${s.card} ${s.mA}`} aria-hidden><b>Lesson 3 · First project</b><div className={s.cRow}><span>Quiz added</span><em>5 questions</em></div></div>}
+          {i === 1 && <><div className={`${s.card} ${s.mA}`} aria-hidden><b>Progress</b><div className={s.bar}><i /></div><div className={s.cRow}><span>Intro to databases</span><em>72%</em></div></div>
+            <div className={`${s.card} ${s.mB}`} aria-hidden><div className={s.cert}><HugeiconsIcon icon={CheckmarkCircle02Icon} size={18} />Certificate earned</div></div></>}
+          {i === 2 && <div className={`${s.card} ${s.mC}`} aria-hidden><b>Checkout</b><div className={s.kv}><span>Course</span><b>₦15,000</b></div><div className={s.kv}><span>Pay with</span><b>Card or transfer</b></div><div className={s.payBtn}>Pay ₦15,000</div></div>}
+        </div>
+        <div className={s.under}>
+          <div><p>{w.text}</p><Link href="/signup?as=teach" className={s.black}>{w.cta} {arrow}</Link></div>
+          <div className={s.note}><b>{w.note[0]}</b><span>{w.note[1]}</span></div>
+        </div>
+      </div>)}
     </div>
   </div>;
 }

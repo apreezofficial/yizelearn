@@ -56,7 +56,10 @@
 .opt, .optOn { padding: 12px 0; border: 0; background: none; font: inherit; font-size: 20px; font-weight: 500; text-align: left; letter-spacing: -0.01em; cursor: pointer; color: #8A909C; transition: color 0.2s; }
 .opt:hover { color: #0F1B30; }
 .optOn { color: #0F1B30; }
-.stage { animation: fade 0.35s both; }
+.stages { display: flex; flex-direction: column; gap: 72px; min-width: 0; }
+.stage { opacity: 0.45; transition: opacity 0.4s; }
+.stageOn { opacity: 1; }
+.stageTitle { display: none; margin: 0 0 14px; font-size: 24px; font-weight: 500; letter-spacing: -0.02em; color: #0F1B30; }
 .media { position: relative; aspect-ratio: 16 / 8.6; border-radius: 22px; overflow: hidden; background: #1C2A44; }
 .media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .mediaDark { background: #0B1220 radial-gradient(520px 320px at 100% 100%, rgba(240, 183, 74, 0.55), transparent 70%); }
@@ -83,12 +86,11 @@
 .announce button:hover { background: rgba(15, 27, 48, 0.1); }
 
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
-@keyframes fade { from { opacity: 0; } }
 @keyframes up { from { transform: translateY(100%); } }
 @keyframes bob { 50% { transform: translateY(-6px); } }
 @keyframes fill { from { transform: scaleX(0); } }
 @keyframes slide { to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) { .heroText h1, .heroText p, .btns, .cRow, .cardA, .cardB, .stage, .announce, .bar i, .cardsTrack { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .heroText h1, .heroText p, .btns, .cRow, .cardA, .cardB, .announce, .bar i, .cardsTrack { animation: none; } }
 
 @media (max-width: 900px) {
   .hero { min-height: 0; }
@@ -107,9 +109,10 @@
   .words span { font-size: 20px; }
   .band { padding-bottom: 36px; }
   .ways { grid-template-columns: minmax(0, 1fr); gap: 20px; margin-top: 28px; padding-top: 24px; }
-  .opts { position: static; flex-direction: row; gap: 18px; overflow-x: auto; margin-inline: -16px; padding: 0 16px; scrollbar-width: none; }
-  .opts::-webkit-scrollbar { display: none; }
-  .opt, .optOn { flex: none; font-size: 17px; padding: 6px 0; white-space: nowrap; }
+  .opts { display: none; }
+  .stages { gap: 44px; }
+  .stage { opacity: 1; }
+  .stageTitle { display: block; }
   .media { aspect-ratio: 4 / 4.2; border-radius: 18px; }
   .mA { left: 4%; right: 4%; width: auto; bottom: 5%; }
   .mB { right: 4%; top: 5%; }
