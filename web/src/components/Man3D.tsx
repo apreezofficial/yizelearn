@@ -179,7 +179,7 @@ export function Man3D({fed, chew, burp, events}: Live) {
         for (let i = flights.length - 1; i >= 0; i--) {
           const f = flights[i];
           if (f.kind === 'eat') {
-            f.t += dt / 0.8; const t = Math.min(1, f.t);
+            f.t += dt / 0.5; const t = Math.min(1, f.t);
             bez(P0, P1, P2, t * t * (3 - 2 * t), f.mesh.position);
             f.mesh.rotation.set(t * 9, t * 6, 0); f.mesh.scale.setScalar(t < 0.85 ? 1 : Math.max(0.01, 1 - (t - 0.85) / 0.15));
             if (f.t >= 1) { cur.gulp = 1; scene.remove(f.mesh); flights.splice(i, 1); }
