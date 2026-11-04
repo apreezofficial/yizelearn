@@ -48,11 +48,11 @@ export function LearnerDashboard() {
 
   return <main className={s.page}>
     <header className={s.top}>
-      <Link href="/" className={s.brand}><Logo alt="yizelearn home" width={104} height={40} priority /></Link>
+      <Link href="/dashboard" className={s.brand}><Logo alt="yizelearn dashboard" width={104} height={40} priority /></Link>
       <div className={s.greeting}><p>Hi, Mercy</p><span>Ready for your next lesson?</span></div>
       <div className={s.topActions}>
-        <button className={s.bell} aria-label="Notifications, unread"><HugeiconsIcon icon={Notification01Icon} size={22} /><i /></button>
-        <button className={s.avatar} aria-label="Open account menu">MI</button>
+        <Link href="/dashboard/notifications" className={s.bell} aria-label="Notifications, unread"><HugeiconsIcon icon={Notification01Icon} size={22} /><i /></Link>
+        <Link href="/dashboard/account" className={s.avatar} aria-label="Open account menu">MI</Link>
       </div>
     </header>
 
@@ -64,7 +64,7 @@ export function LearnerDashboard() {
 
       <section aria-labelledby="continue-title">
         <div className={s.sectionHead}><h1 id="continue-title">Continue learning</h1></div>
-        <Link href="/courses/intro-prog" className={s.continue} aria-label={`Continue ${activeCourse.title}, ${activeCourse.progress}% complete`}>
+        <Link href="/dashboard/courses/intro-prog" className={s.continue} aria-label={`Continue ${activeCourse.title}, ${activeCourse.progress}% complete`}>
           <div className={s.book} aria-hidden><i /><b /><em /></div>
           <div className={s.continueCopy}>
             <span className={s.kicker}>IN PROGRESS</span>
@@ -84,9 +84,9 @@ export function LearnerDashboard() {
       <section aria-labelledby="recommended-title">
         <div className={s.sectionHead}>
           <h2 id="recommended-title">Recommended</h2>
-          <Link href="/courses" className={s.seeAll}>See all <HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>
+          <Link href="/dashboard/courses" className={s.seeAll}>See all <HugeiconsIcon icon={ArrowRight01Icon} size={16} /></Link>
         </div>
-        {recommended.length ? <div className={s.courseGrid}>{recommended.slice(0, 8).map(course => <CourseCard key={course.id} course={course} />)}</div> : <div className={s.empty}><HugeiconsIcon icon={BookOpen01Icon} size={30} /><strong>No courses found</strong><span>Try another search or topic.</span></div>}
+        {recommended.length ? <div className={s.courseGrid}>{recommended.slice(0, 8).map(course => <CourseCard key={course.id} course={course} href={`/dashboard/courses/${course.id}`} />)}</div> : <div className={s.empty}><HugeiconsIcon icon={BookOpen01Icon} size={30} /><strong>No courses found</strong><span>Try another search or topic.</span></div>}
       </section>
 
       <section className={s.streak} aria-label="Learning streak">

@@ -6,8 +6,9 @@ import {useRouter} from 'next/navigation';
 import {useSearchParams} from 'next/navigation';
 import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {AppleIcon, ArrowLeft01Icon, CheckmarkCircle02Icon, GoogleIcon} from '@hugeicons/core-free-icons';
+import {ArrowLeft01Icon, CheckmarkCircle02Icon} from '@hugeicons/core-free-icons';
 import {EMAIL, requestCode, verifyCode} from '@/lib/session';
+import {AppleMark, GoogleMark} from './SocialIcons';
 import s from './Auth.module.css';
 
 const RESEND_SECONDS = 30;
@@ -67,7 +68,11 @@ export function Auth({mode, teach}: {mode: 'login' | 'signup'; teach?: boolean})
     finally { setBusy(false); }
   };
 
-  const social = (p: string) => setNotice(`${p} sign-in is not connected yet. Use your email for now.`);
+  const social = (provider: 'Google' | 'Apple') => {
+    setNotice('');
+    setWho(provider === 'Google' ? 'Mercy' : 'Mercy');
+    router.replace('/dashboard');
+  };
 
   return <main className={s.page}>
     <Link href="/" className={s.back} aria-label="Back to home"><HugeiconsIcon icon={ArrowLeft01Icon} size={20} strokeWidth={2} /></Link>
@@ -90,8 +95,8 @@ export function Auth({mode, teach}: {mode: 'login' | 'signup'; teach?: boolean})
 
         <div className={s.divider}><span>{signup ? 'or sign up with' : 'or continue with'}</span></div>
         <div className={s.social}>
-          <button type="button" onClick={() => social('Google')}><HugeiconsIcon icon={GoogleIcon} size={20} />Google</button>
-          <button type="button" onClick={() => social('Apple')}><HugeiconsIcon icon={AppleIcon} size={20} />Apple</button>
+          <button type="button" onClick={() => social('Google')}><GoogleMark />Google</button>
+          <button type="button" onClick={() => social('Apple')}><AppleMark />Apple</button>
         </div>
         <p className={s.foot}>{signup ? <>Already have an account? <Link href="/login">Log in</Link></> : <>New here? <Link href="/signup">Create an account</Link></>}</p>
         {signup && <p className={s.legal}>By creating an account you agree to our <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.</p>}
