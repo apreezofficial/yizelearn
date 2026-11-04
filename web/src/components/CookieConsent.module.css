@@ -1,5 +1,5 @@
 .card { position: fixed; left: 16px; bottom: 16px; z-index: 100; width: min(420px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; border-radius: 22px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 40px 90px -30px rgba(11, 26, 46, 0.55); animation: in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.out { animation: out 0.38s cubic-bezier(0.7, 0, 0.84, 0) both; }
+.out { animation: out 0.26s cubic-bezier(0.7, 0, 0.84, 0) both; }
 @keyframes in { from { opacity: 0; transform: translateY(40px) scale(0.96); } }
 @keyframes out { to { opacity: 0; transform: translateY(40px) scale(0.96); } }
 

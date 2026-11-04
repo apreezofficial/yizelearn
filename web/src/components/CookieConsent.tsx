@@ -46,7 +46,7 @@ export function CookieConsent() {
 
   useEffect(() => {
     // First visit: pop up after a moment. Returning visitors only see it again through "Cookie settings".
-    if (!readConsent()) later(() => setOpen(true), 900);
+    if (!readConsent()) { later(() => setOpen(true), 350); import('three').catch(() => {}); } // start fetching the 3D library right away so the man is ready
     const reopen = () => { const r = readConsent(); if (r) setC({analytics: r.analytics, preferences: r.preferences, marketing: r.marketing}); setBusy(false); setClosing(false); setBurp(false); setOpen(true); };
     window.addEventListener('yz-cookies-open', reopen);
     const list = timers.current;
@@ -54,14 +54,17 @@ export function CookieConsent() {
   }, []);
 
   const fed = Object.values(c).filter(Boolean).length;
+  // The choice is saved the moment you click (it only goes to this browser, so there is nothing to wait for);
+  // the short animation then plays out on its own before the popup slides away.
   const finish = (next: Consent, wait: number) => {
     setBusy(true);
-    later(() => { saveConsent(next); setClosing(true); later(() => { setOpen(false); setClosing(false); setBusy(false); setEvents([]); }, 380); }, wait);
+    saveConsent(next);
+    later(() => { setClosing(true); later(() => { setOpen(false); setClosing(false); setBusy(false); setEvents([]); }, 260); }, wait);
   };
   const toggle = (k: keyof Consent) => { if (busy) return; const on = !c[k]; setC({...c, [k]: on}); push(on ? 'eat' : 'drop'); };
-  const acceptAll = () => { if (busy) return; setC({analytics: true, preferences: true, marketing: true}); [0, 1, 2].forEach(i => { if (!c[OPTIONS[i].key]) push('eat', i * 420); }); later(() => setBurp(true), 1500); finish({analytics: true, preferences: true, marketing: true}, 2500); };
-  const rejectAll = () => { if (busy) return; setC({analytics: false, preferences: false, marketing: false}); [0, 1].forEach(i => push('drop', i * 300)); finish({analytics: false, preferences: false, marketing: false}, 1500); };
-  const save = () => { if (busy) return; finish(c, 250); };
+  const acceptAll = () => { if (busy) return; setC({analytics: true, preferences: true, marketing: true}); [0, 1, 2].forEach(i => { if (!c[OPTIONS[i].key]) push('eat', i * 100); }); later(() => setBurp(true), 380); finish({analytics: true, preferences: true, marketing: true}, 650); };
+  const rejectAll = () => { if (busy) return; setC({analytics: false, preferences: false, marketing: false}); [0, 1].forEach(i => push('drop', i * 100)); finish({analytics: false, preferences: false, marketing: false}, 500); };
+  const save = () => { if (busy) return; finish(c, 0); };
 
   if (!open) return null;
   return <section className={`${s.card} ${closing ? s.out : ''}`} role="dialog" aria-labelledby="ck-title" aria-describedby="ck-text">
