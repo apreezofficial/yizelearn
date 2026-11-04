@@ -2,6 +2,7 @@
 
 import {Logo} from './Logo';
 import Link from 'next/link';
+import {useRouter} from 'next/navigation';
 import {useSearchParams} from 'next/navigation';
 import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
@@ -18,6 +19,7 @@ type Step = 'form' | 'code' | 'done';
  * `teach` is set by /signup?as=teach and only changes the copy.
  */
 export function Auth({mode, teach}: {mode: 'login' | 'signup'; teach?: boolean}) {
+  const router = useRouter();
   const signup = mode === 'signup';
   const [step, setStep] = useState<Step>('form');
   const [name, setName] = useState('');
@@ -60,7 +62,7 @@ export function Auth({mode, teach}: {mode: 'login' | 'signup'; teach?: boolean})
     try {
       const user = await verifyCode(email.trim(), value);
       setWho(signup && name.trim() ? name.trim().split(' ')[0] : user.name);
-      setStep('done');
+      router.replace('/dashboard');
     } catch (err) { setError((err as Error).message); setCode(''); }
     finally { setBusy(false); }
   };
@@ -114,8 +116,6 @@ export function Auth({mode, teach}: {mode: 'login' | 'signup'; teach?: boolean})
       {step === 'done' && <div className={s.done}>
         <span className={s.check}><HugeiconsIcon icon={CheckmarkCircle02Icon} size={34} /></span>
         <h1>You&apos;re in, {who}</h1>
-        <p className={s.sub}>Your account is ready. Learning happens in the yizelearn app on iPhone and Android for now, and the web version is on its way.</p>
-        <Link href="/" className={s.primary}>Back to home</Link>
       </div>}
     </div>
   </main>;
