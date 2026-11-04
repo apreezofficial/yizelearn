@@ -1,8 +1,8 @@
 // Sign-in on the web uses the same flow as the app: enter an email, get a 6-digit code, enter it. No passwords.
-// With NEXT_PUBLIC_API_URL set it talks to the yizelearn API. Without it, `next dev` skips the server (any 6 digits work),
-// and a production build refuses to sign anyone in rather than pretend.
+// With NEXT_PUBLIC_API_URL set it talks to the yizelearn API. Until that service is connected,
+// web follows the mobile app's preview flow: any valid email and six digits open the learner dashboard.
 const API = process.env.NEXT_PUBLIC_API_URL;
-const MOCK = !API && process.env.NODE_ENV !== 'production';
+const MOCK = !API;
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   if (!API) throw new Error('Sign-in is not available on the web yet. Please use the yizelearn app.');

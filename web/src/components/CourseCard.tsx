@@ -43,9 +43,9 @@ export function Heart({id, className}: {id: string; className?: string}) {
 }
 
 /** Udemy home-page card: bordered box, inset picture, bold title, instructor, badge and rating pills, price and a button. */
-export function CourseCard({course: c, wide}: {course: Course; wide?: boolean}) {
+export function CourseCard({course: c, wide, href = `/courses/${c.id}`}: {course: Course; wide?: boolean; href?: string}) {
   const money = useMoney();
-  return <Link href={`/courses/${c.id}`} className={`${s.card} ${wide ? s.wide : ''}`}>
+  return <Link href={href} className={`${s.card} ${wide ? s.wide : ''}`}>
     <div className={s.art} data-tone={c.tone}>
       <HugeiconsIcon icon={categoryIcon[c.category]} size={56} strokeWidth={1.4} className={s.glyph} />
       <span className={s.topic}>{c.topic}</span>
