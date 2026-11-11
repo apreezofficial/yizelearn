@@ -6,7 +6,7 @@ import {OfferBar, SiteNav} from '@/components/Chrome';
 import {Hero} from '@/components/Hero';
 import {Faq} from '@/components/Faq';
 import {OfferBanner} from '@/components/OfferBanner';
-import {GoalCourses} from '@/components/Explore';
+import {HomeCourses} from '@/components/HomeCourses';
 import {Money} from '@/components/Money';
 import {Journey} from '@/components/Journey';
 import {SwitchCta} from '@/components/SwitchCta';
@@ -32,7 +32,7 @@ export default function Home() {
 
     {/* Course browser: the statement fills in, lifts, then the goal tabs and course cards slide up beneath it */}
     <div id="courses"><ScrollWords label="Find your next course" text="Pick a goal and we line up short, practical courses that get you there, taught by people who do the work every day." accent={['goal', 'practical']}>
-      <GoalCourses />
+      <HomeCourses />
     </ScrollWords></div>
 
     {/* Product walk-through after pxxl.app: sticky numbered steps on the left, the matching screen on the right */}

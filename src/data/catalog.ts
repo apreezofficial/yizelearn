@@ -37,6 +37,9 @@ export const sampleReviews: Review[] = [
 // Share of ratings at 5, 4, 3, 2 and 1 stars.
 export const ratingBreakdown = [0.74, 0.18, 0.05, 0.02, 0.01];
 
+/** A steady number per course id, so a course keeps the same artwork wherever it is listed. */
+export function artIndex(id: string) { return [...id].reduce((n, ch) => n + ch.charCodeAt(0), 0); }
+
 export function formatNumber(value = 0) { return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 export function formatNaira(amount = 0) { return `₦${formatNumber(amount)}`; }
 export function formatDuration(minutes = 0) { const h = Math.floor(minutes / 60); const m = minutes % 60; return h ? `${h}h ${m}m` : `${m} min`; }

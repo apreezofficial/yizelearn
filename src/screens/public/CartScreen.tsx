@@ -5,17 +5,26 @@ import {CourseArt, CourseCard, Rating} from '../../components/Catalog';
 import {Icon} from '../../components/Icon';
 import {BottomButton, TitleBar} from '../../components/Layout';
 import {EmptyState} from '../../components/States';
-import {formatNaira, sampleCourses} from '../../data/catalog';
+import {artIndex, formatNaira} from '../../data/catalog';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 import {cartTotals, isValidPromo, normalisePromo} from './cart';
 
-type Props = {items: Course[]; savedForLater: Course[]; promo?: string; onPromo: (code?: string) => void; onRemove: (course: Course) => void; onCourse: (course: Course) => void; onCheckout: () => void; onBrowse: () => void; onBack?: () => void};
+type Props = {items: Course[]; savedForLater: Course[]; promo?: string; totals?: {subtotal: number; discount: number; total: number}; onApplyPromo?: (code: string) => Promise<string | undefined>; onPromo: (code?: string) => void; onRemove: (course: Course) => void; onCourse: (course: Course) => void; onCheckout: () => void; onBrowse: () => void; onBack?: () => void};
 
-export function CartScreen({items, savedForLater, promo, onPromo, onRemove, onCourse, onCheckout, onBrowse, onBack}: Props) {
+export function CartScreen({items, savedForLater, promo, totals: serverTotals, onApplyPromo, onPromo, onRemove, onCourse, onCheckout, onBrowse, onBack}: Props) {
   const [code, setCode] = useState('');
   const [promoError, setPromoError] = useState('');
-  const totals = cartTotals(items, promo);
-  const apply = () => { if (isValidPromo(code)) { onPromo(normalisePromo(code)); setCode(''); setPromoError(''); } else setPromoError(code.trim() ? 'That promo code is not valid.' : 'Enter a promo code.'); };
+  const totals = serverTotals ?? cartTotals(items, promo);
+  // Signed in, the server checks the code; as a guest, the app checks the sample codes.
+  const apply = async () => {
+    if (onApplyPromo) {
+      if (!code.trim()) { setPromoError('Enter a promo code.'); return; }
+      const error = await onApplyPromo(normalisePromo(code));
+      if (error) setPromoError(error); else { setCode(''); setPromoError(''); }
+      return;
+    }
+    if (isValidPromo(code)) { onPromo(normalisePromo(code)); setCode(''); setPromoError(''); } else setPromoError(code.trim() ? 'That promo code is not valid.' : 'Enter a promo code.');
+  };
   return <View style={styles.screen}>
     <TitleBar title={items.length ? `Cart (${items.length})` : 'Cart'} onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
@@ -30,7 +39,7 @@ export function CartScreen({items, savedForLater, promo, onPromo, onRemove, onCo
           <Line label="Total" value={formatNaira(totals.total)} strong />
         </View>
       </>}
-      {savedForLater.length > 0 && <><Text style={[styles.section, font]}>Saved for later</Text>{savedForLater.map(course => <CourseCard key={course.id} course={course} index={sampleCourses.indexOf(course)} onPress={() => onCourse(course)} />)}</>}
+      {savedForLater.length > 0 && <><Text style={[styles.section, font]}>Saved for later</Text>{savedForLater.map(course => <CourseCard key={course.id} course={course} index={artIndex(course.id)} onPress={() => onCourse(course)} />)}</>}
     </ScrollView>
     {items.length > 0 && <BottomButton label={`Checkout ${formatNaira(totals.total)}`} onPress={onCheckout} />}
   </View>;
@@ -38,7 +47,7 @@ export function CartScreen({items, savedForLater, promo, onPromo, onRemove, onCo
 
 function CartItem({course, onPress, onRemove}: {course: Course; onPress: () => void; onRemove: () => void}) {
   return <Pressable onPress={onPress} style={styles.item}>
-    <CourseArt index={sampleCourses.indexOf(course)} />
+    <CourseArt index={artIndex(course.id)} />
     <View style={styles.itemCopy}><Text style={[styles.itemTitle, font]} numberOfLines={2}>{course.title}</Text><Text style={[styles.itemInstructor, font]}>{course.instructorName}</Text><View style={styles.itemFoot}><Rating value={course.rating} /><Text style={[styles.itemPrice, font]}>{formatNaira(course.price)}</Text></View></View>
     <Pressable onPress={onRemove} hitSlop={10} style={styles.remove} accessibilityLabel={`Remove ${course.title} from cart`}><Icon name="close" size={18} color={colors.muted} /></Pressable>
   </Pressable>;

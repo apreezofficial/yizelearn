@@ -6,10 +6,11 @@ import {Icon, type IconName} from '../../components/Icon';
 import {TitleBar} from '../../components/Layout';
 import {ModuleList} from '../../components/ModuleList';
 import {EmptyState} from '../../components/States';
-import {formatDuration, formatNumber, ratingBreakdown, sampleReviews} from '../../data/catalog';
+import type {UiReview} from '../../api/mappers';
+import {formatDuration, formatNumber} from '../../data/catalog';
 import {colors, fonts, motion, radius, spacing, type} from '../../theme/tokens';
 
-type Props = {course: Course; modules: Module[]; saved: boolean; onBack: () => void; onToggleSave: () => void; onPreview: (lesson: Lesson) => void; onEnrol: () => void};
+type Props = {course: Course; modules: Module[]; reviews: UiReview[]; breakdown: number[]; loading?: boolean; saved: boolean; onBack: () => void; onToggleSave: () => void; onPreview: (lesson: Lesson) => void; onEnrol: () => void};
 const tabs = ['Overview', 'Curriculum', 'Reviews'] as const;
 type Tab = (typeof tabs)[number];
 const outExpo = Easing.bezier(...motion.outExpo);
@@ -22,7 +23,7 @@ export function CourseUnavailableScreen({onBack, onBrowse, onSupport}: {onBack: 
   </View>;
 }
 
-export function CourseScreen({course, modules, saved, onBack, onToggleSave, onPreview, onEnrol}: Props) {
+export function CourseScreen({course, modules, reviews, breakdown, loading, saved, onBack, onToggleSave, onPreview, onEnrol}: Props) {
   const [tab, setTab] = useState<Tab>('Overview');
   const [tabLayouts, setTabLayouts] = useState<Partial<Record<Tab, LayoutRectangle>>>({});
   const indicator = useRef({x: new Animated.Value(0), w: new Animated.Value(0)}).current;
@@ -97,15 +98,16 @@ export function CourseScreen({course, modules, saved, onBack, onToggleSave, onPr
           <View style={styles.teacher}><View style={[styles.avatar, styles.avatarLarge]}><Text style={[styles.avatarText, styles.avatarTextLarge, font]}>{initials}</Text></View><View style={styles.teacherCopy}><Text style={[styles.teacherName, font]}>{course.instructorName}</Text><Text style={[styles.facts, font]}>{course.category} instructor · {formatNumber(course.ratingsCount)} learners</Text></View></View>
         </>}
         {tab === 'Curriculum' && <>
-          <Text style={[styles.summary, font]}>{modules.length} modules · {lessons} lessons · {formatDuration(course.durationMinutes)}</Text>
+          <Text style={[styles.summary, font]}>{loading && !modules.length ? 'Loading the curriculum…' : `${modules.length} modules · ${lessons} lessons · ${formatDuration(course.durationMinutes)}`}</Text>
           <ModuleList modules={modules} onPreview={onPreview} />
         </>}
         {tab === 'Reviews' && <>
           <View style={styles.score}>
             <View style={styles.scoreBig}><Text style={[styles.scoreValue, font]}>{(course.rating || 0).toFixed(1)}</Text><Stars value={course.rating} size={16} /><Text style={[styles.facts, font]}>{formatNumber(course.ratingsCount)} ratings</Text></View>
-            <View style={styles.bars}>{ratingBreakdown.map((share, i) => <View key={i} style={styles.barRow}><Text style={[styles.barLabel, font]}>{5 - i}</Text><View style={styles.barTrack}><View style={[styles.barFill, {width: `${share * 100}%`}]} /></View></View>)}</View>
+            <View style={styles.bars}>{breakdown.map((share, i) => <View key={i} style={styles.barRow}><Text style={[styles.barLabel, font]}>{5 - i}</Text><View style={styles.barTrack}><View style={[styles.barFill, {width: `${share * 100}%`}]} /></View></View>)}</View>
           </View>
-          {sampleReviews.map(r => <View key={r.id} style={styles.review}>
+          {reviews.length === 0 && <Text style={[styles.facts, font]}>{loading ? 'Loading reviews…' : 'No written reviews yet.'}</Text>}
+          {reviews.map(r => <View key={r.id} style={styles.review}>
             <View style={styles.reviewHead}><View style={styles.avatar}><Text style={[styles.avatarText, font]}>{r.name.split(' ').map(p => p[0]).join('')}</Text></View><View style={styles.teacherCopy}><Text style={[styles.reviewName, font]}>{r.name}</Text><View style={styles.reviewMeta}><Stars value={r.rating} size={13} /><Text style={[styles.facts, font]}>{r.when}</Text></View></View></View>
             <Text style={[styles.about, font]}>{r.text}</Text>
           </View>)}

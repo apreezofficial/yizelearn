@@ -5,7 +5,7 @@ import {PrimaryAction, TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
 import {EmptyState} from '../../components/States';
 import {badges, certificate} from '../../data/learning';
-import {learnerName} from '../../data/learning';
+import {learner} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
 const font = {fontFamily: fonts.family};
@@ -19,7 +19,7 @@ export function CertificatesScreen({onBack, onLearn}: {onBack: () => void; onLea
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Rise style={styles.certificate}>
         <Text style={[styles.kicker, font]}>{certificate.title}</Text>
-        <Text style={[styles.name, font]}>{learnerName} Nwachukwu</Text>
+        <Text style={[styles.name, font]}>{learner.fullName}</Text>
         <Text style={[styles.course, font]}>has completed {certificate.course}</Text>
         <View style={styles.seal}><Icon name="award" size={26} color={colors.onSky} /></View>
       </Rise>

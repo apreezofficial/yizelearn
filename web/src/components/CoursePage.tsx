@@ -7,7 +7,7 @@ import {Award01Icon, ArrowDown01Icon, Calendar03Icon, CheckmarkCircle02Icon, Clo
 import {type Course} from '@/lib/courses';
 import {useMoney} from '@/lib/prefs';
 import {totalLectures, totalMinutes, type Detail} from '@/lib/courseDetail';
-import {CourseCard, Heart, categoryIcon, useWish} from './CourseCard';
+import {CourseCard, Heart, iconFor, useWish} from './CourseCard';
 import s from './CoursePage.module.css';
 
 const dur = (m: number) => (m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}m`);
@@ -30,7 +30,7 @@ function Skeleton() {
 }
 
 /** Single course page after Udemy's: dark header, sticky purchase card, what you'll learn, content list, requirements, instructor. */
-export function CoursePage({course: c, detail: d, more}: {course: Course; detail: Detail; more: Course[]}) {
+export function CoursePage({course: c, detail: d, more, sample}: {course: Course; detail: Detail; more: Course[]; sample?: boolean}) {
   const money = useMoney();
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState<number[]>([0]);
@@ -69,13 +69,13 @@ export function CoursePage({course: c, detail: d, more}: {course: Course; detail
   const card = <aside className={s.buy}>
     <div className={s.preview} data-tone={c.tone}>
       {playing ? <video ref={video} src="/video/learn.mp4" controls playsInline autoPlay muted /> : <button onClick={preview} aria-label="Preview this course">
-        <HugeiconsIcon icon={categoryIcon[c.category]} size={72} strokeWidth={1.3} className={s.glyph} />
+        <HugeiconsIcon icon={iconFor(c.category)} size={72} strokeWidth={1.3} className={s.glyph} />
         <span className={s.play}><HugeiconsIcon icon={PlayIcon} size={26} /></span>
         <em>Preview this course</em>
       </button>}
     </div>
     <div className={s.buyBody}>
-      <p className={s.price}><b>{money(c.price)}</b>{c.was && <><s>{money(c.was)}</s><span>{off}% off</span></>}</p>
+      <p className={s.price}><b>{c.price === 0 ? 'Free' : money(c.price)}</b>{c.was && <><s>{money(c.was)}</s><span>{off}% off</span></>}</p>
       <Link href="/signup" className={s.enroll}>Enroll now</Link>
       <button className={s.wish} onClick={toggleWish} aria-pressed={wished}><HugeiconsIcon icon={wished ? Tick02Icon : FavouriteIcon} size={18} strokeWidth={2} />{wished ? 'Saved to wishlist' : 'Save to wishlist'}</button>
       <p className={s.fine}>Pay once, in the currency you choose. Keep access after you finish. <Link href="/terms">Refund policy</Link></p>
@@ -92,20 +92,20 @@ export function CoursePage({course: c, detail: d, more}: {course: Course; detail
 
   return <div className={s.page}>
     <div className={`${s.mini} ${bar ? s.miniOn : ''}`} aria-hidden={!bar}>
-      <div className={s.miniIn}><div><b>{c.title}</b><span><HugeiconsIcon icon={StarIcon} size={13} />{c.rating.toFixed(1)} ({c.reviews.toLocaleString()} ratings) · {students(c)} learners</span></div>
-        <p>{money(c.price)}</p><Link href="/signup" className={s.miniBtn} tabIndex={bar ? 0 : -1}>Enroll now</Link></div>
+      <div className={s.miniIn}><div><b>{c.title}</b><span><HugeiconsIcon icon={StarIcon} size={13} />{c.reviews > 0 ? `${c.rating.toFixed(1)} (${c.reviews.toLocaleString()} ratings)` : 'New course'}{sample ? ` · ${students(c)} learners` : ''}</span></div>
+        <p>{c.price === 0 ? 'Free' : money(c.price)}</p><Link href="/signup" className={s.miniBtn} tabIndex={bar ? 0 : -1}>Enroll now</Link></div>
     </div>
 
     <header ref={head} className={s.header}>
       <div className={s.headIn}>
         <div className={s.headText}>
-          <nav className={s.crumbs} aria-label="Breadcrumb"><Link href="/courses">Courses</Link><i>›</i><Link href={`/courses?category=${encodeURIComponent(c.category)}`}>{c.category}</Link><i>›</i><span>{c.topic}</span></nav>
+          <nav className={s.crumbs} aria-label="Breadcrumb"><Link href="/courses">Courses</Link><i>›</i><Link href={`/courses?category=${encodeURIComponent(c.category)}`}>{c.category}</Link>{c.topic !== c.category && <><i>›</i><span>{c.topic}</span></>}</nav>
           <h1>{c.title}</h1>
           <p className={s.sub}>{d.sub}</p>
           <div className={s.badges}>{c.tag && <span className={s.badge}>{c.tag === 'New' ? 'New' : 'Bestseller'}</span>}
-            <span className={s.rate}><b>{c.rating.toFixed(1)}</b><Stars v={c.rating} /><u>({c.reviews.toLocaleString()} ratings)</u></span><span>{students(c)} learners</span></div>
+            {c.reviews > 0 ? <span className={s.rate}><b>{c.rating.toFixed(1)}</b><Stars v={c.rating} /><u>({c.reviews.toLocaleString()} ratings)</u></span> : <span>No ratings yet</span>}{sample && <span>{students(c)} learners</span>}</div>
           <p className={s.by}>Created by <a href="#instructor">{c.instructor}</a></p>
-          <div className={s.meta}><span><HugeiconsIcon icon={Calendar03Icon} size={15} />Last updated 10/2026</span><span><HugeiconsIcon icon={Globe02Icon} size={15} />English</span><span><HugeiconsIcon icon={Clock01Icon} size={15} />{c.level}</span></div>
+          <div className={s.meta}><span><HugeiconsIcon icon={Calendar03Icon} size={15} />{sample ? 'Last updated 10/2026' : 'Short lessons'}</span><span><HugeiconsIcon icon={Globe02Icon} size={15} />English</span><span><HugeiconsIcon icon={Clock01Icon} size={15} />{c.level}</span></div>
         </div>
       </div>
     </header>
@@ -114,17 +114,17 @@ export function CoursePage({course: c, detail: d, more}: {course: Course; detail
       <div className={s.main}>
         <div className={s.mobileCard}>{card}</div>
 
-        <section className={s.learn}>
+        {d.learn.length > 0 && <section className={s.learn}>
           <h2>What you&apos;ll learn</h2>
           <ul>{d.learn.map(l => <li key={l}><HugeiconsIcon icon={CheckmarkCircle02Icon} size={18} />{l}</li>)}</ul>
-        </section>
+        </section>}
 
         <section className={s.topics}>
           <h2>Explore related topics</h2>
-          <div>{[c.topic, c.category, c.level].map(t => <Link key={t} href={`/courses?q=${encodeURIComponent(t)}`}>{t}</Link>)}</div>
+          <div>{[...new Set([c.topic, c.category, c.level])].map(t => <Link key={t} href={`/courses?q=${encodeURIComponent(t)}`}>{t}</Link>)}</div>
         </section>
 
-        <section>
+        {d.modules.length > 0 && <section>
           <h2>Course content</h2>
           <div className={s.contentHead}>
             <span>{d.modules.length} sections · {lectures} lessons · {dur(totalMinutes(d))} total length</span>
@@ -141,17 +141,26 @@ export function CoursePage({course: c, detail: d, more}: {course: Course; detail
               </ul></div></div>
             </div>)}
           </div>
-        </section>
+        </section>}
 
-        <section><h2>Requirements</h2><ul className={s.dots}>{d.needs.map(n => <li key={n}>{n}</li>)}</ul></section>
-        <section><h2>Description</h2>{d.about.map(p => <p key={p} className={s.p}>{p}</p>)}</section>
+        {d.needs.length > 0 && <section><h2>Requirements</h2><ul className={s.dots}>{d.needs.map(n => <li key={n}>{n}</li>)}</ul></section>}
+        {d.about.length > 0 && <section><h2>Description</h2>{d.about.map(p => <p key={p} className={s.p}>{p}</p>)}</section>}
+
+        {d.reviews && d.reviews.count > 0 && <section id="reviews">
+          <h2>Learner reviews</h2>
+          <p className={s.reviewSum}><HugeiconsIcon icon={StarIcon} size={20} />{(d.reviews.avg ?? 0).toFixed(1)} course rating · {d.reviews.count.toLocaleString()} {d.reviews.count === 1 ? 'review' : 'reviews'}</p>
+          <ul className={s.reviews}>{d.reviews.items.map(r => <li key={r.id}>
+            <div><i>{r.author.split(' ').map(n => n[0]).join('').slice(0, 2)}</i><b>{r.author}</b><Stars v={r.rating} /><time>{new Date(r.date).toLocaleDateString('en', {month: 'short', year: 'numeric'})}</time></div>
+            {r.comment && <p>{r.comment}</p>}
+          </li>)}</ul>
+        </section>}
 
         <section id="instructor">
           <h2>Instructor</h2>
           <div className={s.inst}>
             <i>{c.instructor.split(' ').map(n => n[0]).join('').slice(0, 2)}</i>
             <div><b>{c.instructor}</b><span>{c.category} instructor</span>
-              <p><HugeiconsIcon icon={StarIcon} size={14} />{c.rating.toFixed(1)} instructor rating · {students(c)} learners</p>
+              {sample && <p><HugeiconsIcon icon={StarIcon} size={14} />{c.rating.toFixed(1)} instructor rating · {students(c)} learners</p>}
               <p className={s.p}>{d.bio}</p></div>
           </div>
         </section>
@@ -165,7 +174,7 @@ export function CoursePage({course: c, detail: d, more}: {course: Course; detail
     </section>}
 
     <div className={s.phoneBar}>
-      <div><b>{money(c.price)}</b>{c.was && <s>{money(c.was)}</s>}</div>
+      <div><b>{c.price === 0 ? 'Free' : money(c.price)}</b>{c.was && <s>{money(c.was)}</s>}</div>
       <Heart id={c.id} className={s.phoneHeart} />
       <Link href="/signup" className={s.phoneBtn}>Enroll now</Link>
     </div>

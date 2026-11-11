@@ -1,14 +1,15 @@
 'use client';
 
+import {logOut, useSession} from '@/lib/session';
 import {openPrefs} from './FooterPrefs';
 import {Logo} from './Logo';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {createPortal} from 'react-dom';
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Globe02Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
-import {categories, courses} from '@/lib/courses';
+import {useCategories, useSuggestions} from '@/lib/catalog-client';
 import {findLang} from '@/lib/languages';
 import {useMoney, usePrefs} from '@/lib/prefs';
 import s from './Nav.module.css';
@@ -37,7 +38,11 @@ export function SiteNav() {
   const phoneInput = useRef<HTMLInputElement>(null);
 
   const q = query.trim().toLowerCase();
-  const results = useMemo(() => (q ? courses.filter(c => `${c.title} ${c.topic} ${c.instructor}`.toLowerCase().includes(q)).slice(0, 5) : []), [q]);
+  const categories = useCategories();
+  const session = useSession();
+  const home = session?.user.landing === 'learner_home' ? '/dashboard' : '/';
+  const first = session?.user.fullName.split(' ')[0] ?? '';
+  const results = useSuggestions(query);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -70,10 +75,10 @@ export function SiteNav() {
   const submit = (e: React.FormEvent) => { e.preventDefault(); if (q) go(`/courses?q=${encodeURIComponent(query.trim())}`); };
 
   const suggestions = <div className={s.suggest} role="listbox" aria-label="Suggestions">
-    {q ? (results.length ? results.map(c => <button key={c.id} role="option" aria-selected={false} onMouseDown={e => e.preventDefault()} onClick={() => go(`/courses/${c.id}`)}>
+    {q ? (results.length ? results.map(c => <button key={c.key} role="option" aria-selected={false} onMouseDown={e => e.preventDefault()} onClick={() => go(c.href)}>
       <span className={s.sIcon}><HugeiconsIcon icon={Search01Icon} size={16} /></span>
-      <span className={s.sText}><b>{c.title}</b><i>{c.topic} · {c.level} · {c.instructor}</i></span>
-      <em>{money(c.price)}</em>
+      <span className={s.sText}><b>{c.title}</b>{c.sub && <i>{c.sub}</i>}</span>
+      {c.price !== undefined && <em>{money(c.price)}</em>}
     </button>) : <p className={s.none}>No courses match &ldquo;{query}&rdquo; yet. Try Python, SQL or SEO.</p>)
       : <div className={s.popular}><p>Popular right now</p><div>{topics.map(t => <button key={t} onMouseDown={e => e.preventDefault()} onClick={() => { setQuery(t); (phoneSearch ? phoneInput : input).current?.focus(); }}>{t}</button>)}</div></div>}
   </div>;
@@ -98,14 +103,19 @@ export function SiteNav() {
       <nav className={s.links} aria-label="Main">{links.map(l => <Link key={l.label} href={l.href}>{l.label}</Link>)}</nav>
       <button className={s.lang} onClick={() => openPrefs('language')} aria-label={`Language: ${lang.name}. Change language`}><HugeiconsIcon icon={Globe02Icon} size={18} strokeWidth={1.8} /><span translate="no">{short}</span></button>
       <div className={s.actions}>
-        <Link href="/login" className={s.login}>Log in</Link>
-        <Link href="/signup" className={s.signup}>Sign up</Link>
+        {session ? <>
+          <button className={s.login} onClick={() => logOut()}>Log out</button>
+          <Link href={home} className={s.signup}>{home === '/dashboard' ? 'My learning' : `Hi, ${first}`}</Link>
+        </> : <>
+          <Link href="/login" className={s.login}>Log in</Link>
+          <Link href="/signup" className={s.signup}>Sign up</Link>
+        </>}
       </div>
 
       {/* Phones */}
       <div className={s.phone}>
         <button className={s.iconBtn} aria-label="Search" aria-expanded={phoneSearch} onClick={() => { setPhoneSearch(v => !v); setTimeout(() => phoneInput.current?.focus(), 60); }}><HugeiconsIcon icon={phoneSearch ? Cancel01Icon : Search01Icon} size={22} strokeWidth={2} /></button>
-        <Link href="/signup" className={s.signup}>Sign up</Link>
+        {session ? <Link href={home} className={s.signup}>{home === '/dashboard' ? 'My learning' : `Hi, ${first}`}</Link> : <Link href="/signup" className={s.signup}>Sign up</Link>}
         <button className={s.iconBtn} aria-label="Open menu" onClick={() => setDrawer(true)}><HugeiconsIcon icon={Menu01Icon} size={24} strokeWidth={2} /></button>
       </div>
     </div>
@@ -116,7 +126,7 @@ export function SiteNav() {
       <div className={s.megaInner}>
         <div>
           <p className={s.megaHead}>Categories</p>
-          {categories.map(g => <button key={g.name} className={s.goal} onClick={() => go(`/courses?category=${encodeURIComponent(g.name)}`)}><span><b>{g.name}</b><i>{g.topics.slice(0, 4).join(', ')} and more</i></span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>)}
+          {categories.map(g => <button key={g.name} className={s.goal} onClick={() => go(`/courses?category=${encodeURIComponent(g.name)}`)}><span><b>{g.name}</b><i>{g.topics.length ? `${g.topics.slice(0, 4).join(', ')} and more` : 'Browse courses'}</i></span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>)}
         </div>
         <div>
           <p className={s.megaHead}>Popular topics</p>
@@ -138,8 +148,13 @@ export function SiteNav() {
         <div className={s.chips}>{categories.map(g => <button key={g.name} onClick={() => go(`/courses?category=${encodeURIComponent(g.name)}`)}>{g.name}</button>)}</div>
         <button className={s.drawerLang} onClick={() => { setDrawer(false); openPrefs('language'); }}><HugeiconsIcon icon={Globe02Icon} size={20} strokeWidth={1.8} /><span translate="no">{lang.name}</span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>
         <div className={s.drawerActions}>
-          <Link href="/login" className={s.login} onClick={() => setDrawer(false)}>Log in</Link>
-          <Link href="/signup" className={s.signup} onClick={() => setDrawer(false)}>Sign up</Link>
+          {session ? <>
+            <button className={s.login} onClick={() => { setDrawer(false); logOut(); }}>Log out</button>
+            <Link href={home} className={s.signup} onClick={() => setDrawer(false)}>{home === '/dashboard' ? 'My learning' : `Hi, ${first}`}</Link>
+          </> : <>
+            <Link href="/login" className={s.login} onClick={() => setDrawer(false)}>Log in</Link>
+            <Link href="/signup" className={s.signup} onClick={() => setDrawer(false)}>Sign up</Link>
+          </>}
         </div>
       </div>
     </div>, document.body)}

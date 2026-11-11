@@ -1,58 +1,106 @@
-import {API_BASE_URL, ApiError, request} from './client';
+import {ApiError, request} from './client';
+import type {ApiAuthResult, ApiCart, ApiCategory, ApiCourseCard, ApiCourseDetail, ApiCurriculum, ApiEnrollment, ApiHomeFeed, ApiReviews, ApiTokens, Page} from './contract';
+import {session} from './session';
+import {toUser} from './mappers';
 import type {AssignmentSubmission, Course, DashboardSummary, Lesson, Module, Paginated, Payment, User} from './types';
 
-// Sign-in and sign-up are one flow: the user enters an email, gets a 6-digit code, and enters it. No passwords.
-// Until the backend is live (the base URL is still the placeholder), dev builds sign in without it:
-// any email "sends" a code and any 6 digits log you in.
-const MOCK_AUTH = __DEV__ && API_BASE_URL.includes('example.com');
-const mockUser = (email: string, name?: string): User => ({id: 'mock-user', name: name || email.split('@')[0], email, role: 'student'});
-
-export const authApi = {
-  requestCode: (email: string, name?: string) => (MOCK_AUTH ? Promise.resolve() : request<void>('/auth/code/request', {method: 'POST', body: {email, name}})),
-  verifyCode: (email: string, code: string) => (MOCK_AUTH
-    ? Promise.resolve({token: 'mock-token', user: mockUser(email)})
-    : request<{token: string; user: User}>('/auth/code/verify', {method: 'POST', body: {email, code}})),
-  me: () => request<User>('/auth/me'),
-  logout: () => request<void>('/auth/logout', {method: 'POST'}),
-  // School and work SSO: look up the organisation from the email's domain, then sign in through its identity provider.
-  ssoLookup: (email: string) => (MOCK_AUTH ? mockOrganisation(email) : request<Organisation>(`/auth/sso/lookup?email=${encodeURIComponent(email)}`)),
-  ssoSignIn: (organisationId: string, email: string) => (MOCK_AUTH
-    ? new Promise<{token: string; user: User}>(resolve => setTimeout(() => resolve({token: 'mock-token', user: mockUser(email)}), 2400))
-    : request<{token: string; user: User}>('/auth/sso/complete', {method: 'POST', body: {organisationId, email}})),
+const qs = (params: Record<string, string | number | boolean | undefined>) => {
+  const parts = Object.entries(params).filter(([, v]) => v !== undefined && v !== '').map(([k, v]) => `${k}=${encodeURIComponent(String(v))}`);
+  return parts.length ? `?${parts.join('&')}` : '';
 };
 
-export type Organisation = {id: string; name: string; domain: string; kind: 'school' | 'work'; provider: string};
+// ---------------------------------------------------------------------------------------------------------------
+// Account: email and password, an emailed 6-digit code to confirm a new email, two-step when it is on.
+export type SignInResult = {status: 'signed-in'; user: User} | {status: 'two-step'; challengeToken: string};
 
-const PUBLIC_DOMAINS = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'live.com', 'proton.me', 'aol.com'];
-const KNOWN: Record<string, Omit<Organisation, 'domain'>> = {
-  'unilag.edu.ng': {id: 'unilag', name: 'University of Lagos', kind: 'school', provider: 'Microsoft'},
-  'ui.edu.ng': {id: 'ui', name: 'University of Ibadan', kind: 'school', provider: 'Google Workspace'},
-  'covenantuniversity.edu.ng': {id: 'cu', name: 'Covenant University', kind: 'school', provider: 'Microsoft'},
-  'andela.com': {id: 'andela', name: 'Andela', kind: 'work', provider: 'Okta'},
-};
-
-// Dev stand-in for the lookup: personal email providers have no SSO; any other domain is treated as an organisation.
-function mockOrganisation(email: string): Promise<Organisation> {
-  const domain = email.split('@')[1]?.toLowerCase() ?? '';
-  return new Promise((resolve, reject) => setTimeout(() => {
-    if (PUBLIC_DOMAINS.includes(domain)) { reject(new ApiError(`${domain} is a personal email. Use the email your school or employer gave you.`, 404)); return; }
-    const known = KNOWN[domain];
-    const school = /\.(edu|ac|sch)(\.|$)/.test(domain);
-    const base = domain.split('.')[0];
-    resolve(known ? {...known, domain} : {id: base, name: base.charAt(0).toUpperCase() + base.slice(1), domain, kind: school ? 'school' : 'work', provider: 'your organisation'});
-  }, 900));
+async function finishAuth(result: ApiAuthResult): Promise<SignInResult> {
+  if (result.status === 'mfa_required') return {status: 'two-step', challengeToken: result.mfa.challengeToken};
+  await session.set(result.tokens);
+  return {status: 'signed-in', user: toUser(result.tokens.user)};
 }
 
-// Bug reports from the in-app "Report app issue" sheet. Dev builds without the backend pretend to send.
-export type IssueReport = {message: string; screenshot?: string; page: string};
-export const supportApi = {
-  reportIssue: (report: IssueReport) => (MOCK_AUTH
-    ? new Promise<void>(resolve => setTimeout(resolve, 1000))
-    : request<void>('/support/issues', {method: 'POST', body: report})),
+export const authApi = {
+  signUp: (v: {fullName: string; email: string; password: string; termsVersion?: string}) => request<{userId: string; emailVerificationRequired: boolean; sentTo: string; resendAvailableAt: string}>('/auth/signup', {
+    method: 'POST', idempotent: true, anonymous: true,
+    body: {fullName: v.fullName, email: v.email, password: v.password, termsAccepted: true, termsVersion: v.termsVersion ?? '1.0', locale: 'en'},
+  }),
+  logIn: async (email: string, password: string) => finishAuth(await request<ApiAuthResult>('/auth/login', {method: 'POST', anonymous: true, body: {email, password, deviceName: 'yizelearn app', platform: 'ios'}})),
+  verifyEmail: async (email: string, code: string) => finishAuth(await request<ApiAuthResult>('/auth/verify-email', {method: 'POST', anonymous: true, body: {email, code}})),
+  mfaVerify: async (challengeToken: string, code: string) => finishAuth(await request<ApiAuthResult>('/auth/mfa/verify', {method: 'POST', anonymous: true, body: {challengeToken, code}})),
+  resendCode: (email: string) => request<void>('/auth/verify-email/resend', {method: 'POST', anonymous: true, body: {email}}),
+  forgotPassword: (email: string) => request<void>('/auth/password/forgot', {method: 'POST', anonymous: true, body: {email}}),
+  resetPassword: (email: string, code: string, newPassword: string) => request<void>('/auth/password/reset', {method: 'POST', anonymous: true, body: {email, code, newPassword}}),
+  ssoDiscover: (email: string) => request<{available: boolean; connectionId?: string | null; name?: string | null; protocol?: string | null}>('/auth/sso/discover', {method: 'POST', anonymous: true, body: {email}}),
+  me: async (): Promise<User> => {
+    const m = await request<{id: string; fullName: string; email: string; role: 'learner' | 'instructor' | 'manager' | 'admin'; avatarUrl: string | null; emailVerified: boolean; landing?: string}>('/me');
+    return toUser({...m, landing: m.landing ?? 'learner_home'});
+  },
+  logout: async () => {
+    const tokens = session.get();
+    try { if (tokens) await request<void>('/auth/logout', {method: 'POST', body: {refreshToken: tokens.refreshToken}}); } catch { /* signed out here either way */ }
+    await session.clear();
+  },
 };
 
-export const dashboardApi = { instructor: () => request<DashboardSummary>('/instructor/dashboard'), administrator: () => request<DashboardSummary>('/administrator/dashboard') };
+// ---------------------------------------------------------------------------------------------------------------
+// Catalogue (public: works signed out)
+export type CourseQuery = {q?: string; category?: string; level?: string; ratingMin?: number; priceMin?: number; priceMax?: number; freeOnly?: boolean; sort?: 'popular' | 'newest' | 'rating' | 'price_asc' | 'price_desc'; limit?: number; cursor?: string};
 
+export const catalogApi = {
+  categories: () => request<Page<ApiCategory>>(`/categories${qs({limit: 100})}`, {anonymous: !session.isSignedIn()}),
+  courses: (query: CourseQuery = {}) => request<Page<ApiCourseCard>>(`/courses${qs({limit: 50, ...query})}`),
+  suggestions: (q: string) => request<Page<{text: string; kind: 'query' | 'course' | 'category'; id?: string}>>(`/courses/suggestions${qs({q, limit: 6})}`),
+  course: (id: string) => request<ApiCourseDetail>(`/courses/${id}`),
+  curriculum: (id: string) => request<ApiCurriculum>(`/courses/${id}/curriculum`),
+  reviews: (id: string, limit = 10) => request<ApiReviews>(`/courses/${id}/reviews${qs({limit})}`),
+  similar: (id: string) => request<Page<ApiCourseCard>>(`/courses/${id}/similar${qs({limit: 6})}`),
+};
+
+// ---------------------------------------------------------------------------------------------------------------
+// Saved courses and the cart live on the server once you are signed in.
+export const wishlistApi = {
+  list: () => request<Page<ApiCourseCard>>(`/me/wishlist${qs({limit: 100})}`),
+  add: (courseId: string) => request<void>(`/me/wishlist/${courseId}`, {method: 'PUT'}),
+  remove: (courseId: string) => request<void>(`/me/wishlist/${courseId}`, {method: 'DELETE'}),
+};
+
+export const cartApi = {
+  get: () => request<ApiCart>('/me/cart'),
+  add: (courseId: string) => request<ApiCart>('/me/cart/items', {method: 'POST', body: {courseId}}),
+  remove: (courseId: string) => request<ApiCart>(`/me/cart/items/${courseId}`, {method: 'DELETE'}),
+  saveForLater: (courseId: string) => request<ApiCart>(`/me/cart/items/${courseId}/save-for-later`, {method: 'POST'}),
+  moveToCart: (courseId: string) => request<ApiCart>(`/me/cart/saved/${courseId}/move-to-cart`, {method: 'POST'}),
+  applyPromo: (code: string) => request<ApiCart>('/me/cart/promo', {method: 'POST', body: {code}}),
+  removePromo: () => request<ApiCart>('/me/cart/promo', {method: 'DELETE'}),
+  /** After signing in, fold the cart you built as a guest into your account. */
+  merge: (courseIds: string[], savedCourseIds: string[] = [], promoCode?: string) => request<ApiCart>('/me/cart/merge', {method: 'POST', body: {courseIds, savedCourseIds, promoCode}}),
+  /** Price a guest cart on the server (no account needed). */
+  quote: (courseIds: string[], promoCode?: string) => request<{items: unknown[]; promo: ApiCart['promo']; subtotal: ApiCart['subtotal']; discount: ApiCart['discount']; total: ApiCart['total']}>('/cart/quote', {method: 'POST', anonymous: true, body: {courseIds, promoCode}}),
+};
+
+// ---------------------------------------------------------------------------------------------------------------
+// Learning
+export const learningApi = {
+  home: () => request<ApiHomeFeed>('/me/home'),
+  enrollments: (status?: 'in_progress' | 'completed') => request<Page<ApiEnrollment>>(`/me/enrollments${qs({limit: 100, status})}`),
+  // Legacy names kept for the lesson screens that will be wired next.
+  lesson: (_courseId: string, lessonId: string) => request<Lesson>(`/lessons/${lessonId}`),
+  completeLesson: (_courseId: string, lessonId: string) => request<void>(`/lessons/${lessonId}/complete`, {method: 'POST'}),
+};
+
+// ---------------------------------------------------------------------------------------------------------------
+// "Report app issue" sends general feedback. It needs an account; screenshots are not uploaded yet.
+export type IssueReport = {message: string; screenshot?: string; page: string};
+export const supportApi = {
+  reportIssue: (report: IssueReport) => {
+    if (!session.isSignedIn()) return Promise.reject(new ApiError('Log in to send a report, or email support.', 401));
+    return request<void>('/feedback', {method: 'POST', body: {message: `[${report.page}] ${report.message}`.slice(0, 2000), category: 'bug', source: 'app_settings', contactOk: true}});
+  },
+};
+
+// Instructor and admin placeholders, not wired to the new contract yet (they belong to the instructor and admin apps).
+export type Organisation = {id: string; name: string; domain: string; kind: 'school' | 'work'; provider: string};
+export const dashboardApi = { instructor: () => request<DashboardSummary>('/instructor/dashboard'), administrator: () => request<DashboardSummary>('/admin/dashboard') };
 export const coursesApi = {
   list: (params?: {status?: string; page?: number}) => request<Paginated<Course>>(`/courses${params?.status ? `?status=${encodeURIComponent(params.status)}` : ''}`),
   get: (id: string) => request<Course>(`/courses/${id}`),
@@ -60,10 +108,9 @@ export const coursesApi = {
   create: (payload: Pick<Course, 'title'> & Partial<Course>) => request<Course>('/courses', {method: 'POST', body: payload}),
   update: (id: string, payload: Partial<Course>) => request<Course>(`/courses/${id}`, {method: 'PATCH', body: payload}),
 };
-
-export const learningApi = { myCourses: () => request<Paginated<Course>>('/me/courses'), lesson: (courseId: string, lessonId: string) => request<Lesson>(`/courses/${courseId}/lessons/${lessonId}`), completeLesson: (courseId: string, lessonId: string) => request<void>(`/courses/${courseId}/lessons/${lessonId}/complete`, {method: 'POST'}) };
 export const gradingApi = { queue: () => request<Paginated<AssignmentSubmission>>('/grading/submissions'), get: (id: string) => request<AssignmentSubmission>(`/grading/submissions/${id}`), grade: (id: string, score: number, feedback: string) => request<AssignmentSubmission>(`/grading/submissions/${id}`, {method: 'POST', body: {score, feedback}}) };
 export const usersApi = { list: (page = 1) => request<Paginated<User>>(`/users?page=${page}`), get: (id: string) => request<User>(`/users/${id}`), invite: (email: string, role: string) => request<void>('/users/invite', {method: 'POST', body: {email, role}}) };
 export const paymentsApi = { list: () => request<Paginated<Payment>>('/payments'), checkout: (courseId: string, method: string) => request<{reference: string}>('/payments/checkout', {method: 'POST', body: {courseId, method}}) };
 export const notificationsApi = { list: () => request<Paginated<{id: string; title: string; body: string; read: boolean}>>('/notifications'), markRead: (id: string) => request<void>(`/notifications/${id}/read`, {method: 'POST'}) };
 
+export type {ApiTokens};

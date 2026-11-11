@@ -4,12 +4,14 @@ import {useSearchParams} from 'next/navigation';
 import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowLeft01Icon, ArrowRight01Icon, GridViewIcon, Search01Icon} from '@hugeicons/core-free-icons';
-import {categories, courses, type Category, type Course} from '@/lib/courses';
+import {type Course} from '@/lib/courses';
+import type {CatalogCategory} from '@/lib/catalog';
 import {useMoney} from '@/lib/prefs';
-import {CardSkeleton, CourseCard, categoryIcon} from './CourseCard';
+import {CardSkeleton, CourseCard, iconFor} from './CourseCard';
 import s from './Catalog.module.css';
 
-type Tab = 'All' | Category;
+type Tab = string;
+type Data = {courses: Course[]; categories: CatalogCategory[]};
 const levels = ['Any level', 'Beginner', 'Intermediate', 'Advanced'];
 const prices = [0, 10000, 15000, 20000] as const;
 
@@ -36,16 +38,16 @@ function Row({title, sub, items, onMore}: {title: string; sub?: string; items: C
  * (What / Level / Price), then rows you scroll sideways. Everything shimmers for a moment while it "loads".
  */
 /** Reads the URL and restarts the catalogue when it changes, so menu links like /courses?category=AI work while you are already here. */
-export function Catalog() {
+export function Catalog(props: Data) {
   const params = useSearchParams();
-  return <CatalogView key={params.toString()} />;
+  return <CatalogView key={params.toString()} {...props} />;
 }
 
-function CatalogView() {
+function CatalogView({courses, categories}: Data) {
   const money = useMoney();
   const params = useSearchParams();
   const cat = params.get('category');
-  const [tab, setTabRaw] = useState<Tab>(categories.some(c => c.name === cat) ? (cat as Category) : 'All');
+  const [tab, setTabRaw] = useState<Tab>(categories.some(c => c.name === cat || c.slug === cat) ? (categories.find(c => c.name === cat || c.slug === cat)!.name) : 'All');
   const [q, setQRaw] = useState(params.get('q') ?? '');
   const [level, setLevelRaw] = useState(levels[0]);
   const [price, setPriceRaw] = useState(0);
@@ -64,14 +66,18 @@ function CatalogView() {
   const filtered = courses.filter(c => (tab === 'All' || c.category === tab)
     && (level === levels[0] || c.level === level) && (!price || c.price <= price)
     && (!needle || `${c.title} ${c.topic} ${c.category} ${c.instructor}`.toLowerCase().includes(needle)));
+  // The API already sorts by popularity; the sample courses carry Bestseller / New tags instead.
+  const tagged = courses.filter(c => c.tag === 'Bestseller');
+  const popular = tagged.length ? tagged : courses.slice(0, 8);
+  const fresh = courses.filter(c => c.tag === 'New');
   const browsing = tab === 'All' && level === levels[0] && !price && !needle;
   const topicsOf = categories.find(c => c.name === tab)?.topics;
 
   return <div className={s.page}>
     <div className={s.tabsBar}>
       <div className={s.tabs} role="tablist" aria-label="Categories">
-        {(['All', ...categories.map(c => c.name)] as Tab[]).map(t => <button key={t} role="tab" aria-selected={t === tab} className={t === tab ? s.tabOn : s.tab} onClick={() => setTab(t)}>
-          <HugeiconsIcon icon={t === 'All' ? GridViewIcon : categoryIcon[t]} size={28} strokeWidth={1.6} /><span>{t}</span>
+        {['All', ...categories.map(c => c.name)].map(t => <button key={t} role="tab" aria-selected={t === tab} className={t === tab ? s.tabOn : s.tab} onClick={() => setTab(t)}>
+          <HugeiconsIcon icon={t === 'All' ? GridViewIcon : iconFor(t)} size={28} strokeWidth={1.6} /><span>{t}</span>
         </button>)}
       </div>
     </div>
@@ -90,9 +96,9 @@ function CatalogView() {
         <div className={s.rowHead}><div className={`${s.sk} ${s.skTitle}`} /></div>
         <div className={s.rail}>{Array.from({length: 7}, (_, i) => <CardSkeleton key={i} wide />)}</div>
       </> : browsing ? <>
-        <Row title="Popular right now" sub="The courses learners start most" items={courses.filter(c => c.tag === 'Bestseller')} />
-        <Row title="New this month" sub="Fresh courses from our instructors" items={courses.filter(c => c.tag === 'New')} />
-        {categories.map(c => <Row key={c.name} title={c.name} sub={c.topics.slice(0, 4).join(', ') + ' and more'} items={courses.filter(x => x.category === c.name)} onMore={() => { setTab(c.name); window.scrollTo({top: 0, behavior: 'smooth'}); }} />)}
+        {popular.length > 0 && <Row title="Popular right now" sub="The courses learners start most" items={popular} />}
+        {fresh.length > 0 && <Row title="New this month" sub="Fresh courses from our instructors" items={fresh} />}
+        {categories.map(c => <Row key={c.name} title={c.name} sub={c.topics.length ? c.topics.slice(0, 4).join(', ') + ' and more' : `${c.count} ${c.count === 1 ? 'course' : 'courses'}`} items={courses.filter(x => x.category === c.name)} onMore={() => { setTab(c.name); window.scrollTo({top: 0, behavior: 'smooth'}); }} />)}
       </> : <section className={s.results}>
         <div className={s.rowHead}><div><h2>{tab === 'All' ? 'Search results' : tab}</h2><p>{filtered.length} {filtered.length === 1 ? 'course' : 'courses'}{topicsOf ? ` · ${topicsOf.slice(0, 5).join(', ')}` : ''}</p></div></div>
         {filtered.length ? <div className={s.grid}>{filtered.map(c => <CourseCard key={c.id} course={c} />)}</div>

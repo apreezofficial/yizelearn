@@ -40,3 +40,6 @@
 @media (prefers-color-scheme: dark) { .shimmer { background: #272B33; } .shimmer::after { background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent); } }
 @media (prefers-reduced-motion: reduce) { .shimmer::after { animation: none; } .card:hover .glyph, .card:hover .art { transform: none; } }
 @media (max-width: 700px) { .wide { width: 262px; } .glyph { width: 44px; height: 44px; } .card h3 { font-size: 15px; min-height: 0; } .art { aspect-ratio: 16 / 8; } .btn { padding: 6px 10px; } }
+
+.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.art .topic, .art .heart { z-index: 1; }

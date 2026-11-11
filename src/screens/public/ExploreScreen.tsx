@@ -4,14 +4,14 @@ import type {Course} from '../../api/types';
 import {CategoryChips, CourseCard, SearchField, TabBarSpacer} from '../../components/Catalog';
 import {Icon} from '../../components/Icon';
 import {EmptyState} from '../../components/States';
-import {categories, formatNumber} from '../../data/catalog';
+import {formatNumber} from '../../data/catalog';
 import {colors, fonts, spacing, type} from '../../theme/tokens';
 import {activeFilterCount, browseCourses, defaultFilters, nextSort, sortLabels, type Browse} from './browse';
 import {FilterSheet} from './FilterSheet';
 
-type Props = {courses: Course[]; browse: Browse; onBrowse: (browse: Browse) => void; onCourse: (course: Course) => void};
+type Props = {courses: Course[]; categories: readonly string[]; browse: Browse; onBrowse: (browse: Browse) => void; onCourse: (course: Course) => void};
 
-export function ExploreScreen({courses, browse, onBrowse, onCourse}: Props) {
+export function ExploreScreen({courses, categories, browse, onBrowse, onCourse}: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const results = useMemo(() => browseCourses(courses, browse), [courses, browse]);
   const filterCount = activeFilterCount(browse.filters);

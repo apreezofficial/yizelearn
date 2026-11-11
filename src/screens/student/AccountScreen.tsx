@@ -2,7 +2,7 @@ import React from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {TabBarSpacer} from '../../components/Catalog';
 import {Icon} from '../../components/Icon';
-import {learnerName} from '../../data/learning';
+import {learner} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
 const font = {fontFamily: fonts.family};
@@ -18,7 +18,7 @@ type Props = {
 };
 
 export function AccountScreen({onGrades, onCertificates, onNotifications, onHelp, onSoon, onLogout, onReport}: Props) {
-  const initials = `${learnerName.slice(0, 1)}N`;
+  const initials = learner.fullName.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   // Grades and certificates are shown in the design's list order; the rest open sections not built yet.
   const rows: {label: string; onPress: () => void}[] = [
     {label: 'Profile', onPress: () => onSoon('Profile')},
@@ -37,7 +37,7 @@ export function AccountScreen({onGrades, onCertificates, onNotifications, onHelp
       <View style={styles.profile}>
         <View style={styles.avatar}><Text style={[styles.avatarText, font]}>{initials}</Text></View>
         <View style={styles.profileCopy}>
-          <Text style={[styles.name, font]}>{learnerName} Nwachukwu</Text>
+          <Text style={[styles.name, font]}>{learner.fullName}</Text>
           <Text style={[styles.role, font]}>Learner</Text>
         </View>
         <Pressable onPress={() => onSoon('Edit profile')} style={({pressed}) => [styles.edit, pressed && styles.pressed]} accessibilityRole="button">

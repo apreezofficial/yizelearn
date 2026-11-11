@@ -1,9 +1,9 @@
 // Sample catalogue for the website until the courses API is connected. The categories and their topics are
 // the real ones; the individual courses, instructors, prices and ratings are placeholders.
-export type Category = 'Programming' | 'AI' | 'Digital marketing' | 'Database' | 'IT tech skills';
-export type Course = {id: string; title: string; instructor: string; rating: number; reviews: number; price: number; was?: number; hours: number; level: string; category: Category; topic: string; tone: 0 | 1 | 2 | 3 | 4; tag?: 'Bestseller' | 'New'};
+export type Category = string; // our own five marketing categories for the sample catalogue; the API can define others
+export type Course = {id: string; title: string; instructor: string; rating: number; reviews: number; price: number; was?: number; hours: number; level: string; category: Category; topic: string; tone: 0 | 1 | 2 | 3 | 4; tag?: 'Bestseller' | 'New'; thumbnailUrl?: string; subtitle?: string | null};
 
-export const categories: {name: Category; topics: string[]}[] = [
+export const categories: {name: string; topics: string[]}[] = [
   {name: 'Programming', topics: ['Intro to programming', 'Python', 'TypeScript', 'Go', 'React', 'React Native', 'Swift']},
   {name: 'AI', topics: ['Intro to AI & ML', 'Computer vision', 'Robotics', 'ML', 'AI agents', 'Agentic AI']},
   {name: 'Digital marketing', topics: ['Intro to digital marketing', 'YouTube', 'SEO', 'Instagram', 'Facebook', 'TikTok', 'Snap', 'LinkedIn', 'X', 'WhatsApp']},

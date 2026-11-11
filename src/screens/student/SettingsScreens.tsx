@@ -5,13 +5,13 @@ import {BottomButton, PrimaryAction, TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
 import {haptic} from '../../theme/system';
 import {formatNaira} from '../../data/catalog';
-import {learnerName} from '../../data/learning';
+import {learner} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
 const font = {fontFamily: fonts.family};
 
 // Sample account data until the profile and payments APIs are connected.
-const profileSeed = {name: `${learnerName} Nwachukwu`, email: 'sunday.n@unilag.edu.ng', phone: '+234 803 555 0142', school: 'University of Lagos', bio: 'Learning data analysis one pivot table at a time.'};
+const profileSeed = () => ({name: learner.fullName, email: learner.email, phone: '', school: '', bio: ''});
 const receipts = [
   {id: 'YZ-10482', course: 'Data analysis in Excel', date: '12 Oct 2026', amount: 15000, method: 'Card •••• 4021'},
   {id: 'YZ-10311', course: 'UI design basics', date: '28 Sep 2026', amount: 12500, method: 'Bank transfer'},
