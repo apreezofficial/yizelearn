@@ -151,3 +151,15 @@
   .phoneBar .phoneHeart { position: static; color: var(--ink); filter: none; border: 1px solid var(--line); }
   .phoneBtn { padding: 13px 22px; border-radius: 8px; background: var(--blue700); color: #fff; font-weight: 700; }
 }
+
+.reviewSum { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; font-size: 17px; font-weight: 700; color: var(--ink); }
+.reviewSum svg { color: var(--marigold); fill: var(--marigold); }
+.reviews { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 32px; margin: 0; padding: 0; list-style: none; }
+.reviews li { padding-top: 16px; border-top: 1px solid var(--line); }
+.reviews li > div { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; }
+.reviews li i { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--blue900); color: var(--marigold); font-style: normal; font-size: 14px; font-weight: 800; }
+.reviews li b { font-size: 15px; }
+.reviews li time { margin-left: auto; font-size: 13px; color: var(--muted); }
+.reviews li p { margin: 10px 0 0; font-size: 15px; line-height: 1.55; }
+.reviews .stars .starOn { color: var(--marigold); }
+@media (max-width: 960px) { .reviews { grid-template-columns: minmax(0, 1fr); } }

@@ -3,7 +3,8 @@ import {courses, type Course} from './courses';
 // Sample course pages. The wording is placeholder copy written to match each sample course until the courses API is connected.
 export type Lecture = {title: string; minutes: number; preview?: boolean};
 export type Module = {title: string; lectures: Lecture[]};
-export type Detail = {sub: string; learn: string[]; modules: Module[]; needs: string[]; about: string[]; bio: string};
+export type DetailReview = {id: string; rating: number; comment: string | null; author: string; date: string};
+export type Detail = {sub: string; learn: string[]; modules: Module[]; needs: string[]; about: string[]; bio: string; reviews?: {avg: number | null; count: number; items: DetailReview[]}};
 
 type Seed = {sub: string; learn: string[]; modules: [string, string[]][]; needs: string[]; about: string[]};
 

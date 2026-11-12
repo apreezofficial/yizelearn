@@ -3,15 +3,22 @@
 import Link from 'next/link';
 import {useSyncExternalStore} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
-import {AiBrain01Icon, ComputerSettingsIcon, DatabaseIcon, FavouriteIcon, Megaphone01Icon, SourceCodeIcon, StarIcon} from '@hugeicons/core-free-icons';
-import {type Category, type Course} from '@/lib/courses';
+import {AiBrain01Icon, BookOpen01Icon, ComputerSettingsIcon, DatabaseIcon, FavouriteIcon, Megaphone01Icon, SourceCodeIcon, StarIcon} from '@hugeicons/core-free-icons';
+import {type Course} from '@/lib/courses';
 import {preferencesAllowed} from '@/lib/consent';
 import {useMoney} from '@/lib/prefs';
 import s from './CourseCard.module.css';
 
-export const categoryIcon: Record<Category, typeof SourceCodeIcon> = {
-  Programming: SourceCodeIcon, AI: AiBrain01Icon, 'Digital marketing': Megaphone01Icon, Database: DatabaseIcon, 'IT tech skills': ComputerSettingsIcon,
-};
+/** An icon for any category name, including ones the API defines. */
+export function iconFor(category: string) {
+  const n = category.toLowerCase();
+  if (/\b(ai|ml|machine|robot)/.test(n)) return AiBrain01Icon;
+  if (/market|social|seo|brand/.test(n)) return Megaphone01Icon;
+  if (/data|sql/.test(n)) return DatabaseIcon;
+  if (/program|code|develop|software|web/.test(n)) return SourceCodeIcon;
+  if (/\bit\b|tech|network|hardware|support/.test(n)) return ComputerSettingsIcon;
+  return BookOpen01Icon;
+}
 
 const KEY = 'yz-wish';
 const listeners = new Set<() => void>();
@@ -47,8 +54,10 @@ export function CourseCard({course: c, wide, href = `/courses/${c.id}`}: {course
   const money = useMoney();
   return <Link href={href} className={`${s.card} ${wide ? s.wide : ''}`}>
     <div className={s.art} data-tone={c.tone}>
-      <HugeiconsIcon icon={categoryIcon[c.category]} size={56} strokeWidth={1.4} className={s.glyph} />
-      <span className={s.topic}>{c.topic}</span>
+      {c.thumbnailUrl
+        // eslint-disable-next-line @next/next/no-img-element -- thumbnails come from the API's own storage, not a fixed host
+        ? <img src={c.thumbnailUrl} alt="" className={s.photo} loading="lazy" />
+        : <><HugeiconsIcon icon={iconFor(c.category)} size={56} strokeWidth={1.4} className={s.glyph} /><span className={s.topic}>{c.topic}</span></>}
       <Heart id={c.id} />
     </div>
     <div className={s.body}>
@@ -56,11 +65,12 @@ export function CourseCard({course: c, wide, href = `/courses/${c.id}`}: {course
       <p className={s.by}>{c.instructor}</p>
       <div className={s.pills}>
         {c.tag && <span className={s.chip}>{c.tag === 'New' ? 'New' : 'Bestseller'}</span>}
-        <span className={s.pill}><HugeiconsIcon icon={StarIcon} size={11} className={s.starOn} /><b>{c.rating.toFixed(1)}</b></span>
-        <span className={s.pill}>{c.reviews.toLocaleString()} ratings</span>
+        {c.reviews > 0
+          ? <><span className={s.pill}><HugeiconsIcon icon={StarIcon} size={11} className={s.starOn} /><b>{c.rating.toFixed(1)}</b></span><span className={s.pill}>{c.reviews.toLocaleString()} ratings</span></>
+          : <span className={s.pill}>New course</span>}
       </div>
       <div className={s.foot}>
-        <p className={s.meta}><b>{money(c.price)}</b>{c.was && <s>{money(c.was)}</s>}</p>
+        <p className={s.meta}><b>{c.price === 0 ? 'Free' : money(c.price)}</b>{c.was && <s>{money(c.was)}</s>}</p>
         <span className={s.btn}>View course</span>
       </div>
     </div>

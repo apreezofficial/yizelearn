@@ -5,10 +5,10 @@ import {Logo} from './Logo';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {createPortal} from 'react-dom';
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon, Globe02Icon, Menu01Icon, Search01Icon} from '@hugeicons/core-free-icons';
-import {categories, courses} from '@/lib/courses';
+import {useCategories, useSuggestions} from '@/lib/catalog-client';
 import {findLang} from '@/lib/languages';
 import {useMoney, usePrefs} from '@/lib/prefs';
 import s from './Nav.module.css';
@@ -37,7 +37,8 @@ export function SiteNav() {
   const phoneInput = useRef<HTMLInputElement>(null);
 
   const q = query.trim().toLowerCase();
-  const results = useMemo(() => (q ? courses.filter(c => `${c.title} ${c.topic} ${c.instructor}`.toLowerCase().includes(q)).slice(0, 5) : []), [q]);
+  const categories = useCategories();
+  const results = useSuggestions(query);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -70,10 +71,10 @@ export function SiteNav() {
   const submit = (e: React.FormEvent) => { e.preventDefault(); if (q) go(`/courses?q=${encodeURIComponent(query.trim())}`); };
 
   const suggestions = <div className={s.suggest} role="listbox" aria-label="Suggestions">
-    {q ? (results.length ? results.map(c => <button key={c.id} role="option" aria-selected={false} onMouseDown={e => e.preventDefault()} onClick={() => go(`/courses/${c.id}`)}>
+    {q ? (results.length ? results.map(c => <button key={c.key} role="option" aria-selected={false} onMouseDown={e => e.preventDefault()} onClick={() => go(c.href)}>
       <span className={s.sIcon}><HugeiconsIcon icon={Search01Icon} size={16} /></span>
-      <span className={s.sText}><b>{c.title}</b><i>{c.topic} · {c.level} · {c.instructor}</i></span>
-      <em>{money(c.price)}</em>
+      <span className={s.sText}><b>{c.title}</b>{c.sub && <i>{c.sub}</i>}</span>
+      {c.price !== undefined && <em>{money(c.price)}</em>}
     </button>) : <p className={s.none}>No courses match &ldquo;{query}&rdquo; yet. Try Python, SQL or SEO.</p>)
       : <div className={s.popular}><p>Popular right now</p><div>{topics.map(t => <button key={t} onMouseDown={e => e.preventDefault()} onClick={() => { setQuery(t); (phoneSearch ? phoneInput : input).current?.focus(); }}>{t}</button>)}</div></div>}
   </div>;
@@ -116,7 +117,7 @@ export function SiteNav() {
       <div className={s.megaInner}>
         <div>
           <p className={s.megaHead}>Categories</p>
-          {categories.map(g => <button key={g.name} className={s.goal} onClick={() => go(`/courses?category=${encodeURIComponent(g.name)}`)}><span><b>{g.name}</b><i>{g.topics.slice(0, 4).join(', ')} and more</i></span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>)}
+          {categories.map(g => <button key={g.name} className={s.goal} onClick={() => go(`/courses?category=${encodeURIComponent(g.name)}`)}><span><b>{g.name}</b><i>{g.topics.length ? `${g.topics.slice(0, 4).join(', ')} and more` : 'Browse courses'}</i></span><HugeiconsIcon icon={ArrowRight01Icon} size={16} /></button>)}
         </div>
         <div>
           <p className={s.megaHead}>Popular topics</p>

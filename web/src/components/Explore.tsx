@@ -4,13 +4,13 @@ import Link from 'next/link';
 import {useRef, useState} from 'react';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowLeft01Icon, ArrowRight01Icon, Clock01Icon, StarIcon} from '@hugeicons/core-free-icons';
-import {categoryNames, courses, type Category, type Course} from '@/lib/courses';
+import {type Course} from '@/lib/courses';
 import {useMoney} from '@/lib/prefs';
 import s from './Explore.module.css';
 
 /** Pick a goal, slide through matching courses. Arrows scroll the rail; on phones it's a swipeable row. */
-export function GoalCourses() {
-  const [goal, setGoal] = useState<Category>(categoryNames[0]);
+export function GoalCourses({courses, categoryNames}: {courses: Course[]; categoryNames: string[]}) {
+  const [goal, setGoal] = useState<string>(categoryNames[0]);
   const rail = useRef<HTMLDivElement>(null);
   const shown = courses.filter(c => c.category === goal);
   const scroll = (dir: 1 | -1) => rail.current?.scrollBy({left: dir * rail.current.clientWidth * 0.8, behavior: 'smooth'});

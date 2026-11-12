@@ -4,20 +4,22 @@ import {Suspense} from 'react';
 import {OfferBar, SiteNav} from '@/components/Chrome';
 import {CoursePage} from '@/components/CoursePage';
 import {Footer} from '@/components/Footer';
-import {courses} from '@/lib/courses';
-import {getCourse, getDetail, related} from '@/lib/courseDetail';
+import {getCatalog, getCourseView} from '@/lib/catalog';
 
-export function generateStaticParams() { return courses.map(c => ({id: c.id})); }
+export async function generateStaticParams() {
+  const {courses} = await getCatalog();
+  return courses.map(c => ({id: c.id}));
+}
 
 export async function generateMetadata({params}: {params: Promise<{id: string}>}): Promise<Metadata> {
-  const c = getCourse((await params).id);
-  return c ? {title: c.title, description: getDetail(c).sub} : {title: 'Course not found'};
+  const view = await getCourseView((await params).id);
+  return view ? {title: view.course.title, description: view.detail.sub || undefined} : {title: 'Course not found'};
 }
 
 async function Course({params}: {params: Promise<{id: string}>}) {
-  const c = getCourse((await params).id);
-  if (!c) notFound();
-  return <CoursePage course={c} detail={getDetail(c)} more={related(c)} />;
+  const view = await getCourseView((await params).id);
+  if (!view) notFound();
+  return <CoursePage course={view.course} detail={view.detail} more={view.more} sample={view.source === 'sample'} />;
 }
 
 export default function Page({params}: {params: Promise<{id: string}>}) {
