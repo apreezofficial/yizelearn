@@ -14,7 +14,7 @@ import {findLang} from '@/lib/languages';
 import {useMoney, usePrefs} from '@/lib/prefs';
 import s from './Nav.module.css';
 
-const links = [{label: 'Courses', href: '/courses'}, {label: 'FAQ', href: '/faq'}, {label: 'Teach', href: '/teach'}, {label: 'About', href: '/about'}];
+const links = [{label: 'Courses', href: '/courses'}, {label: 'For business', href: '/business'}, {label: 'FAQ', href: '/faq'}, {label: 'Teach', href: '/teach'}, {label: 'About', href: '/about'}];
 const topics = ['Python', 'React', 'SQL', 'AI agents', 'SEO', 'TikTok', 'PostgreSQL', 'Computer technician'];
 
 /**
