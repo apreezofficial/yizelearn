@@ -48,3 +48,13 @@
 
 @media (prefers-reduced-motion: reduce) { .card, .check, .error, .notice { animation: none; } }
 @media (max-width: 480px) { .card h1 { font-size: 26px; } .box { width: 44px; height: 56px; } }
+
+/* Password field, terms checkbox and the forgot link */
+.pw { position: relative; }
+.pw input { padding-right: 56px; }
+.eye { position: absolute; right: 8px; top: 50%; display: grid; place-items: center; width: 42px; height: 42px; transform: translateY(-50%); border: 0; border-radius: 10px; background: none; color: var(--muted); cursor: pointer; }
+.eye:hover { color: var(--ink); background: var(--blue50); }
+.terms { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 16px; font-size: 13.5px; line-height: 1.45; color: var(--muted); cursor: pointer; }
+.terms input { flex: none; width: 20px; height: 20px; margin-top: 1px; accent-color: var(--blue700); cursor: pointer; }
+.terms a { color: var(--blue700); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.forgot { margin: 14px 0 0; text-align: center; }
