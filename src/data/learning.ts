@@ -1,7 +1,14 @@
 import {sampleModules} from './catalog';
 
 // Sample learner data until the learning API is live. Lesson ids match the catalogue's Module 2.
-export const learnerName = 'Sunday';
+// Who is signed in. Shows a sample learner until someone logs in; setLearner() fills it from the account.
+export let learnerName = 'Sunday';
+export const learner = {fullName: 'Sunday Nwachukwu', email: 'sunday.n@unilag.edu.ng'};
+export function setLearner(fullName: string, email: string) {
+  learnerName = fullName.trim().split(/\s+/)[0] || fullName;
+  learner.fullName = fullName;
+  learner.email = email;
+}
 
 export const continueLearning = {
   title: 'Spreadsheet skills',

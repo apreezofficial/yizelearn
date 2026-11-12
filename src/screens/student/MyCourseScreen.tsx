@@ -4,24 +4,23 @@ import type {Course} from '../../api/types';
 import {CourseArt, TabBarSpacer} from '../../components/Catalog';
 import {ProgressBar} from '../../components/Chalkboard';
 import {EmptyState} from '../../components/States';
-import {sampleCourses} from '../../data/catalog';
-import {enrolments} from '../../data/learning';
+import type {EnrolmentView} from '../../api/mappers';
+import {artIndex} from '../../data/catalog';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
 type Tab = 'In progress' | 'Completed' | 'Wishlist';
 const tabs: Tab[] = ['In progress', 'Completed', 'Wishlist'];
 const font = {fontFamily: fonts.family};
 
-type Props = {saved: string[]; onOpen: (course: Course) => void; onExplore: () => void};
+type Props = {enrolments: EnrolmentView[]; wishlist: Course[]; onOpen: (course: Course) => void; onExplore: () => void};
 
-export function MyCourseScreen({saved, onOpen, onExplore}: Props) {
+export function MyCourseScreen({enrolments, wishlist, onOpen, onExplore}: Props) {
   const [tab, setTab] = useState<Tab>('In progress');
   const rows = useMemo(() => {
-    const byId = (id: string) => sampleCourses.find(c => c.id === id);
-    if (tab === 'Wishlist') return saved.map(byId).filter((c): c is Course => !!c).map(course => ({course, progress: undefined as number | undefined}));
+    if (tab === 'Wishlist') return wishlist.map(course => ({course, progress: undefined as number | undefined}));
     const status = tab === 'In progress' ? 'in-progress' : 'completed';
-    return enrolments.filter(e => e.status === status).map(e => ({course: byId(e.courseId), progress: e.progress})).filter((r): r is {course: Course; progress: number} => !!r.course);
-  }, [tab, saved]);
+    return enrolments.filter(e => e.status === status).map(e => ({course: e.course, progress: e.progress as number | undefined}));
+  }, [tab, enrolments, wishlist]);
 
   return <View style={styles.screen}>
     <Text style={[styles.title, font]}>My Course</Text>
@@ -37,7 +36,7 @@ export function MyCourseScreen({saved, onOpen, onExplore}: Props) {
           ? <EmptyState key={tab} icon="book" title="Start your first course" message={'Pick something short and practical.\nYour progress will show up here.'} actionLabel="Explore courses" onAction={onExplore} />
           : <EmptyState key={tab} icon="award" title="No finished courses yet" message="Courses you complete, with their certificates, will show up here." actionLabel="Explore courses" onAction={onExplore} />}
       renderItem={({item, index}) => <Pressable onPress={() => onOpen(item.course)} style={({pressed}) => [styles.row, pressed && styles.pressed]} accessibilityRole="button">
-        <CourseArt index={index} size={84} />
+        <CourseArt index={artIndex(item.course.id)} size={84} />
         <View style={styles.copy}>
           <Text style={[styles.rowTitle, font]} numberOfLines={2}>{item.course.title}</Text>
           <Text style={[styles.rowMeta, font]} numberOfLines={1}>{item.course.instructorName}</Text>

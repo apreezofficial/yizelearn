@@ -11,3 +11,5 @@ jest.mock('@callstack/liquid-glass', () => {
   return {LiquidGlassView: View, LiquidGlassContainerView: View, isLiquidGlassSupported: false};
 });
 jest.mock('react-native-haptic-feedback', () => ({__esModule: true, default: {trigger: jest.fn()}, HapticFeedbackTypes: {}}));
+// Tests never reach the real backend: any request fails as if offline, unless a test installs its own fetch.
+global.fetch = jest.fn(() => Promise.reject(new Error('offline')));

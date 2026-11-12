@@ -2,13 +2,12 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import type {Course} from '../../api/types';
 import {CategoryChips, CourseCard, SearchField} from '../../components/Catalog';
-import {categories} from '../../data/catalog';
 import {colors, fonts, motion, radius, spacing, type} from '../../theme/tokens';
 
-type Props = {courses: Course[]; onLogin: () => void; onSearch: (query: string) => void; onCategory: (category: string) => void; onSeeAll: () => void; onCourse: (course: Course) => void};
+type Props = {courses: Course[]; categories: readonly string[]; onLogin: () => void; onSearch: (query: string) => void; onCategory: (category: string) => void; onSeeAll: () => void; onCourse: (course: Course) => void};
 const outExpo = Easing.bezier(...motion.outExpo);
 
-export function LandingScreen({courses, onLogin, onSearch, onCategory, onSeeAll, onCourse}: Props) {
+export function LandingScreen({courses, categories, onLogin, onSearch, onCategory, onSeeAll, onCourse}: Props) {
   const [query, setQuery] = useState('');
   const bubbles = useRef(new Animated.Value(0)).current;
   // Hero circles drift in from the corner, echoing the launch intro's ease.

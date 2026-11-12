@@ -5,15 +5,13 @@ import type {Course} from '../../api/types';
 import {SearchField, TabBarSpacer} from '../../components/Catalog';
 import {Icon} from '../../components/Icon';
 import {Rise} from '../../components/Motion';
-import {formatNaira, sampleCourses} from '../../data/catalog';
-import {continueLearning, learnerName} from '../../data/learning';
+import {formatNaira} from '../../data/catalog';
+import {learnerName} from '../../data/learning';
+import type {ContinueCard} from '../../hooks/useLearning';
 import {colors, fonts, palettes, spacing, type} from '../../theme/tokens';
 
-type Props = {onResume: () => void; onCourse: (course: Course) => void; onNotifications: () => void};
+type Props = {recommended: Course[]; categories: string[]; continueLearning?: ContinueCard; loading?: boolean; hasUnread?: boolean; onResume: () => void; onExplore: () => void; onCourse: (course: Course) => void; onNotifications: () => void};
 const font = {fontFamily: fonts.family};
-const chips = ['All', 'AI', 'Tech', 'Design', 'Programming', 'Database'];
-// Courses that sit under each chip until the catalogue has these categories.
-const chipCategory: Record<string, string[]> = {AI: ['Tech'], Tech: ['Tech'], Design: ['Design'], Programming: ['Tech'], Database: ['Business', 'Tech']};
 
 /** Progress as the design draws it: a solid run for what is done, then chalk dots for what is left. */
 function ChalkProgress({value}: {value: number}) {
@@ -71,28 +69,28 @@ function CourseTile({course, index, onPress}: {course: Course; index: number; on
   </Rise>;
 }
 
-export function StudentHomeScreen({onResume, onCourse, onNotifications}: Props) {
+export function StudentHomeScreen({recommended: picks, categories, continueLearning, loading, hasUnread, onResume, onExplore, onCourse, onNotifications}: Props) {
   const [query, setQuery] = useState('');
   const [chip, setChip] = useState('All');
+  const chips = categories.length ? categories : ['All'];
   const recommended = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return sampleCourses
-      .filter(c => c.id !== 'excel')
-      .filter(c => (chip === 'All' || chipCategory[chip]?.includes(c.category ?? '')) && (!q || c.title.toLowerCase().includes(q)));
-  }, [chip, query]);
+    return picks.filter(c => (chip === 'All' || c.category === chip) && (!q || c.title.toLowerCase().includes(q)));
+  }, [picks, chip, query]);
 
   return <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
     <Rise style={styles.header}>
       <Text style={[styles.hello, font]}>Hi,  {learnerName}</Text>
       <Pressable onPress={onNotifications} hitSlop={12} style={styles.bell} accessibilityRole="button" accessibilityLabel="Notifications, unread">
         <Icon name="bell" size={26} color={colors.ink} strokeWidth={1.6} />
-        <View style={styles.unread} />
+        {hasUnread && <View style={styles.unread} />}
       </Pressable>
     </Rise>
     <Rise delay={60} style={styles.pad}><SearchField value={query} onChangeText={setQuery} placeholder="Search for courses" style={styles.search} /></Rise>
 
     <Rise delay={120} style={styles.pad}>
       <Text style={[styles.section, font]}>Continue learning</Text>
+      {continueLearning ? (
       <Pressable onPress={onResume} style={styles.frame} accessibilityRole="button" accessibilityLabel={`Continue ${continueLearning.title}, ${continueLearning.progress}% done`}>
         <View style={styles.board}>
           <View style={styles.swirlA} />
@@ -112,6 +110,21 @@ export function StudentHomeScreen({onResume, onCourse, onNotifications}: Props) 
           <View style={styles.eraser} />
         </View>
       </Pressable>
+      ) : (
+        <Pressable onPress={onExplore} style={styles.frame} accessibilityRole="button" accessibilityLabel="Find your first course">
+          <View style={styles.board}>
+            <View style={styles.swirlA} />
+            <View style={styles.swirlB} />
+            <BookArt />
+            <View style={styles.boardCopy}>
+              <Text style={styles.chalkTitle} numberOfLines={1} adjustsFontSizeToFit>{loading ? 'Loading…' : 'Start learning'}</Text>
+              <Text style={[styles.chalkMeta, font]} numberOfLines={2}>{loading ? ' ' : 'You have no course in progress. Pick one to begin.'}</Text>
+              <View style={styles.resume}><Text style={[styles.resumeText, font]}>Explore courses</Text></View>
+            </View>
+            <View style={styles.eraser} />
+          </View>
+        </Pressable>
+      )}
     </Rise>
 
     <Rise delay={240}>

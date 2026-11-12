@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, Alert, Animated, Easing, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, type TextInputInstance, type TextInputProps, View} from 'react-native';
-import {ApiError, auth} from '../../api/client';
+import {ApiError} from '../../api/client';
 import {authApi, type Organisation} from '../../api/endpoints';
 import type {User} from '../../api/types';
 import {RoundButton} from '../../components/Catalog';
@@ -11,7 +11,7 @@ import {TitleBar} from '../../components/Layout';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
 const font = {fontFamily: fonts.family};
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const RESEND_SECONDS = 30;
 
 function describe(error: unknown) {
@@ -23,24 +23,30 @@ function notConnected(provider: string) {
   Alert.alert(provider, `${provider} sign-in is not connected yet. Use your email for now.`);
 }
 
-type LoginProps = {onBack?: () => void; onSignUp: () => void; onSso: () => void; onSent: (email: string) => void};
-export function LoginScreen({onBack, onSignUp, onSso, onSent}: LoginProps) {
+type LoginProps = {onBack?: () => void; onSignUp: () => void; onSso: () => void; onForgot: () => void; onSignedIn: (user: User) => void; onNeedsEmailCode: (email: string) => void; onTwoStep: (challengeToken: string) => void};
+export function LoginScreen({onBack, onSignUp, onSso, onForgot, onSignedIn, onNeedsEmailCode, onTwoStep}: LoginProps) {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [touched, setTouched] = useState(false);
   const valid = EMAIL.test(email.trim());
   const emailError = touched && email.trim() && !valid ? 'Enter a full email address, like name@example.com' : undefined;
+  const ready = valid && password.length > 0;
 
   const submit = async () => {
-    if (!valid || busy) return;
+    setTouched(true);
+    if (!ready || busy) return;
     setBusy(true);
     setError('');
     try {
-      await authApi.requestCode(email.trim());
-      onSent(email.trim());
+      const result = await authApi.logIn(email.trim(), password);
+      if (result.status === 'two-step') onTwoStep(result.challengeToken);
+      else onSignedIn(result.user);
     } catch (e) {
-      setError(describe(e));
+      // An account that never confirmed its email gets a fresh code and goes to the code screen.
+      if (e instanceof ApiError && e.code === 'email_not_verified') { authApi.resendCode(email.trim()).catch(() => {}); onNeedsEmailCode(email.trim()); }
+      else setError(describe(e));
     } finally {
       setBusy(false);
     }
@@ -53,8 +59,10 @@ export function LoginScreen({onBack, onSignUp, onSso, onSent}: LoginProps) {
     <Text style={[styles.subtitle, font]}>Log in to keep learning</Text>
 
     {!!error && <View style={styles.notice}><Notice tone="danger" title="We couldn't log you in" message={error} /></View>}
-    <Field label="Email" value={email} onChangeText={v => { setEmail(v); setError(''); }} onBlur={() => setTouched(true)} onSubmitEditing={() => { setTouched(true); submit(); }} error={emailError} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
-    <Primary label="Log in" disabled={!valid} busy={busy} onPress={submit} />
+    <Field label="Email" value={email} onChangeText={v => { setEmail(v); setError(''); }} onBlur={() => setTouched(true)} error={emailError} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
+    <Field label="Password" value={password} onChangeText={v => { setPassword(v); setError(''); }} onSubmitEditing={submit} placeholder="Your password" secureTextEntry autoCapitalize="none" autoComplete="current-password" textContentType="password" />
+    <Pressable onPress={onForgot} style={styles.forgot} accessibilityRole="button"><Text style={[styles.link, font]}>Forgot password?</Text></Pressable>
+    <Primary label="Log in" disabled={!ready} busy={busy} onPress={submit} />
 
     <Divider label="or continue with" />
     <View style={styles.social}>
@@ -74,20 +82,25 @@ type SignUpProps = {onBack: () => void; onLogin: () => void; onSent: (email: str
 export function SignUpScreen({onBack, onLogin, onSent}: SignUpProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState('');
+  const [fields, setFields] = useState<Record<string, string[]>>({});
   const [busy, setBusy] = useState(false);
-  const ready = name.trim().length >= 2 && EMAIL.test(email.trim()) && agreed;
+  const passwordOk = password.length >= 8 && password.trim().toLowerCase() !== email.trim().toLowerCase();
+  const ready = name.trim().length >= 2 && EMAIL.test(email.trim()) && passwordOk && agreed;
 
   const submit = async () => {
     if (!ready || busy) return;
     setBusy(true);
     setError('');
+    setFields({});
     try {
-      await authApi.requestCode(email.trim(), name.trim());
+      await authApi.signUp({fullName: name.trim(), email: email.trim(), password});
       onSent(email.trim(), name.trim());
     } catch (e) {
       setError(describe(e));
+      if (e instanceof ApiError && e.details) setFields(e.details);
     } finally {
       setBusy(false);
     }
@@ -97,8 +110,9 @@ export function SignUpScreen({onBack, onLogin, onSent}: SignUpProps) {
     <TitleBar title="Create account" onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
       <BrandLogo />
-      <Field label="Full name" value={name} onChangeText={setName} placeholder="Your full name" autoCapitalize="words" autoComplete="name" textContentType="name" />
-      <Field label="Email" value={email} onChangeText={setEmail} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
+      <Field label="Full name" value={name} onChangeText={setName} placeholder="Your full name" autoCapitalize="words" autoComplete="name" textContentType="name" error={fields.fullName?.[0]} />
+      <Field label="Email" value={email} onChangeText={setEmail} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" error={fields.email?.[0]} />
+      <Field label="Password" value={password} onChangeText={setPassword} placeholder="At least 8 characters" secureTextEntry autoCapitalize="none" autoComplete="new-password" textContentType="newPassword" error={fields.password?.[0] ?? (password && !passwordOk ? 'Use at least 8 characters, and not your email address.' : undefined)} />
       <Pressable onPress={() => setAgreed(v => !v)} style={styles.check} accessibilityRole="checkbox" accessibilityState={{checked: agreed}}>
         <View style={[styles.box, agreed && styles.boxOn]}>{agreed && <Icon name="check" size={16} color={colors.onSky} />}</View>
         <Text style={[styles.checkText, font]}>I agree to the Terms and Privacy policy</Text>
@@ -117,12 +131,15 @@ export function SignUpScreen({onBack, onLogin, onSent}: SignUpProps) {
   </View>;
 }
 
-type VerifyProps = {email: string; name?: string; onBack: () => void; onVerified: (user: User) => void};
-export function VerifyCodeScreen({email, name, onBack, onVerified}: VerifyProps) {
+/** One code screen for two jobs: confirming a new email (emailed code) and the authenticator code when two-step is on. */
+type VerifyProps = {email: string; challengeToken?: string; onBack: () => void; onVerified: (user: User) => void};
+export function VerifyCodeScreen({email, challengeToken, onBack, onVerified}: VerifyProps) {
+  const twoStep = !!challengeToken;
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
-  const [wait, setWait] = useState(RESEND_SECONDS);
+  const [wait, setWait] = useState(twoStep ? 0 : RESEND_SECONDS);
 
   useEffect(() => {
     if (wait <= 0) return;
@@ -135,9 +152,9 @@ export function VerifyCodeScreen({email, name, onBack, onVerified}: VerifyProps)
     setBusy(true);
     setError('');
     try {
-      const result = await authApi.verifyCode(email, value);
-      auth.setToken(result.token);
-      onVerified(result.user);
+      const result = twoStep ? await authApi.mfaVerify(challengeToken!, value) : await authApi.verifyEmail(email, value);
+      if (result.status === 'signed-in') onVerified(result.user);
+      else setError('Something went wrong. Log in again.');
     } catch (e) {
       setError(describe(e));
       setCode('');
@@ -150,8 +167,9 @@ export function VerifyCodeScreen({email, name, onBack, onVerified}: VerifyProps)
     if (wait > 0) return;
     setError('');
     try {
-      await authApi.requestCode(email, name);
+      await authApi.resendCode(email);
       setWait(RESEND_SECONDS);
+      setNotice('We sent a new code.');
     } catch (e) {
       setError(describe(e));
     }
@@ -160,16 +178,67 @@ export function VerifyCodeScreen({email, name, onBack, onVerified}: VerifyProps)
   return <View style={styles.screen}>
     <View style={styles.backRow}><RoundButton icon="back" onPress={onBack} label="Back" /></View>
     <View style={styles.codeWrap}>
-      <Text style={[styles.title, font]}>Enter the code</Text>
-      <Text style={[styles.subtitle, font]}>We sent a 6-digit code to{'\n'}<Text style={styles.emailText}>{email}</Text></Text>
+      <Text style={[styles.title, font]}>{twoStep ? 'Two-step check' : 'Check your email'}</Text>
+      <Text style={[styles.subtitle, font]}>{twoStep ? 'Open your authenticator app and\nenter the 6-digit code.' : <>We sent a 6-digit code to{'\n'}<Text style={styles.emailText}>{email}</Text></>}</Text>
       <CodeInput value={code} onChange={setCode} onComplete={verify} />
+      {!!notice && !error && <Text style={[styles.hint, font]}>{notice}</Text>}
       {!!error && <Text style={[styles.error, font]}>{error}</Text>}
-      <Primary label="Verify" disabled={code.length !== 6} busy={busy} onPress={() => verify(code)} />
-      <Pressable onPress={resend} disabled={wait > 0} style={styles.resend} accessibilityRole="button" accessibilityState={{disabled: wait > 0}}>
+      <Primary label={twoStep ? 'Verify' : 'Confirm email'} disabled={code.length !== 6} busy={busy} onPress={() => verify(code)} />
+      {!twoStep && <Pressable onPress={resend} disabled={wait > 0} style={styles.resend} accessibilityRole="button" accessibilityState={{disabled: wait > 0}}>
         <Text style={[styles.resendText, font, wait > 0 && styles.muted]}>{wait > 0 ? `Resend code in ${wait}s` : 'Resend code'}</Text>
-      </Pressable>
+      </Pressable>}
     </View>
   </View>;
+}
+
+/** Forgot password: ask for a code by email, then choose a new password with it. */
+export function ForgotPasswordScreen({onBack, onDone}: {onBack: () => void; onDone: () => void}) {
+  const [step, setStep] = useState<'email' | 'reset'>('email');
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const valid = EMAIL.test(email.trim());
+
+  const send = async () => {
+    if (!valid || busy) return;
+    setBusy(true);
+    setError('');
+    try { await authApi.forgotPassword(email.trim()); setStep('reset'); }
+    catch (e) { setError(describe(e)); }
+    finally { setBusy(false); }
+  };
+  const reset = async () => {
+    if (code.length !== 6 || password.length < 8 || busy) return;
+    setBusy(true);
+    setError('');
+    try {
+      await authApi.resetPassword(email.trim(), code, password);
+      Alert.alert('Password changed', 'Log in with your new password.');
+      onDone();
+    } catch (e) { setError(describe(e)); }
+    finally { setBusy(false); }
+  };
+
+  return <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+    <View style={styles.backRow}><RoundButton icon="back" onPress={step === 'reset' ? () => { setStep('email'); setError(''); } : onBack} label="Back" /></View>
+    <BrandLogo />
+    {step === 'email' ? <>
+      <Text style={[styles.title, font]}>Reset your password</Text>
+      <Text style={[styles.subtitle, font]}>Enter your email and we will send you a code.</Text>
+      <Field label="Email" value={email} onChangeText={v => { setEmail(v); setError(''); }} onSubmitEditing={send} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
+      {!!error && <Text style={[styles.error, font]}>{error}</Text>}
+      <Primary label="Send code" disabled={!valid} busy={busy} onPress={send} />
+    </> : <>
+      <Text style={[styles.title, font]}>Choose a new password</Text>
+      <Text style={[styles.subtitle, font]}>If that email has an account, we sent a code to{'\n'}<Text style={styles.emailText}>{email}</Text></Text>
+      <CodeInput value={code} onChange={setCode} onComplete={() => {}} />
+      <Field label="New password" value={password} onChangeText={v => { setPassword(v); setError(''); }} onSubmitEditing={reset} placeholder="At least 8 characters" secureTextEntry autoCapitalize="none" autoComplete="new-password" textContentType="newPassword" />
+      {!!error && <Text style={[styles.error, font]}>{error}</Text>}
+      <Primary label="Change password" disabled={code.length !== 6 || password.length < 8} busy={busy} onPress={reset} />
+    </>}
+  </ScrollView>;
 }
 
 // Six boxes that fill as you type. One hidden input does the typing, so the keyboard and autofill work as usual.
@@ -183,7 +252,7 @@ function CodeInput({value, onChange, onComplete}: {value: string; onChange: (val
   </Pressable>;
 }
 
-type FieldProps = Pick<TextInputProps, 'value' | 'onChangeText' | 'placeholder' | 'keyboardType' | 'autoCapitalize' | 'autoComplete' | 'textContentType' | 'onBlur' | 'onSubmitEditing'> & {label: string};
+type FieldProps = Pick<TextInputProps, 'value' | 'onChangeText' | 'placeholder' | 'keyboardType' | 'autoCapitalize' | 'autoComplete' | 'textContentType' | 'onBlur' | 'onSubmitEditing' | 'secureTextEntry'> & {label: string};
 function Field({label, error, ...input}: FieldProps & {error?: string}) {
   return <View style={styles.field}>
     <Text style={[styles.label, font]}>{label}</Text>
@@ -217,12 +286,12 @@ function Divider({label}: {label: string}) {
   return <View style={styles.divider}><View style={styles.rule} /><Text style={[styles.dividerText, font]}>{label}</Text><View style={styles.rule} /></View>;
 }
 
-type SsoProps = {onBack: () => void; onEmailLogin: () => void; onSignedIn: (user: User) => void};
+type SsoProps = {onBack: () => void; onEmailLogin: () => void};
 type SsoStep = 'email' | 'confirm' | 'signing';
 const SIGNING_STEPS = ['Opening your organisation’s sign-in', 'Checking your account', 'Setting up yizelearn'];
 
 /** School or work SSO: find the organisation from the email, confirm it, then sign in through its identity provider. */
-export function SsoScreen({onBack, onEmailLogin, onSignedIn}: SsoProps) {
+export function SsoScreen({onBack, onEmailLogin}: SsoProps) {
   const [step, setStep] = useState<SsoStep>('email');
   const [email, setEmail] = useState('');
   const [org, setOrg] = useState<Organisation | undefined>();
@@ -235,7 +304,10 @@ export function SsoScreen({onBack, onEmailLogin, onSignedIn}: SsoProps) {
     setBusy(true);
     setError('');
     try {
-      setOrg(await authApi.ssoLookup(email.trim()));
+      const found = await authApi.ssoDiscover(email.trim());
+      if (!found.available) { setError('We found no single sign-on for that email. Log in with your email and password instead.'); return; }
+      const domain = email.split('@')[1]?.toLowerCase() ?? '';
+      setOrg({id: found.connectionId ?? domain, name: found.name ?? domain, domain, kind: /\.(edu|ac|sch)(\.|$)/.test(domain) ? 'school' : 'work', provider: found.protocol ?? 'your organisation'});
       setStep('confirm');
     } catch (e) {
       setError(describe(e));
@@ -244,17 +316,9 @@ export function SsoScreen({onBack, onEmailLogin, onSignedIn}: SsoProps) {
     }
   };
 
-  const signIn = async () => {
-    if (!org) return;
-    setStep('signing');
-    try {
-      const result = await authApi.ssoSignIn(org.id, email.trim());
-      auth.setToken(result.token);
-      onSignedIn(result.user);
-    } catch (e) {
-      setError(describe(e));
-      setStep('confirm');
-    }
+  // Signing in through the organisation's page needs an in-app browser and its redirect set up first.
+  const signIn = () => {
+    notConnected(org?.name ?? 'School or work');
   };
 
   const back = step === 'confirm' ? () => { setStep('email'); setError(''); } : onBack;
@@ -267,7 +331,7 @@ export function SsoScreen({onBack, onEmailLogin, onSignedIn}: SsoProps) {
       <Field label="School or work email" value={email} onChangeText={t => { setEmail(t); setError(''); }} placeholder="you@school.edu.ng" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
       {!!error && <Text style={[styles.error, font]}>{error}</Text>}
       <Primary label="Find my organisation" disabled={!valid} busy={busy} onPress={find} />
-      <Text style={[styles.footer, font]}>No SSO? <Text onPress={onEmailLogin} style={styles.link}>Log in with an email code</Text></Text>
+      <Text style={[styles.footer, font]}>No SSO? <Text onPress={onEmailLogin} style={styles.link}>Log in with email and password</Text></Text>
     </FadeIn>}
     {step === 'confirm' && org && <FadeIn key="confirm">
       <SsoArt icon={org.kind === 'school' ? 'school' : 'building'} />
@@ -379,6 +443,8 @@ const styles = StyleSheet.create({
   box: {width: 26, height: 26, borderRadius: 7, borderWidth: 1.5, borderColor: colors.muted, alignItems: 'center', justifyContent: 'center'},
   boxOn: {backgroundColor: colors.sky, borderColor: colors.sky},
   checkText: {flex: 1, fontSize: type.label, color: colors.ink},
+  forgot: {alignSelf: 'flex-end', marginTop: -6, marginBottom: 14, padding: 4},
+  hint: {fontSize: type.caption, color: colors.muted, marginBottom: 10, textAlign: 'center'},
   codeWrap: {flex: 1, paddingHorizontal: spacing.screen, paddingTop: 24},
   emailText: {color: colors.ink, fontWeight: '700'},
   codeRow: {flexDirection: 'row', justifyContent: 'space-between', marginTop: 16, marginBottom: 24},

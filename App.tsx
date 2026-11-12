@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Alert, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View} from 'react-native';
+import {ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View} from 'react-native';
 import {useGlass} from './src/theme/system';
 import {ApiConnectionBanner} from './src/components/ApiConnectionBanner';
 import {InstructorDashboardScreen} from './src/screens/instructor/InstructorDashboardScreen';
@@ -7,7 +7,7 @@ import {CoursesScreen} from './src/screens/instructor/CoursesScreen';
 import {StudentHomeScreen} from './src/screens/student/StudentHomeScreen';
 import {AdminDashboardScreen} from './src/screens/admin/AdminDashboardScreen';
 import {CurriculumScreen, GradingScreen} from './src/screens/flows/CoreFlowScreens';
-import type {Course} from './src/api/types';
+import type {Course, User} from './src/api/types';
 import {TabBar, type TabItem} from './src/components/Catalog';
 import {EmptyState} from './src/components/States';
 import {TitleBar} from './src/components/Layout';
@@ -15,13 +15,18 @@ import {LogoutSheet} from './src/components/LogoutSheet';
 import {ReportIssueSheet} from './src/components/ReportIssueSheet';
 import RNShake from 'react-native-shake';
 import {captureScreen} from 'react-native-view-shot';
-import {sampleCourses, sampleModules} from './src/data/catalog';
-import {learnerName} from './src/data/learning';
+import {learnerName, setLearner} from './src/data/learning';
 import {defaultBrowse, type Browse} from './src/screens/public/browse';
 import {CourseScreen, CourseUnavailableScreen} from './src/screens/public/CourseScreen';
 import {ExploreScreen} from './src/screens/public/ExploreScreen';
 import {LandingScreen} from './src/screens/public/LandingScreen';
-import {LoginScreen, SsoScreen, SignUpScreen, VerifyCodeScreen} from './src/screens/auth/AuthScreens';
+import {ForgotPasswordScreen, LoginScreen, SsoScreen, SignUpScreen, VerifyCodeScreen} from './src/screens/auth/AuthScreens';
+import {authApi, cartApi, wishlistApi} from './src/api/endpoints';
+import {toCart, toCourse, type CartView} from './src/api/mappers';
+import {useCatalog} from './src/hooks/useCatalog';
+import {useCourseDetail} from './src/hooks/useCourseDetail';
+import {useLearning} from './src/hooks/useLearning';
+import {session} from './src/api/session';
 import {MyCourseScreen} from './src/screens/student/MyCourseScreen';
 import {CoursePlayerScreen} from './src/screens/student/CoursePlayerScreen';
 import {QuizQuestionScreen} from './src/screens/student/QuizQuestionScreen';
@@ -48,7 +53,7 @@ import {ScreenTransition} from './src/components/ScreenTransition';
 
 const C = {bg: '#FBFBF9', blue50: '#EFF5FC', blue100: '#DFEBF9', blue600: '#4F8BCD', blue700: '#2F6DB5', blue900: '#17335A', ink: '#242A36', muted: '#6F7785', line: '#E6E7E5', white: '#FFFFFF', yellow: '#F0B74A'};
 type Tab = 'Dashboard' | 'Courses' | 'Students' | 'Messages' | 'More';
-type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'LessonPreview' | 'Cart' | 'Login' | 'SignUp' | 'Verify' | 'Sso' | 'Assessment' | 'Grades' | 'Conversation' | 'Help' | 'Soon' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding' | 'Profile' | 'Payments' | 'Privacy' | 'Connected';
+type Page = Tab | 'Setup' | 'Curriculum' | 'Lesson' | 'Player' | 'Quiz' | 'Result' | 'Checkout' | 'Receipt' | 'Grading' | 'Grade' | 'Certificates' | 'Notifications' | 'Landing' | 'Explore' | 'Course' | 'LessonPreview' | 'Cart' | 'Login' | 'SignUp' | 'Verify' | 'Forgot' | 'Sso' | 'Assessment' | 'Grades' | 'Conversation' | 'Help' | 'Soon' | 'Learning' | 'Inbox' | 'Account' | 'Onboarding' | 'Profile' | 'Payments' | 'Privacy' | 'Connected';
 // Account rows that open their own settings page.
 const settingsPages: Record<string, Page> = {'Profile': 'Profile', 'Edit profile': 'Profile', 'Payments and receipts': 'Payments', 'Privacy and data': 'Privacy', 'Connected accounts': 'Connected'};
 type Role = 'Guest' | 'Instructor' | 'Student' | 'Administrator';
@@ -100,7 +105,13 @@ function AppContent() {
   const [page, setPage] = useState<Page>('Onboarding');
   const [role, setRole] = useState<Role>('Guest');
   const [browse, setBrowse] = useState<Browse>(defaultBrowse);
-  const [courseId, setCourseId] = useState(sampleCourses[0].id);
+  const catalog = useCatalog();
+  const learning = useLearning(role === 'Student');
+  const courses = catalog.courses;
+  const [courseId, setCourseId] = useState('');
+  const [openedCourse, setOpenedCourse] = useState<Course>();
+  const [serverCart, setServerCart] = useState<CartView>();
+  const [wishCourses, setWishCourses] = useState<Course[]>([]);
   const [courseFrom, setCourseFrom] = useState<Page>('Explore');
   const [saved, setSaved] = useState<string[]>([]);
   const [cart, setCart] = useState<string[]>([]);
@@ -109,7 +120,7 @@ function AppContent() {
   const [order, setOrder] = useState<Order>();
   // Guests sign in by email code; afterAuth is where they land once verified.
   const [afterAuth, setAfterAuth] = useState<Page>('Dashboard');
-  const [pending, setPending] = useState<{email: string; name?: string}>({email: ''});
+  const [pending, setPending] = useState<{email: string; name?: string; challenge?: string}>({email: ''});
   const [thread, setThread] = useState('sn');
   const [soonTitle, setSoonTitle] = useState('');
   // Pages visited since the last tab or fresh start, so Android's back button retraces them.
@@ -124,21 +135,79 @@ function AppContent() {
   // Returns to whichever page opened this one, e.g. Notifications from Home or from Account.
   const goBack = (fallback: Page) => setPage(history.current.pop() ?? fallback);
   useScreenCapturePolicy(capturePolicies[page] || 'block', () => Alert.alert('Screenshot taken', 'This screen can show sensitive payment details, like your card number. Keep the screenshot private, or delete it if you do not need it.'));
-  const course = sampleCourses.find(c => c.id === courseId) || sampleCourses[0];
-  const isSaved = saved.includes(course.id);
-  const toggleSave = () => setSaved(list => (isSaved ? list.filter(id => id !== course.id) : [...list, course.id]));
-  const openCourse = (c: Course) => { setCourseId(c.id); setCourseFrom(page); nav('Course'); };
+  // The course on screen: the one just opened, then the rich version the API sends for its page.
+  const base = (openedCourse?.id === courseId ? openedCourse : undefined) ?? courses.find(c => c.id === courseId) ?? courses[0];
+  const detail = useCourseDetail(page === 'Course' ? base?.id : undefined);
+  const course = detail.course ?? base;
+  const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  const isSaved = !!course && saved.includes(course.id);
+  const serverCall = (job: () => Promise<unknown>) => { job().catch((e: Error) => Alert.alert('Something went wrong', e.message)); };
+  // Saved courses sync with the account once signed in; the change shows at once and rolls back if the server says no.
+  const toggleSave = () => {
+    if (!course) return;
+    const id = course.id;
+    const was = saved.includes(id);
+    setSaved(list => (was ? list.filter(x => x !== id) : [...list, id]));
+    setWishCourses(list => (was ? list.filter(c => c.id !== id) : [...list.filter(c => c.id !== id), course]));
+    if (role !== 'Guest' && isUuid(id)) (was ? wishlistApi.remove(id) : wishlistApi.add(id)).catch((e: Error) => { setSaved(list => (was ? [...list, id] : list.filter(x => x !== id))); Alert.alert('Could not update your wishlist', e.message); });
+  };
+  const openCourse = (c: Course) => { setOpenedCourse(c); setCourseId(c.id); setCourseFrom(page); nav('Course'); };
   const explore = (patch: Partial<Browse>) => { setBrowse({...defaultBrowse, ...patch}); nav('Explore'); };
-  const cartItems = sampleCourses.filter(c => cart.includes(c.id));
-  const savedForLater = sampleCourses.filter(c => saved.includes(c.id) && !cart.includes(c.id));
-  const totals = cartTotals(cartItems, promo);
+  // Signed in, the cart lives on the server (with its own totals and promo check); as a guest it stays on the device.
+  const applyCart = (view: CartView) => { setServerCart(view); setCart(view.items.map(c => c.id)); setPromo(view.promo); };
+  const cartItems = serverCart ? serverCart.items : courses.filter(c => cart.includes(c.id));
+  const savedForLater = serverCart ? serverCart.savedForLater : courses.filter(c => saved.includes(c.id) && !cart.includes(c.id));
+  const totals = serverCart ? {subtotal: serverCart.subtotal, discount: serverCart.discount, total: serverCart.total} : cartTotals(cartItems, promo);
   // Flow A1: buying needs an account, so guests sign in first; signed-in learners add to cart.
-  // Buying needs an account. Guests add to the cart first, then sign in and come back to it.
-  const enrol = () => { setCart(list => (list.includes(course.id) ? list : [...list, course.id])); setCartFrom(page); if (role === 'Guest') { needSignIn('Cart'); return; } nav('Cart'); };
-  const pay = (method: Parameters<typeof createOrder>[2], cardNumber: string) => { if (method === 'card' && isDeclined(cardNumber)) return false; setOrder(createOrder(cartItems, totals.total, method, cardNumber)); setCart([]); setPromo(undefined); nav('Receipt'); return true; };
+  const enrol = () => {
+    if (!course) return;
+    setCartFrom(page);
+    if (role === 'Guest') { setCart(list => (list.includes(course.id) ? list : [...list, course.id])); needSignIn('Cart'); return; }
+    if (!isUuid(course.id)) { setCart(list => (list.includes(course.id) ? list : [...list, course.id])); nav('Cart'); return; }
+    serverCall(async () => { applyCart(toCart(await cartApi.add(course.id))); nav('Cart'); });
+  };
+  // The courses behind the saved ids: the ones the account returned, then anything already loaded in the catalogue.
+  const wishlist = saved.map(id => wishCourses.find(c => c.id === id) ?? courses.find(c => c.id === id)).filter((c): c is Course => !!c);
+  // The lesson player is not wired yet, so "Resume" opens the course page of what you were taking.
+  const resumeLearning = () => { const current = learning.enrolments.find(e => e.status === 'in-progress'); if (current) openCourse(current.course); else nav('Explore'); };
+  const removeFromCart = (c: Course) => { setCart(list => list.filter(id => id !== c.id)); if (serverCart) serverCall(async () => applyCart(toCart(await cartApi.remove(c.id)))); };
+  const applyPromo = serverCart ? async (code: string) => { try { applyCart(toCart(await cartApi.applyPromo(code))); return undefined; } catch (e) { return (e as Error).message; } } : undefined;
+  const changePromo = (code?: string) => { if (code) { setPromo(code); return; } setPromo(undefined); if (serverCart) serverCall(async () => applyCart(toCart(await cartApi.removePromo()))); };
+  // Payments are not connected yet, so a real course cannot be bought here; sample courses keep the demo checkout.
+  const startCheckout = () => {
+    if (role === 'Guest') { needSignIn('Checkout'); return; }
+    if (serverCart?.items.some(c => isUuid(c.id))) { Alert.alert('Payments are coming soon', 'Card and bank payments are not connected in the app yet, so your courses stay in your cart.'); return; }
+    nav('Checkout');
+  };
+  const pay = (method: Parameters<typeof createOrder>[2], cardNumber: string) => { if (method === 'card' && isDeclined(cardNumber)) return false; setOrder(createOrder(cartItems, totals.total, method, cardNumber)); setCart([]); setServerCart(undefined); setPromo(undefined); nav('Receipt'); return true; };
   const needSignIn = (next: Page) => { setAfterAuth(next); nav('Login'); };
-  const signedIn = () => { setRole('Student'); reset(afterAuth); };
-  const signOut = () => { setLogoutOpen(false); setRole('Guest'); reset('Landing'); };
+  // The account decides the role: learners get the student app; instructor and admin accounts get theirs.
+  // After signing in, fold what you saved and carted as a guest into your account and load what was already there.
+  const syncAccount = async () => {
+    const ids = (list: string[]) => list.filter(isUuid);
+    try {
+      await Promise.all(ids(saved).map(id => wishlistApi.add(id).catch(() => undefined)));
+      const [wish, merged] = await Promise.all([wishlistApi.list(), cartApi.merge(ids(cart), [], promo)]);
+      setSaved(wish.data.map(c => c.id));
+      setWishCourses(wish.data.map(c => toCourse(c)));
+      applyCart(toCart(merged));
+    } catch { /* keep the lists on this device */ }
+  };
+  const applyUser = (user: User) => {
+    setLearner(user.name, user.email);
+    setRole(user.role === 'student' ? 'Student' : user.role === 'instructor' ? 'Instructor' : 'Administrator');
+    if (user.role === 'student') void syncAccount();
+  };
+  const signedIn = (user: User) => { applyUser(user); reset(afterAuth); };
+  const signOut = () => { setLogoutOpen(false); authApi.logout(); setRole('Guest'); setServerCart(undefined); setSaved([]); setWishCourses([]); setCart([]); setPromo(undefined); reset('Landing'); };
+  // A saved session (once storage is connected) signs the person straight back in; an expired one signs them out.
+  useEffect(() => {
+    let live = true;
+    session.restore().then(tokens => { if (tokens) authApi.me().then(user => { if (live) { applyUser(user); setPage(p => (p === 'Onboarding' ? 'Dashboard' : p)); } }).catch(() => {}); });
+    const off = session.subscribe(signedInNow => { if (!signedInNow && live) { setRole('Guest'); history.current = []; setPage(p => (p === 'Onboarding' ? p : 'Landing')); } });
+    return () => { live = false; off(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
@@ -167,26 +236,32 @@ function AppContent() {
     });
     return () => sub.remove();
   });
+  const courseGone = page === 'Course' && (detail.notFound || (!!course && course.status !== 'published'));
+  const courseLoading = page === 'Course' && !course && !courseGone;
+  const loadingView = <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><ActivityIndicator color={colors.blue700} /></View>;
   const publicScreen = page === 'Onboarding' ? <OnboardingScreen onBrowse={() => nav('Landing')} onLogin={() => needSignIn('Dashboard')} />
-    : page === 'Landing' ? <LandingScreen courses={sampleCourses} onLogin={() => needSignIn('Dashboard')} onSearch={query => explore({query})} onCategory={category => explore({category})} onSeeAll={() => explore({})} onCourse={openCourse} />
-    : page === 'Explore' ? <ExploreScreen courses={sampleCourses} browse={browse} onBrowse={setBrowse} onCourse={openCourse} />
-    : page === 'Course' && course.status !== 'published' ? <CourseUnavailableScreen onBack={() => nav(courseFrom)} onBrowse={() => nav('Explore')} onSupport={openReport} />
-    : page === 'Course' ? <CourseScreen key={course.id} course={course} modules={sampleModules} saved={isSaved} onBack={() => nav(courseFrom)} onToggleSave={toggleSave} onPreview={() => nav('LessonPreview')} onEnrol={enrol} />
-    : page === 'Cart' ? <CartScreen items={cartItems} savedForLater={savedForLater} promo={promo} onPromo={setPromo} onRemove={c => setCart(list => list.filter(id => id !== c.id))} onCourse={openCourse} onCheckout={() => (role === 'Guest' ? needSignIn('Checkout') : nav('Checkout'))} onBrowse={() => nav('Explore')} onBack={role === 'Guest' ? undefined : () => nav(cartFrom)} />
-      : page === 'Login' ? <LoginScreen onBack={() => nav(afterAuth === 'Dashboard' ? 'Landing' : 'Cart')} onSignUp={() => nav('SignUp')} onSso={() => nav('Sso')} onSent={email => { setPending({email}); nav('Verify'); }} />
+    : (page === 'Landing' || page === 'Explore') && catalog.loading ? loadingView
+    : page === 'Landing' ? <LandingScreen courses={courses} categories={catalog.categories} onLogin={() => needSignIn('Dashboard')} onSearch={query => explore({query})} onCategory={category => explore({category})} onSeeAll={() => explore({})} onCourse={openCourse} />
+    : page === 'Explore' ? <ExploreScreen courses={courses} categories={catalog.categories} browse={browse} onBrowse={setBrowse} onCourse={openCourse} />
+    : courseGone ? <CourseUnavailableScreen onBack={() => nav(courseFrom)} onBrowse={() => nav('Explore')} onSupport={openReport} />
+    : courseLoading ? loadingView
+    : page === 'Course' && course ? <CourseScreen key={course.id} course={course} modules={detail.modules} reviews={detail.reviews} breakdown={detail.breakdown} loading={detail.loading} saved={isSaved} onBack={() => nav(courseFrom)} onToggleSave={toggleSave} onPreview={() => nav('LessonPreview')} onEnrol={enrol} />
+    : page === 'Cart' ? <CartScreen items={cartItems} savedForLater={savedForLater} promo={promo} totals={serverCart ? totals : undefined} onApplyPromo={applyPromo} onPromo={changePromo} onRemove={removeFromCart} onCourse={openCourse} onCheckout={startCheckout} onBrowse={() => nav('Explore')} onBack={role === 'Guest' ? undefined : () => nav(cartFrom)} />
+      : page === 'Login' ? <LoginScreen onBack={() => nav(afterAuth === 'Dashboard' ? 'Landing' : 'Cart')} onSignUp={() => nav('SignUp')} onSso={() => nav('Sso')} onForgot={() => nav('Forgot')} onSignedIn={signedIn} onNeedsEmailCode={email => { setPending({email}); nav('Verify'); }} onTwoStep={challenge => { setPending({email: '', challenge}); nav('Verify'); }} />
     : page === 'SignUp' ? <SignUpScreen onBack={() => nav('Login')} onLogin={() => nav('Login')} onSent={(email, name) => { setPending({email, name}); nav('Verify'); }} />
-    : page === 'Verify' ? <VerifyCodeScreen key={pending.email} email={pending.email} name={pending.name} onBack={() => nav(pending.name ? 'SignUp' : 'Login')} onVerified={signedIn} />
-    : page === 'Sso' ? <SsoScreen onBack={() => nav('Login')} onEmailLogin={() => nav('Login')} onSignedIn={signedIn} />
+    : page === 'Verify' ? <VerifyCodeScreen key={pending.email + (pending.challenge ?? '')} email={pending.email} challengeToken={pending.challenge} onBack={() => nav(pending.name ? 'SignUp' : 'Login')} onVerified={signedIn} />
+    : page === 'Forgot' ? <ForgotPasswordScreen onBack={() => nav('Login')} onDone={() => nav('Login')} />
+    : page === 'Sso' ? <SsoScreen onBack={() => nav('Login')} onEmailLogin={() => nav('Login')} />
     : page === 'LessonPreview' ? <Pending title="Free preview" message="The preview lesson player is waiting on its design." actionLabel="Back to course" onAction={() => nav('Course')} onBack={() => nav('Course')} />
     : undefined;
   const screen = publicScreen ? publicScreen
     : role === 'Guest' ? <Pending title="Log in to continue" message="Log in with your email to keep going." actionLabel="Log in" onAction={() => needSignIn('Dashboard')} />
-    : role === 'Student' ? page === 'Help' ? <HelpCentreScreen onBack={() => nav('Account')} /> : page === 'Profile' ? <ProfileScreen onBack={() => nav('Account')} /> : page === 'Payments' ? <PaymentsScreen onBack={() => nav('Account')} /> : page === 'Privacy' ? <PrivacyScreen onBack={() => nav('Account')} /> : page === 'Connected' ? <ConnectedAccountsScreen onBack={() => nav('Account')} /> : page === 'Soon' ? <Pending title={soonTitle} message="This section is waiting on its design." actionLabel="Back to account" onAction={() => nav('Account')} onBack={() => nav('Account')} /> : page === 'Grades' ? <GradesScreen onBack={() => nav('Account')} onAssessment={() => nav('Assessment')} onCourses={() => nav('Learning')} /> : page === 'Assessment' ? <AssessmentScreen onBack={() => nav('Grades')} /> : page === 'Conversation' ? <ConversationScreen conversationId={thread} onBack={() => nav('Inbox')} /> : page === 'Quiz' ? <QuizQuestionScreen onBack={() => nav('Player')} onNext={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} onSupport={openReport} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => goBack('Dashboard')} /> : page === 'Player' ? <CoursePlayerScreen onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} onReport={openReport} /> : page === 'Result' ? <ResultScreen onBack={() => nav('Dashboard')} onContinue={() => nav('Player')} onReview={() => nav('Quiz')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <CertificatesScreen onBack={() => nav('Account')} onLearn={() => nav('Learning')} /> : page === 'Learning' ? <MyCourseScreen saved={saved} onOpen={() => nav('Player')} onExplore={() => nav('Explore')} /> : page === 'Inbox' ? <MessagesScreen onOpen={id => { setThread(id); nav('Conversation'); }} onExplore={() => nav('Explore')} /> : page === 'Account' ? <AccountScreen onGrades={() => nav('Grades')} onCertificates={() => nav('Certificates')} onNotifications={() => nav('Notifications')} onHelp={() => nav('Help')} onSoon={title => { if (settingsPages[title]) { nav(settingsPages[title]); return; } setSoonTitle(title); nav('Soon'); }} onLogout={() => setLogoutOpen(true)} onReport={openReport} /> : <StudentHomeScreen onResume={() => nav('Player')} onCourse={() => nav('Player')} onNotifications={() => nav('Notifications')} />
+    : role === 'Student' ? page === 'Help' ? <HelpCentreScreen onBack={() => nav('Account')} /> : page === 'Profile' ? <ProfileScreen onBack={() => nav('Account')} /> : page === 'Payments' ? <PaymentsScreen onBack={() => nav('Account')} /> : page === 'Privacy' ? <PrivacyScreen onBack={() => nav('Account')} /> : page === 'Connected' ? <ConnectedAccountsScreen onBack={() => nav('Account')} /> : page === 'Soon' ? <Pending title={soonTitle} message="This section is waiting on its design." actionLabel="Back to account" onAction={() => nav('Account')} onBack={() => nav('Account')} /> : page === 'Grades' ? <GradesScreen onBack={() => nav('Account')} onAssessment={() => nav('Assessment')} onCourses={() => nav('Learning')} /> : page === 'Assessment' ? <AssessmentScreen onBack={() => nav('Grades')} /> : page === 'Conversation' ? <ConversationScreen conversationId={thread} onBack={() => nav('Inbox')} /> : page === 'Quiz' ? <QuizQuestionScreen onBack={() => nav('Player')} onNext={() => nav('Result')} /> : page === 'Checkout' ? <PaymentCheckoutScreen courseCount={cartItems.length} total={totals.total} onBack={() => nav('Cart')} onPay={pay} onSupport={openReport} /> : page === 'Notifications' ? <NotificationsScreen onBack={() => goBack('Dashboard')} /> : page === 'Player' ? <CoursePlayerScreen onBack={() => nav('Dashboard')} onQuiz={() => nav('Quiz')} onReport={openReport} /> : page === 'Result' ? <ResultScreen onBack={() => nav('Dashboard')} onContinue={() => nav('Player')} onReview={() => nav('Quiz')} /> : page === 'Receipt' && order ? <PaymentReceivedScreen order={order} onStartLearning={() => nav('Dashboard')} /> : page === 'Certificates' ? <CertificatesScreen onBack={() => nav('Account')} onLearn={() => nav('Learning')} /> : page === 'Learning' ? <MyCourseScreen enrolments={learning.enrolments} wishlist={wishlist} onOpen={openCourse} onExplore={() => nav('Explore')} /> : page === 'Inbox' ? <MessagesScreen onOpen={id => { setThread(id); nav('Conversation'); }} onExplore={() => nav('Explore')} /> : page === 'Account' ? <AccountScreen onGrades={() => nav('Grades')} onCertificates={() => nav('Certificates')} onNotifications={() => nav('Notifications')} onHelp={() => nav('Help')} onSoon={title => { if (settingsPages[title]) { nav(settingsPages[title]); return; } setSoonTitle(title); nav('Soon'); }} onLogout={() => setLogoutOpen(true)} onReport={openReport} /> : <StudentHomeScreen recommended={learning.recommended.length ? learning.recommended : courses} categories={catalog.categories} continueLearning={learning.continueLearning} loading={learning.loading} hasUnread={learning.hasUnread} onResume={resumeLearning} onExplore={() => nav('Explore')} onCourse={openCourse} onNotifications={() => nav('Notifications')} />
     : role === 'Administrator' ? <AdminDashboardScreen onInstructor={() => {setRole('Instructor'); nav('Dashboard');}} />
     : page === 'Grading' ? <GradingScreen onBack={() => nav('Dashboard')} onGrade={() => nav('Grade')} /> : page === 'Grade' ? <Grade onBack={() => nav('Grading')} /> : page === 'Courses' ? <CoursesScreen onSetup={() => nav('Setup')} /> : page === 'Students' ? <Students /> : page === 'Messages' ? <Messages /> : page === 'More' ? <More onStudent={() => {setRole('Student'); nav('Dashboard');}} onAdmin={() => {setRole('Administrator'); nav('Dashboard');}} /> : page === 'Setup' ? <Setup onBack={() => nav('Courses')} onCurriculum={() => nav('Curriculum')} /> : page === 'Curriculum' ? <CurriculumScreen onBack={() => nav('Setup')} onLesson={() => nav('Lesson')} /> : page === 'Lesson' ? <Lesson onBack={() => nav('Curriculum')} /> : <InstructorDashboardScreen onOpenGrading={() => nav('Grading')} />;
   const publicTabs = role === 'Guest' ? guestTabs : role === 'Student' ? studentTabs : undefined;
   const isPublic = publicTabs !== undefined;
-  const showPublicTabs = !(['Login', 'SignUp', 'Verify', 'Sso'] as Page[]).includes(page) && publicTabs?.some(t => t.key === page);
+  const showPublicTabs = !(['Login', 'SignUp', 'Verify', 'Forgot', 'Sso'] as Page[]).includes(page) && publicTabs?.some(t => t.key === page);
   const tab = tabs.some(x => x.label === page);
   // Edge-to-edge is on, so the app pads itself with the device insets. Each inset takes the colour of what it touches.
   const dark = useColorScheme() === 'dark';
