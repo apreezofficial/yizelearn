@@ -131,7 +131,11 @@
 @media (max-width: 960px) {
   .layout { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 0 16px 48px; }
   .side { display: none; }
-  .mobileCard { display: block; margin: 20px 0 28px; }
+  /* Phones: the thumbnail stays pinned under the top bar while the page scrolls; the price and buttons scroll normally. */
+  .mobileCard { display: contents; }
+  .mobileCard .buy { display: contents; }
+  .mobileCard .preview { position: sticky; top: 64px; z-index: 5; margin: 20px 0 0; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(11, 26, 46, 0.18); }
+  .mobileCard .buyBody { margin: 0 0 28px; padding: 20px 4px 0; }
   .headIn { padding: 24px 16px 28px; }
   .header h1 { font-size: 26px; }
   .sub { font-size: 16px; }
