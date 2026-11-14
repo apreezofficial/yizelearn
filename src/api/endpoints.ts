@@ -125,6 +125,22 @@ export const accountApi = {
   privacyRequest: (type: PrivacyRequest['type'], reason?: string) => request<PrivacyRequest>('/me/privacy-requests', {method: 'POST', idempotent: true, body: {type, reason}}),
 };
 
+// Paying for the cart. The server returns a hosted Paystack page; card details are entered there, never in the app.
+export type OrderResult = {id: string; status: 'pending' | 'paid' | 'failed' | 'cancelled' | 'refunded' | 'partially_refunded'; payment?: {failureMessage?: string | null; next?: {authorizationUrl?: string | null} | null} | null};
+export const ordersApi = {
+  create: (promoCode?: string) => request<OrderResult>('/me/orders', {method: 'POST', idempotent: true, body: {paymentMethod: 'card', returnUrl: 'yizelearn://payment', promoCode}}),
+  get: (id: string) => request<OrderResult>(`/me/orders/${id}`),
+  /** Poll every 2 seconds, up to a minute, until the payment settles. */
+  settle: async (id: string): Promise<OrderResult> => {
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      const o = await request<OrderResult>(`/me/orders/${id}`);
+      if (o.status !== 'pending') return o;
+    }
+    return request<OrderResult>(`/me/orders/${id}`);
+  },
+};
+
 // File uploads: ask for an upload slot, send the bytes to the signed address, then confirm. Files up to the single-upload limit.
 export type PickedFile = {uri: string; name: string; type: string; size: number};
 export const uploadsApi = {

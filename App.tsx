@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View} from 'react-native';
+import {ActivityIndicator, Alert, BackHandler, Linking, Pressable, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View} from 'react-native';
 import {useGlass} from './src/theme/system';
 import {ApiConnectionBanner} from './src/components/ApiConnectionBanner';
 import {InstructorDashboardScreen} from './src/screens/instructor/InstructorDashboardScreen';
@@ -21,7 +21,7 @@ import {CourseScreen, CourseUnavailableScreen} from './src/screens/public/Course
 import {ExploreScreen} from './src/screens/public/ExploreScreen';
 import {LandingScreen} from './src/screens/public/LandingScreen';
 import {ForgotPasswordScreen, LoginScreen, SsoScreen, SignUpScreen, VerifyCodeScreen} from './src/screens/auth/AuthScreens';
-import {authApi, cartApi, wishlistApi} from './src/api/endpoints';
+import {authApi, cartApi, ordersApi, wishlistApi} from './src/api/endpoints';
 import {toCart, toCourse, type CartView} from './src/api/mappers';
 import {useCatalog} from './src/hooks/useCatalog';
 import {useCourseDetail} from './src/hooks/useCourseDetail';
@@ -173,10 +173,22 @@ function AppContent() {
   const removeFromCart = (c: Course) => { setCart(list => list.filter(id => id !== c.id)); if (serverCart) serverCall(async () => applyCart(toCart(await cartApi.remove(c.id)))); };
   const applyPromo = serverCart ? async (code: string) => { try { applyCart(toCart(await cartApi.applyPromo(code))); return undefined; } catch (e) { return (e as Error).message; } } : undefined;
   const changePromo = (code?: string) => { if (code) { setPromo(code); return; } setPromo(undefined); if (serverCart) serverCall(async () => applyCart(toCart(await cartApi.removePromo()))); };
-  // Payments are not connected yet, so a real course cannot be bought here; sample courses keep the demo checkout.
+  // Real courses are paid for on the server's hosted Paystack page; sample courses keep the demo checkout.
+  const payForCart = async () => {
+    try {
+      const order = await ordersApi.create(promo);
+      const url = order.payment?.next?.authorizationUrl;
+      if (!url) { Alert.alert('Payment could not start', order.payment?.failureMessage ?? 'The payment page did not open. Try again.'); return; }
+      await Linking.openURL(url);
+      const done = await ordersApi.settle(order.id);
+      if (done.status === 'paid') { Alert.alert('Payment received', 'Your courses are unlocked. Find them under Learning.'); await syncAccount(); }
+      else if (done.status === 'pending') Alert.alert('Still waiting for your bank', 'We will unlock your courses as soon as the payment is confirmed.');
+      else Alert.alert('Payment did not go through', done.payment?.failureMessage ?? 'No money was taken. Your courses are still in your cart.');
+    } catch (e) { Alert.alert('Could not start the payment', (e as Error).message); }
+  };
   const startCheckout = () => {
     if (role === 'Guest') { needSignIn('Checkout'); return; }
-    if (serverCart?.items.some(c => isUuid(c.id))) { Alert.alert('Payments are coming soon', 'Card and bank payments are not connected in the app yet, so your courses stay in your cart.'); return; }
+    if (serverCart?.items.some(c => isUuid(c.id))) { payForCart(); return; }
     nav('Checkout');
   };
   const pay = (method: Parameters<typeof createOrder>[2], cardNumber: string) => { if (method === 'card' && isDeclined(cardNumber)) return false; setOrder(createOrder(cartItems, totals.total, method, cardNumber)); setCart([]); setServerCart(undefined); setPromo(undefined); nav('Receipt'); return true; };
