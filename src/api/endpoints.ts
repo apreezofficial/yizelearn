@@ -133,7 +133,7 @@ export const ordersApi = {
   /** Poll every 2 seconds, up to a minute, until the payment settles. */
   settle: async (id: string): Promise<OrderResult> => {
     for (let i = 0; i < 30; i++) {
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise<void>(r => setTimeout(() => r(), 2000));
       const o = await request<OrderResult>(`/me/orders/${id}`);
       if (o.status !== 'pending') return o;
     }
