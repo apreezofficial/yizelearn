@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Pressable, ScrollView, Share, StyleSheet, Text, View} from 'react-native';
 import {Icon, type IconName} from '../../components/Icon';
 import {PrimaryAction, TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
@@ -9,8 +9,6 @@ import {learner} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
 
 const font = {fontFamily: fonts.family};
-// Certificate PDFs come from the payments/courses API, which isn't connected yet.
-const notConnected = (what: string) => Alert.alert(what, `${what} is not connected yet.`);
 
 export function CertificatesScreen({onBack, onLearn}: {onBack: () => void; onLearn: () => void}) {
   return <View style={styles.screen}>
@@ -25,8 +23,7 @@ export function CertificatesScreen({onBack, onLearn}: {onBack: () => void; onLea
       </Rise>
 
       <Rise delay={100} style={styles.actions}>
-        <View style={styles.half}><PrimaryAction label="Share" outline onPress={() => notConnected('Sharing')} /></View>
-        <View style={styles.half}><PrimaryAction label="Download PDF" onPress={() => notConnected('Download')} /></View>
+        <View style={styles.full}><PrimaryAction label="Share" onPress={() => Share.share({message: `I completed ${certificate.course} on yizelearn.`})} /></View>
       </Rise>
 
       <Rise delay={180}><Text style={[font, styles.section]}>Badges</Text></Rise>
@@ -51,6 +48,7 @@ const styles = StyleSheet.create({
   course: {fontSize: type.label, color: colors.ink, marginTop: 8, textAlign: 'center', lineHeight: 22},
   seal: {width: 56, height: 56, borderRadius: 28, backgroundColor: colors.marigold, alignItems: 'center', justifyContent: 'center', marginTop: 18},
   actions: {flexDirection: 'row', gap: 12, marginTop: 16},
+  full: {flex: 1},
   half: {flex: 1},
   section: {fontSize: type.subheading, color: colors.ink, fontFamily: fonts.display, marginTop: 26, marginBottom: 12},
   grid: {flexDirection: 'row', flexWrap: 'wrap', rowGap: 18},

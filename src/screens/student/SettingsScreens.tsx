@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
-import {Alert, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, type KeyboardTypeOptions} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, type KeyboardTypeOptions} from 'react-native';
 import {Icon, type IconName} from '../../components/Icon';
 import {BottomButton, PrimaryAction, TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
 import {haptic} from '../../theme/system';
+import {accountApi, type OrderSummary} from '../../api/endpoints';
+import {session} from '../../api/session';
 import {formatNaira} from '../../data/catalog';
 import {learner} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
@@ -12,11 +14,6 @@ const font = {fontFamily: fonts.family};
 
 // Sample account data until the profile and payments APIs are connected.
 const profileSeed = () => ({name: learner.fullName, email: learner.email, phone: '', school: '', bio: ''});
-const receipts = [
-  {id: 'YZ-10482', course: 'Data analysis in Excel', date: '12 Oct 2026', amount: 15000, method: 'Card •••• 4021'},
-  {id: 'YZ-10311', course: 'UI design basics', date: '28 Sep 2026', amount: 12500, method: 'Bank transfer'},
-  {id: 'YZ-10107', course: 'Intro to Python', date: '3 Sep 2026', amount: 18000, method: 'Card •••• 4021'},
-];
 
 function Section({title, delay, children}: {title: string; delay: number; children: React.ReactNode}) {
   return <Rise delay={delay}>
@@ -63,8 +60,25 @@ export function ProfileScreen({onBack}: {onBack: () => void}) {
   </View>;
 }
 
+const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'});
+
 export function PaymentsScreen({onBack}: {onBack: () => void}) {
-  const total = receipts.reduce((sum, r) => sum + r.amount, 0);
+  const [orders, setOrders] = useState<OrderSummary[]>([]);
+  const [cards, setCards] = useState<{id: string; brand: string; last4: string; expMonth: number; expYear: number}[]>([]);
+  const [state, setState] = useState<'loading' | 'ready' | 'error' | 'signed-out'>(session.isSignedIn() ? 'loading' : 'signed-out');
+  useEffect(() => {
+    if (!session.isSignedIn()) return;
+    Promise.all([accountApi.orders(), accountApi.cards().catch(() => ({data: []}))]).then(([o, c]) => { setOrders(o.data); setCards(c.data); setState('ready'); }, () => setState('error'));
+  }, []);
+  const paid = orders.filter(o => o.status === 'paid' || o.receiptAvailable);
+  const total = paid.reduce((sum, o) => sum + o.total.amountMinor / 100, 0);
+  const openReceipt = async (o: OrderSummary) => {
+    try {
+      const r = await accountApi.receipt(o.id);
+      if (r.pdfUrl) await Linking.openURL(r.pdfUrl);
+      else Alert.alert(`Receipt #${r.number}`, `${o.titles.join(', ')}\n${formatNaira(r.total.amountMinor / 100)}${r.cardLast4 ? ` · Card •••• ${r.cardLast4}` : ''}\n${fmtDate(r.issuedAt)}`);
+    } catch (e) { Alert.alert('Could not open the receipt', e instanceof Error ? e.message : 'Try again.'); }
+  };
   return <View style={styles.screen}>
     <TitleBar title="Payments and receipts" onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -72,32 +86,42 @@ export function PaymentsScreen({onBack}: {onBack: () => void}) {
         <View style={styles.swirl} />
         <Text style={[font, styles.boardLabel]}>Total spent on learning</Text>
         <Text style={[font, styles.boardValue]}>{formatNaira(total)}</Text>
-        <Text style={[font, styles.boardMeta]}>{receipts.length} courses paid for</Text>
+        <Text style={[font, styles.boardMeta]}>{paid.length} {paid.length === 1 ? 'order' : 'orders'} paid</Text>
       </Rise>
-
-      <Section title="Payment method" delay={90}>
-        <View style={styles.row}>
-          <View style={styles.rowIcon}><Icon name="card" size={20} color={colors.blue700} /></View>
-          <View style={styles.rowCopy}>
-            <Text style={[font, styles.rowTitle]}>Visa •••• 4021</Text>
-            <Text style={[font, styles.rowMeta]}>Expires 08/28</Text>
-          </View>
-          <View style={styles.pill}><Text style={[font, styles.pillText]}>Default</Text></View>
-        </View>
-      </Section>
-
-      <Section title="Receipts" delay={180}>
-        {receipts.map((r, i) => <Pressable key={r.id} onPress={() => Alert.alert(`Receipt ${r.id}`, `${r.course}\n${formatNaira(r.amount)} · ${r.method}\n${r.date}`)} style={({pressed}) => [styles.row, i > 0 && styles.rowLine, pressed && styles.rowPressed]} accessibilityRole="button">
-          <View style={styles.rowIcon}><Icon name="book" size={20} color={colors.blue700} /></View>
-          <View style={styles.rowCopy}>
-            <Text style={[font, styles.rowTitle]} numberOfLines={1}>{r.course}</Text>
-            <Text style={[font, styles.rowMeta]}>{r.date} · {r.method}</Text>
-          </View>
-          <Text style={[font, styles.amount]}>{formatNaira(r.amount)}</Text>
-        </Pressable>)}
-      </Section>
+      {state === 'loading' && <ActivityIndicator color={colors.blue700} style={{marginTop: 24}} />}
+      {state === 'signed-out' && <Text style={[font, styles.emptyNote]}>Log in to see your payments and receipts.</Text>}
+      {state === 'error' && <Text style={[font, styles.emptyNote]}>Could not load your payments. Check your connection and open this page again.</Text>}
+      {state === 'ready' && <>
+        <Section title="Payment method" delay={90}>
+          {cards.length === 0 && <Text style={[font, styles.emptyNote]}>No saved cards. You can save one when you pay for a course.</Text>}
+          {cards.map((c, i) => <View key={c.id} style={[styles.row, i > 0 && styles.rowLine]}>
+            <View style={styles.rowIcon}><Icon name="card" size={20} color={colors.blue700} /></View>
+            <View style={styles.rowCopy}>
+              <Text style={[font, styles.rowTitle]}>{c.brand} •••• {c.last4}</Text>
+              <Text style={[font, styles.rowMeta]}>Expires {String(c.expMonth).padStart(2, '0')}/{String(c.expYear).slice(-2)}</Text>
+            </View>
+          </View>)}
+        </Section>
+        <Section title="Receipts" delay={180}>
+          {orders.length === 0 && <Text style={[font, styles.emptyNote]}>No orders yet. Courses you buy will appear here.</Text>}
+          {orders.map((o, i) => <Pressable key={o.id} onPress={() => o.receiptAvailable ? openReceipt(o) : undefined} style={({pressed}) => [styles.row, i > 0 && styles.rowLine, pressed && styles.rowPressed]} accessibilityRole="button">
+            <View style={styles.rowIcon}><Icon name="book" size={20} color={colors.blue700} /></View>
+            <View style={styles.rowCopy}>
+              <Text style={[font, styles.rowTitle]} numberOfLines={1}>{o.titles.join(', ') || `Order #${o.number}`}</Text>
+              <Text style={[font, styles.rowMeta]}>{fmtDate(o.createdAt)} · {o.cardLast4 ? `Card •••• ${o.cardLast4}` : o.paymentMethod === 'bank_transfer' ? 'Bank transfer' : o.status}</Text>
+            </View>
+            <Text style={[font, styles.amount]}>{formatNaira(o.total.amountMinor / 100)}</Text>
+          </Pressable>)}
+        </Section>
+      </>}
     </ScrollView>
   </View>;
+}
+
+async function requestPrivacy(kind: 'data_export' | 'delete_account', title: string, done: string) {
+  if (!session.isSignedIn()) { Alert.alert('Log in first', 'This request is tied to your account.'); return; }
+  try { await accountApi.privacyRequest(kind); Alert.alert(title, done); }
+  catch (e) { Alert.alert('Could not send the request', e instanceof Error ? e.message : 'Try again.'); }
 }
 
 function ToggleRow({icon, title, detail, value, onChange, first}: {icon: IconName; title: string; detail: string; value: boolean; onChange: (v: boolean) => void; first?: boolean}) {
@@ -133,8 +157,8 @@ export function PrivacyScreen({onBack}: {onBack: () => void}) {
       </Section>
       <Rise delay={270}>
         <Text style={[font, styles.section]}>Your data</Text>
-        <PrimaryAction label="Download my data" outline onPress={() => Alert.alert('Download my data', 'We’ll email you a copy of your data within 48 hours.')} />
-        <Pressable onPress={() => Alert.alert('Delete account?', 'This removes your courses, progress and certificates for good.', [{text: 'Cancel', style: 'cancel'}, {text: 'Delete', style: 'destructive', onPress: () => Alert.alert('Request received', 'Our team will confirm by email before anything is deleted.')}])}
+        <PrimaryAction label="Download my data" outline onPress={() => requestPrivacy('data_export', 'Download my data', 'We will email you a link to a copy of your data.')} />
+        <Pressable onPress={() => Alert.alert('Delete account?', 'This removes your courses, progress and certificates for good.', [{text: 'Cancel', style: 'cancel'}, {text: 'Delete', style: 'destructive', onPress: () => requestPrivacy('delete_account', 'Request received', 'Our team will confirm by email before anything is deleted.')}])}
           style={({pressed}) => [styles.danger, pressed && styles.pressed]} accessibilityRole="button">
           <Text style={[font, styles.dangerText]}>Delete my account</Text>
         </Pressable>
@@ -180,6 +204,7 @@ export function ConnectedAccountsScreen({onBack}: {onBack: () => void}) {
 }
 
 const styles = StyleSheet.create({
+  emptyNote: {fontSize: type.label, color: colors.muted, paddingVertical: 16, lineHeight: 22},
   screen: {flex: 1, backgroundColor: colors.cream},
   content: {padding: spacing.screen, paddingBottom: 32},
   section: {fontSize: type.subheading, color: colors.ink, fontFamily: fonts.display, marginTop: 24, marginBottom: 10},

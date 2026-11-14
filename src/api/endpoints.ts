@@ -98,6 +98,33 @@ export const supportApi = {
   },
 };
 
+// ---------------------------------------------------------------------------------------------------------------
+// Help centre, support tickets, privacy requests and receipts.
+export type HelpCategory = {id: string; slug: string; name: string; iconKey: string | null; articleCount: number};
+export type HelpArticleCard = {id: string; title: string; category?: {id: string; name: string}; readMinutes?: number; lead?: string | null};
+export type HelpBlock = {type: string; text?: string | null; level?: number; items?: string[]; tone?: string};
+export type HelpArticle = HelpArticleCard & {blocks: HelpBlock[]; shareUrl: string};
+export type TicketTopic = 'payments' | 'account' | 'courses' | 'certificates' | 'quizzes_and_grades' | 'technical' | 'course_upload' | 'other';
+export type OrderSummary = {id: string; number: number; status: string; itemCount: number; titles: string[]; total: {amountMinor: number; currency: string}; paymentMethod: string | null; cardLast4: string | null; createdAt: string; receiptAvailable: boolean};
+export type PrivacyRequest = {id: string; type: 'data_export' | 'delete_account'; status: 'open' | 'done'; dueAt: string; downloadUrl: string | null};
+
+export const helpApi = {
+  categories: () => request<Page<HelpCategory>>(`/help/categories${qs({limit: 50, audience: 'learner'})}`, {anonymous: !session.isSignedIn()}),
+  articles: (query: {q?: string; categoryId?: string} = {}) => request<Page<HelpArticleCard>>(query.categoryId ? `/help/categories/${query.categoryId}/articles${qs({limit: 50})}` : `/help/articles${qs({limit: 50, q: query.q, audience: 'learner'})}`, {anonymous: !session.isSignedIn()}),
+  article: (id: string) => request<HelpArticle>(`/help/articles/${id}`, {anonymous: !session.isSignedIn()}),
+  rate: (id: string, helpful: boolean) => request<void>(`/help/articles/${id}/feedback`, {method: 'POST', body: {helpful}}),
+};
+export const ticketsApi = {
+  topics: () => request<Page<{key: TicketTopic; label: string}>>('/support/topics'),
+  create: (v: {topic: TicketTopic; subject: string; message: string}) => request<{id: string; number: number}>('/support/tickets', {method: 'POST', idempotent: true, body: v}),
+};
+export const accountApi = {
+  orders: () => request<Page<OrderSummary>>(`/me/orders${qs({limit: 50})}`),
+  cards: () => request<Page<{id: string; brand: string; last4: string; expMonth: number; expYear: number; isDefault?: boolean}>>('/me/payment-methods'),
+  receipt: (orderId: string) => request<{number: number; issuedAt: string; total: {amountMinor: number; currency: string}; method: string; cardLast4: string | null; pdfUrl: string | null}>(`/me/orders/${orderId}/receipt`),
+  privacyRequest: (type: PrivacyRequest['type'], reason?: string) => request<PrivacyRequest>('/me/privacy-requests', {method: 'POST', idempotent: true, body: {type, reason}}),
+};
+
 // Instructor and admin placeholders, not wired to the new contract yet (they belong to the instructor and admin apps).
 export type Organisation = {id: string; name: string; domain: string; kind: 'school' | 'work'; provider: string};
 export const dashboardApi = { instructor: () => request<DashboardSummary>('/instructor/dashboard'), administrator: () => request<DashboardSummary>('/admin/dashboard') };
