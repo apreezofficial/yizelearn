@@ -32,26 +32,26 @@ export function AccountScreen({onGrades, onCertificates, onNotifications, onHelp
     {label: 'Report a problem', onPress: onReport},
   ];
   return <View style={styles.screen}>
-    <Text style={[styles.title, font]}>Account</Text>
+    <Text style={[font, styles.title]}>Account</Text>
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.profile}>
-        <View style={styles.avatar}><Text style={[styles.avatarText, font]}>{initials}</Text></View>
+        <View style={styles.avatar}><Text style={[font, styles.avatarText]}>{initials}</Text></View>
         <View style={styles.profileCopy}>
-          <Text style={[styles.name, font]}>{learner.fullName}</Text>
-          <Text style={[styles.role, font]}>Learner</Text>
+          <Text style={[font, styles.name]}>{learner.fullName}</Text>
+          <Text style={[font, styles.role]}>Learner</Text>
         </View>
         <Pressable onPress={() => onSoon('Edit profile')} style={({pressed}) => [styles.edit, pressed && styles.pressed]} accessibilityRole="button">
-          <Text style={[styles.editText, font]}>Edit</Text>
+          <Text style={[font, styles.editText]}>Edit</Text>
         </Pressable>
       </View>
 
       {rows.map(row => <Pressable key={row.label} onPress={row.onPress} style={({pressed}) => [styles.row, pressed && styles.pressed]} accessibilityRole="button">
-        <Text style={[styles.rowText, font]}>{row.label}</Text>
+        <Text style={[font, styles.rowText]}>{row.label}</Text>
         <Icon name="next" size={18} color={colors.muted} />
       </Pressable>)}
 
       <Pressable onPress={onLogout} style={({pressed}) => [styles.logout, pressed && styles.pressed]} accessibilityRole="button">
-        <Text style={[styles.logoutText, font]}>Log out</Text>
+        <Text style={[font, styles.logoutText]}>Log out</Text>
       </Pressable>
       <TabBarSpacer />
     </ScrollView>
@@ -60,19 +60,19 @@ export function AccountScreen({onGrades, onCertificates, onNotifications, onHelp
 
 const styles = StyleSheet.create({
   screen: {flex: 1, backgroundColor: colors.cream, paddingTop: 12},
-  title: {fontSize: type.display, color: colors.ink, fontWeight: '800', paddingHorizontal: spacing.screen, marginBottom: 12},
+  title: {fontSize: type.display, color: colors.ink, fontFamily: fonts.display, paddingHorizontal: spacing.screen, marginBottom: 12},
   content: {paddingHorizontal: spacing.screen, paddingBottom: 28},
   profile: {flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14, marginBottom: 6},
   avatar: {width: 64, height: 64, borderRadius: 32, backgroundColor: colors.blue100, alignItems: 'center', justifyContent: 'center'},
-  avatarText: {fontSize: type.subheading, color: colors.blue900, fontWeight: '800'},
+  avatarText: {fontSize: type.subheading, color: colors.blue900, fontFamily: fonts.bold},
   profileCopy: {flex: 1},
-  name: {fontSize: type.subheading, color: colors.ink, fontWeight: '800'},
+  name: {fontSize: type.subheading, color: colors.ink, fontFamily: fonts.bold},
   role: {fontSize: type.small, color: colors.muted, marginTop: 3},
   edit: {height: 40, paddingHorizontal: 20, borderRadius: radius.pill, borderWidth: 1.5, borderColor: colors.blue700, justifyContent: 'center'},
-  editText: {fontSize: type.small, color: colors.blue700, fontWeight: '700'},
+  editText: {fontSize: type.small, color: colors.blue700, fontFamily: fonts.bold},
   row: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 56, borderBottomWidth: 1, borderBottomColor: colors.line},
-  rowText: {fontSize: type.label, color: colors.ink, fontWeight: '600'},
+  rowText: {fontSize: type.label, color: colors.ink, fontFamily: fonts.semibold},
   logout: {alignSelf: 'center', paddingVertical: 16, marginTop: 14},
-  logoutText: {fontSize: type.label, color: colors.danger, fontWeight: '700'},
+  logoutText: {fontSize: type.label, color: colors.danger, fontFamily: fonts.bold},
   pressed: {opacity: 0.7},
 });

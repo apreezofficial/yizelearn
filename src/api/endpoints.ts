@@ -98,6 +98,64 @@ export const supportApi = {
   },
 };
 
+// ---------------------------------------------------------------------------------------------------------------
+// Help centre, support tickets, privacy requests and receipts.
+export type HelpCategory = {id: string; slug: string; name: string; iconKey: string | null; articleCount: number};
+export type HelpArticleCard = {id: string; title: string; category?: {id: string; name: string}; readMinutes?: number; lead?: string | null};
+export type HelpBlock = {type: string; text?: string | null; level?: number; items?: string[]; tone?: string};
+export type HelpArticle = HelpArticleCard & {blocks: HelpBlock[]; shareUrl: string};
+export type TicketTopic = 'payments' | 'account' | 'courses' | 'certificates' | 'quizzes_and_grades' | 'technical' | 'course_upload' | 'other';
+export type OrderSummary = {id: string; number: number; status: string; itemCount: number; titles: string[]; total: {amountMinor: number; currency: string}; paymentMethod: string | null; cardLast4: string | null; createdAt: string; receiptAvailable: boolean};
+export type PrivacyRequest = {id: string; type: 'data_export' | 'delete_account'; status: 'open' | 'done'; dueAt: string; downloadUrl: string | null};
+
+export const helpApi = {
+  categories: () => request<Page<HelpCategory>>(`/help/categories${qs({limit: 50, audience: 'learner'})}`, {anonymous: !session.isSignedIn()}),
+  articles: (query: {q?: string; categoryId?: string} = {}) => request<Page<HelpArticleCard>>(query.categoryId ? `/help/categories/${query.categoryId}/articles${qs({limit: 50})}` : `/help/articles${qs({limit: 50, q: query.q, audience: 'learner'})}`, {anonymous: !session.isSignedIn()}),
+  article: (id: string) => request<HelpArticle>(`/help/articles/${id}`, {anonymous: !session.isSignedIn()}),
+  rate: (id: string, helpful: boolean) => request<void>(`/help/articles/${id}/feedback`, {method: 'POST', body: {helpful}}),
+};
+export const ticketsApi = {
+  topics: () => request<Page<{key: TicketTopic; label: string}>>('/support/topics'),
+  create: (v: {topic: TicketTopic; subject: string; message: string}) => request<{id: string; number: number}>('/support/tickets', {method: 'POST', idempotent: true, body: v}),
+};
+export const accountApi = {
+  orders: () => request<Page<OrderSummary>>(`/me/orders${qs({limit: 50})}`),
+  cards: () => request<Page<{id: string; brand: string; last4: string; expMonth: number; expYear: number; isDefault?: boolean}>>('/me/payment-methods'),
+  receipt: (orderId: string) => request<{number: number; issuedAt: string; total: {amountMinor: number; currency: string}; method: string; cardLast4: string | null; pdfUrl: string | null}>(`/me/orders/${orderId}/receipt`),
+  privacyRequest: (type: PrivacyRequest['type'], reason?: string) => request<PrivacyRequest>('/me/privacy-requests', {method: 'POST', idempotent: true, body: {type, reason}}),
+};
+
+// Paying for the cart. The server returns a hosted Paystack page; card details are entered there, never in the app.
+export type OrderResult = {id: string; status: 'pending' | 'paid' | 'failed' | 'cancelled' | 'refunded' | 'partially_refunded'; payment?: {failureMessage?: string | null; next?: {authorizationUrl?: string | null} | null} | null};
+export const ordersApi = {
+  create: (promoCode?: string) => request<OrderResult>('/me/orders', {method: 'POST', idempotent: true, body: {paymentMethod: 'card', returnUrl: 'yizelearn://payment', promoCode}}),
+  get: (id: string) => request<OrderResult>(`/me/orders/${id}`),
+  /** Poll every 2 seconds, up to a minute, until the payment settles. */
+  settle: async (id: string): Promise<OrderResult> => {
+    for (let i = 0; i < 30; i++) {
+      await new Promise<void>(r => setTimeout(() => r(), 2000));
+      const o = await request<OrderResult>(`/me/orders/${id}`);
+      if (o.status !== 'pending') return o;
+    }
+    return request<OrderResult>(`/me/orders/${id}`);
+  },
+};
+
+// File uploads: ask for an upload slot, send the bytes to the signed address, then confirm. Files up to the single-upload limit.
+export type PickedFile = {uri: string; name: string; type: string; size: number};
+export const uploadsApi = {
+  upload: async (file: PickedFile, purpose: 'avatar' | 'assignment_submission' | 'ticket_attachment'): Promise<string> => {
+    const slot = await request<{id: string; mode: 'single' | 'multipart'; single?: {url: string; method: string; headers?: Record<string, string>}}>('/uploads', {method: 'POST', idempotent: true, body: {purpose, fileName: file.name, contentType: file.type, sizeBytes: file.size}});
+    if (slot.mode !== 'single' || !slot.single) throw new ApiError('That file is too large to send from the app.', 413);
+    const bytes = await (await fetch(file.uri)).blob();
+    const put = await fetch(slot.single.url, {method: slot.single.method || 'PUT', headers: {'Content-Type': file.type, ...(slot.single.headers ?? {})}, body: bytes});
+    if (!put.ok) throw new ApiError('The upload did not finish. Try again.', put.status);
+    await request<unknown>(`/uploads/${slot.id}/complete`, {method: 'POST', body: {}});
+    return slot.id;
+  },
+  setAvatar: (uploadId: string) => request<{avatarUrl: string | null}>('/me/avatar', {method: 'PUT', body: {uploadId}}),
+};
+
 // Instructor and admin placeholders, not wired to the new contract yet (they belong to the instructor and admin apps).
 export type Organisation = {id: string; name: string; domain: string; kind: 'school' | 'work'; provider: string};
 export const dashboardApi = { instructor: () => request<DashboardSummary>('/instructor/dashboard'), administrator: () => request<DashboardSummary>('/admin/dashboard') };

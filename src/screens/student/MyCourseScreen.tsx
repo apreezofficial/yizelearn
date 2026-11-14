@@ -23,10 +23,10 @@ export function MyCourseScreen({enrolments, wishlist, onOpen, onExplore}: Props)
   }, [tab, enrolments, wishlist]);
 
   return <View style={styles.screen}>
-    <Text style={[styles.title, font]}>My Course</Text>
+    <Text style={[font, styles.title]}>My Course</Text>
     <View style={styles.segments}>
       {tabs.map(t => <Pressable key={t} onPress={() => setTab(t)} style={[styles.segment, tab === t && styles.segmentOn]} accessibilityRole="tab" accessibilityState={{selected: tab === t}}>
-        <Text style={[styles.segmentText, font, tab === t && styles.segmentTextOn]}>{t}</Text>
+        <Text style={[font, styles.segmentText, tab === t && styles.segmentTextOn]}>{t}</Text>
       </Pressable>)}
     </View>
     <FlatList ListFooterComponent={<TabBarSpacer />} data={rows} keyExtractor={r => r.course.id} contentContainerStyle={styles.list}
@@ -38,11 +38,11 @@ export function MyCourseScreen({enrolments, wishlist, onOpen, onExplore}: Props)
       renderItem={({item, index}) => <Pressable onPress={() => onOpen(item.course)} style={({pressed}) => [styles.row, pressed && styles.pressed]} accessibilityRole="button">
         <CourseArt index={artIndex(item.course.id)} size={84} />
         <View style={styles.copy}>
-          <Text style={[styles.rowTitle, font]} numberOfLines={2}>{item.course.title}</Text>
-          <Text style={[styles.rowMeta, font]} numberOfLines={1}>{item.course.instructorName}</Text>
+          <Text style={[font, styles.rowTitle]} numberOfLines={2}>{item.course.title}</Text>
+          <Text style={[font, styles.rowMeta]} numberOfLines={1}>{item.course.instructorName}</Text>
           {item.progress !== undefined && <View style={styles.progressRow}>
             <View style={styles.bar}><ProgressBar value={item.progress} track={colors.sand} fill={colors.blue600} height={6} /></View>
-            <Text style={[styles.percent, font]}>{item.progress}%</Text>
+            <Text style={[font, styles.percent]}>{item.progress}%</Text>
           </View>}
         </View>
       </Pressable>} />
@@ -51,19 +51,19 @@ export function MyCourseScreen({enrolments, wishlist, onOpen, onExplore}: Props)
 
 const styles = StyleSheet.create({
   screen: {flex: 1, backgroundColor: colors.cream, paddingTop: 12},
-  title: {fontSize: type.display, color: colors.ink, fontWeight: '800', paddingHorizontal: spacing.screen, marginBottom: 18},
+  title: {fontSize: type.display, color: colors.ink, fontFamily: fonts.display, paddingHorizontal: spacing.screen, marginBottom: 18},
   segments: {flexDirection: 'row', gap: 10, paddingHorizontal: spacing.screen, marginBottom: 18},
   segment: {height: 44, paddingHorizontal: 18, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, justifyContent: 'center'},
   segmentOn: {backgroundColor: colors.sky, borderColor: colors.sky},
-  segmentText: {fontSize: type.label, color: colors.ink, fontWeight: '600'},
-  segmentTextOn: {color: colors.onSky, fontWeight: '800'},
+  segmentText: {fontSize: type.label, color: colors.ink, fontFamily: fonts.semibold},
+  segmentTextOn: {color: colors.onSky, fontFamily: fonts.bold},
   list: {paddingHorizontal: spacing.screen, paddingBottom: 28, flexGrow: 1},
   row: {flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sandLine, borderRadius: radius.card, padding: 12, marginBottom: 12},
   pressed: {opacity: 0.85},
   copy: {flex: 1},
-  rowTitle: {fontSize: type.small, color: colors.ink, fontWeight: '800', lineHeight: 19},
+  rowTitle: {fontSize: type.small, color: colors.ink, fontFamily: fonts.bold, lineHeight: 19},
   rowMeta: {fontSize: type.caption, color: colors.muted, marginTop: 4},
   progressRow: {flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 12},
   bar: {flex: 1},
-  percent: {fontSize: type.caption, color: colors.ink, fontWeight: '700', width: 40, textAlign: 'right'},
+  percent: {fontSize: type.caption, color: colors.ink, fontFamily: fonts.bold, width: 40, textAlign: 'right'},
 });

@@ -28,14 +28,13 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 		<key>NSAllowsArbitraryLoads</key>
 		<false/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>
@@ -56,7 +55,16 @@
 		</dict>
 	</dict>
 	<key>UIAppFonts</key>
-	<array><string>Charmonman-Regular.ttf</string><string>Caveat.ttf</string></array>
+	<array>
+		<string>Charmonman-Regular.ttf</string>
+		<string>Caveat.ttf</string>
+		<string>Figtree_600SemiBold.ttf</string>
+		<string>Figtree_400Regular.ttf</string>
+		<string>BricolageGrotesque_600SemiBold.ttf</string>
+		<string>BricolageGrotesque_700Bold.ttf</string>
+		<string>Figtree_700Bold.ttf</string>
+		<string>Figtree_500Medium.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

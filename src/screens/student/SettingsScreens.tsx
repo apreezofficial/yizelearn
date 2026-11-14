@@ -1,9 +1,12 @@
-import React, {useState} from 'react';
-import {Alert, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, type KeyboardTypeOptions} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, type KeyboardTypeOptions} from 'react-native';
 import {Icon, type IconName} from '../../components/Icon';
 import {BottomButton, PrimaryAction, TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
 import {haptic} from '../../theme/system';
+import {errorCodes, isErrorWithCode, pick as pickFile, types} from '@react-native-documents/picker';
+import {accountApi, uploadsApi, type OrderSummary} from '../../api/endpoints';
+import {session} from '../../api/session';
 import {formatNaira} from '../../data/catalog';
 import {learner} from '../../data/learning';
 import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
@@ -12,15 +15,10 @@ const font = {fontFamily: fonts.family};
 
 // Sample account data until the profile and payments APIs are connected.
 const profileSeed = () => ({name: learner.fullName, email: learner.email, phone: '', school: '', bio: ''});
-const receipts = [
-  {id: 'YZ-10482', course: 'Data analysis in Excel', date: '12 Oct 2026', amount: 15000, method: 'Card •••• 4021'},
-  {id: 'YZ-10311', course: 'UI design basics', date: '28 Sep 2026', amount: 12500, method: 'Bank transfer'},
-  {id: 'YZ-10107', course: 'Intro to Python', date: '3 Sep 2026', amount: 18000, method: 'Card •••• 4021'},
-];
 
 function Section({title, delay, children}: {title: string; delay: number; children: React.ReactNode}) {
   return <Rise delay={delay}>
-    <Text style={[styles.section, font]}>{title}</Text>
+    <Text style={[font, styles.section]}>{title}</Text>
     <View style={styles.card}>{children}</View>
   </Rise>;
 }
@@ -28,9 +26,9 @@ function Section({title, delay, children}: {title: string; delay: number; childr
 function Field({label, value, onChangeText, keyboardType, multiline}: {label: string; value: string; onChangeText: (v: string) => void; keyboardType?: KeyboardTypeOptions; multiline?: boolean}) {
   const [focused, setFocused] = useState(false);
   return <View style={styles.fieldWrap}>
-    <Text style={[styles.fieldLabel, font]}>{label}</Text>
+    <Text style={[font, styles.fieldLabel]}>{label}</Text>
     <TextInput value={value} onChangeText={onChangeText} keyboardType={keyboardType} multiline={multiline} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-      style={[styles.field, font, multiline && styles.fieldMulti, focused && styles.fieldFocused]} placeholderTextColor={colors.muted} textAlignVertical={multiline ? 'top' : 'center'} />
+      style={[font, styles.field, multiline && styles.fieldMulti, focused && styles.fieldFocused]} placeholderTextColor={colors.muted} textAlignVertical={multiline ? 'top' : 'center'} />
   </View>;
 }
 
@@ -40,16 +38,28 @@ export function ProfileScreen({onBack}: {onBack: () => void}) {
   const set = (key: keyof typeof form) => (v: string) => setForm(f => ({...f, [key]: v}));
   const changed = JSON.stringify(form) !== JSON.stringify(saved);
   const initials = form.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const [photo, setPhoto] = useState<string | undefined>();
+  const changePhoto = async () => {
+    if (!session.isSignedIn()) { Alert.alert('Log in first', 'Your photo is saved to your account.'); return; }
+    try {
+      const [res] = await pickFile({type: [types.images]});
+      const id = await uploadsApi.upload({uri: res.uri, name: res.name ?? 'photo.jpg', type: res.type ?? 'image/jpeg', size: res.size ?? 0}, 'avatar');
+      const me = await uploadsApi.setAvatar(id);
+      setPhoto(me.avatarUrl ?? res.uri);
+    } catch (e) {
+      if (!(isErrorWithCode(e) && e.code === errorCodes.OPERATION_CANCELED)) Alert.alert('Could not change your photo', e instanceof Error ? e.message : 'Try again.');
+    }
+  };
   return <View style={styles.screen}>
     <TitleBar title="Profile" onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
       <Rise style={styles.avatarBlock}>
-        <View style={styles.avatar}><Text style={[styles.avatarText, font]}>{initials}</Text></View>
-        <Pressable onPress={() => Alert.alert('Change photo', 'Photo uploads are not connected yet.')} style={({pressed}) => [styles.camera, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Change photo">
+        <View style={styles.avatar}>{photo ? <Image source={{uri: photo}} style={styles.photo} /> : <Text style={[font, styles.avatarText]}>{initials}</Text>}</View>
+        <Pressable onPress={changePhoto} style={({pressed}) => [styles.camera, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Change photo">
           <Icon name="upload" size={16} color={colors.onAccent} />
         </Pressable>
-        <Text style={[styles.avatarName, font]}>{form.name || 'Your name'}</Text>
-        <Text style={[styles.avatarMeta, font]}>Learner · {form.school}</Text>
+        <Text style={[font, styles.avatarName]}>{form.name || 'Your name'}</Text>
+        <Text style={[font, styles.avatarMeta]}>Learner · {form.school}</Text>
       </Rise>
       <Rise delay={90}>
         <Field label="Full name" value={form.name} onChangeText={set('name')} />
@@ -63,49 +73,76 @@ export function ProfileScreen({onBack}: {onBack: () => void}) {
   </View>;
 }
 
+const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'});
+
 export function PaymentsScreen({onBack}: {onBack: () => void}) {
-  const total = receipts.reduce((sum, r) => sum + r.amount, 0);
+  const [orders, setOrders] = useState<OrderSummary[]>([]);
+  const [cards, setCards] = useState<{id: string; brand: string; last4: string; expMonth: number; expYear: number}[]>([]);
+  const [state, setState] = useState<'loading' | 'ready' | 'error' | 'signed-out'>(session.isSignedIn() ? 'loading' : 'signed-out');
+  useEffect(() => {
+    if (!session.isSignedIn()) return;
+    Promise.all([accountApi.orders(), accountApi.cards().catch(() => ({data: []}))]).then(([o, c]) => { setOrders(o.data); setCards(c.data); setState('ready'); }, () => setState('error'));
+  }, []);
+  const paid = orders.filter(o => o.status === 'paid' || o.receiptAvailable);
+  const total = paid.reduce((sum, o) => sum + o.total.amountMinor / 100, 0);
+  const openReceipt = async (o: OrderSummary) => {
+    try {
+      const r = await accountApi.receipt(o.id);
+      if (r.pdfUrl) await Linking.openURL(r.pdfUrl);
+      else Alert.alert(`Receipt #${r.number}`, `${o.titles.join(', ')}\n${formatNaira(r.total.amountMinor / 100)}${r.cardLast4 ? ` · Card •••• ${r.cardLast4}` : ''}\n${fmtDate(r.issuedAt)}`);
+    } catch (e) { Alert.alert('Could not open the receipt', e instanceof Error ? e.message : 'Try again.'); }
+  };
   return <View style={styles.screen}>
     <TitleBar title="Payments and receipts" onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Rise style={styles.board}>
         <View style={styles.swirl} />
-        <Text style={[styles.boardLabel, font]}>Total spent on learning</Text>
-        <Text style={[styles.boardValue, font]}>{formatNaira(total)}</Text>
-        <Text style={[styles.boardMeta, font]}>{receipts.length} courses paid for</Text>
+        <Text style={[font, styles.boardLabel]}>Total spent on learning</Text>
+        <Text style={[font, styles.boardValue]}>{formatNaira(total)}</Text>
+        <Text style={[font, styles.boardMeta]}>{paid.length} {paid.length === 1 ? 'order' : 'orders'} paid</Text>
       </Rise>
-
-      <Section title="Payment method" delay={90}>
-        <View style={styles.row}>
-          <View style={styles.rowIcon}><Icon name="card" size={20} color={colors.blue700} /></View>
-          <View style={styles.rowCopy}>
-            <Text style={[styles.rowTitle, font]}>Visa •••• 4021</Text>
-            <Text style={[styles.rowMeta, font]}>Expires 08/28</Text>
-          </View>
-          <View style={styles.pill}><Text style={[styles.pillText, font]}>Default</Text></View>
-        </View>
-      </Section>
-
-      <Section title="Receipts" delay={180}>
-        {receipts.map((r, i) => <Pressable key={r.id} onPress={() => Alert.alert(`Receipt ${r.id}`, `${r.course}\n${formatNaira(r.amount)} · ${r.method}\n${r.date}`)} style={({pressed}) => [styles.row, i > 0 && styles.rowLine, pressed && styles.rowPressed]} accessibilityRole="button">
-          <View style={styles.rowIcon}><Icon name="book" size={20} color={colors.blue700} /></View>
-          <View style={styles.rowCopy}>
-            <Text style={[styles.rowTitle, font]} numberOfLines={1}>{r.course}</Text>
-            <Text style={[styles.rowMeta, font]}>{r.date} · {r.method}</Text>
-          </View>
-          <Text style={[styles.amount, font]}>{formatNaira(r.amount)}</Text>
-        </Pressable>)}
-      </Section>
+      {state === 'loading' && <ActivityIndicator color={colors.blue700} style={{marginTop: 24}} />}
+      {state === 'signed-out' && <Text style={[font, styles.emptyNote]}>Log in to see your payments and receipts.</Text>}
+      {state === 'error' && <Text style={[font, styles.emptyNote]}>Could not load your payments. Check your connection and open this page again.</Text>}
+      {state === 'ready' && <>
+        <Section title="Payment method" delay={90}>
+          {cards.length === 0 && <Text style={[font, styles.emptyNote]}>No saved cards. You can save one when you pay for a course.</Text>}
+          {cards.map((c, i) => <View key={c.id} style={[styles.row, i > 0 && styles.rowLine]}>
+            <View style={styles.rowIcon}><Icon name="card" size={20} color={colors.blue700} /></View>
+            <View style={styles.rowCopy}>
+              <Text style={[font, styles.rowTitle]}>{c.brand} •••• {c.last4}</Text>
+              <Text style={[font, styles.rowMeta]}>Expires {String(c.expMonth).padStart(2, '0')}/{String(c.expYear).slice(-2)}</Text>
+            </View>
+          </View>)}
+        </Section>
+        <Section title="Receipts" delay={180}>
+          {orders.length === 0 && <Text style={[font, styles.emptyNote]}>No orders yet. Courses you buy will appear here.</Text>}
+          {orders.map((o, i) => <Pressable key={o.id} onPress={() => o.receiptAvailable ? openReceipt(o) : undefined} style={({pressed}) => [styles.row, i > 0 && styles.rowLine, pressed && styles.rowPressed]} accessibilityRole="button">
+            <View style={styles.rowIcon}><Icon name="book" size={20} color={colors.blue700} /></View>
+            <View style={styles.rowCopy}>
+              <Text style={[font, styles.rowTitle]} numberOfLines={1}>{o.titles.join(', ') || `Order #${o.number}`}</Text>
+              <Text style={[font, styles.rowMeta]}>{fmtDate(o.createdAt)} · {o.cardLast4 ? `Card •••• ${o.cardLast4}` : o.paymentMethod === 'bank_transfer' ? 'Bank transfer' : o.status}</Text>
+            </View>
+            <Text style={[font, styles.amount]}>{formatNaira(o.total.amountMinor / 100)}</Text>
+          </Pressable>)}
+        </Section>
+      </>}
     </ScrollView>
   </View>;
+}
+
+async function requestPrivacy(kind: 'data_export' | 'delete_account', title: string, done: string) {
+  if (!session.isSignedIn()) { Alert.alert('Log in first', 'This request is tied to your account.'); return; }
+  try { await accountApi.privacyRequest(kind); Alert.alert(title, done); }
+  catch (e) { Alert.alert('Could not send the request', e instanceof Error ? e.message : 'Try again.'); }
 }
 
 function ToggleRow({icon, title, detail, value, onChange, first}: {icon: IconName; title: string; detail: string; value: boolean; onChange: (v: boolean) => void; first?: boolean}) {
   return <View style={[styles.row, !first && styles.rowLine]}>
     <View style={styles.rowIcon}><Icon name={icon} size={20} color={colors.blue700} /></View>
     <View style={styles.rowCopy}>
-      <Text style={[styles.rowTitle, font]}>{title}</Text>
-      <Text style={[styles.rowMeta, font]}>{detail}</Text>
+      <Text style={[font, styles.rowTitle]}>{title}</Text>
+      <Text style={[font, styles.rowMeta]}>{detail}</Text>
     </View>
     <Switch value={value} onValueChange={v => { haptic.select(); onChange(v); }} trackColor={{false: colors.sandLine, true: colors.blue700}} thumbColor={colors.onAccent} ios_backgroundColor={colors.sandLine} accessibilityLabel={title} />
   </View>;
@@ -121,7 +158,7 @@ export function PrivacyScreen({onBack}: {onBack: () => void}) {
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Rise style={styles.note}>
         <Icon name="shield" size={22} color={colors.blue700} />
-        <Text style={[styles.noteText, font]}>You decide who sees your learning. We never sell your data.</Text>
+        <Text style={[font, styles.noteText]}>You decide who sees your learning. We never sell your data.</Text>
       </Rise>
       <Section title="Visibility" delay={90}>
         <ToggleRow first icon="user" title="Show my profile to classmates" detail="Name and photo in course discussions" value={visible} onChange={setVisible} />
@@ -132,11 +169,11 @@ export function PrivacyScreen({onBack}: {onBack: () => void}) {
         <ToggleRow icon="mail" title="Learning tips by email" detail="About once a week" value={emails} onChange={setEmails} />
       </Section>
       <Rise delay={270}>
-        <Text style={[styles.section, font]}>Your data</Text>
-        <PrimaryAction label="Download my data" outline onPress={() => Alert.alert('Download my data', 'We’ll email you a copy of your data within 48 hours.')} />
-        <Pressable onPress={() => Alert.alert('Delete account?', 'This removes your courses, progress and certificates for good.', [{text: 'Cancel', style: 'cancel'}, {text: 'Delete', style: 'destructive', onPress: () => Alert.alert('Request received', 'Our team will confirm by email before anything is deleted.')}])}
+        <Text style={[font, styles.section]}>Your data</Text>
+        <PrimaryAction label="Download my data" outline onPress={() => requestPrivacy('data_export', 'Download my data', 'We will email you a link to a copy of your data.')} />
+        <Pressable onPress={() => Alert.alert('Delete account?', 'This removes your courses, progress and certificates for good.', [{text: 'Cancel', style: 'cancel'}, {text: 'Delete', style: 'destructive', onPress: () => requestPrivacy('delete_account', 'Request received', 'Our team will confirm by email before anything is deleted.')}])}
           style={({pressed}) => [styles.danger, pressed && styles.pressed]} accessibilityRole="button">
-          <Text style={[styles.dangerText, font]}>Delete my account</Text>
+          <Text style={[font, styles.dangerText]}>Delete my account</Text>
         </Pressable>
       </Rise>
     </ScrollView>
@@ -161,17 +198,17 @@ export function ConnectedAccountsScreen({onBack}: {onBack: () => void}) {
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Rise style={styles.note}>
         <Icon name="attach" size={22} color={colors.blue700} />
-        <Text style={[styles.noteText, font]}>Connect accounts to sign in faster. Your password is never shared with us.</Text>
+        <Text style={[font, styles.noteText]}>Connect accounts to sign in faster. Your password is never shared with us.</Text>
       </Rise>
       <Section title="Sign-in methods" delay={90}>
         {providers.map((p, i) => <View key={p.id} style={[styles.row, i > 0 && styles.rowLine]}>
           <View style={styles.rowIcon}><Icon name={p.icon} size={20} color={colors.ink} /></View>
           <View style={styles.rowCopy}>
-            <Text style={[styles.rowTitle, font]}>{p.name}</Text>
-            <Text style={[styles.rowMeta, font]}>{linked[p.id] ? p.detail : 'Not connected'}</Text>
+            <Text style={[font, styles.rowTitle]}>{p.name}</Text>
+            <Text style={[font, styles.rowMeta]}>{linked[p.id] ? p.detail : 'Not connected'}</Text>
           </View>
           <Pressable onPress={() => toggle(p.id, p.name)} style={({pressed}) => [styles.linkButton, linked[p.id] && styles.linkButtonOn, pressed && styles.pressed]} accessibilityRole="button">
-            <Text style={[styles.linkText, font, linked[p.id] && styles.linkTextOn]}>{linked[p.id] ? 'Disconnect' : 'Connect'}</Text>
+            <Text style={[font, styles.linkText, linked[p.id] && styles.linkTextOn]}>{linked[p.id] ? 'Disconnect' : 'Connect'}</Text>
           </Pressable>
         </View>)}
       </Section>
@@ -180,43 +217,45 @@ export function ConnectedAccountsScreen({onBack}: {onBack: () => void}) {
 }
 
 const styles = StyleSheet.create({
+  emptyNote: {fontSize: type.label, color: colors.muted, paddingVertical: 16, lineHeight: 22},
   screen: {flex: 1, backgroundColor: colors.cream},
   content: {padding: spacing.screen, paddingBottom: 32},
-  section: {fontSize: type.subheading, color: colors.ink, fontWeight: '800', marginTop: 24, marginBottom: 10},
+  section: {fontSize: type.subheading, color: colors.ink, fontFamily: fonts.display, marginTop: 24, marginBottom: 10},
   card: {backgroundColor: colors.white, borderRadius: radius.card, borderWidth: 1, borderColor: colors.sandLine, overflow: 'hidden'},
   row: {flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 68, paddingHorizontal: 14, paddingVertical: 10},
   rowLine: {borderTopWidth: 1, borderTopColor: colors.line},
   rowPressed: {backgroundColor: colors.sand},
   rowIcon: {width: 40, height: 40, borderRadius: 20, backgroundColor: colors.blue50, alignItems: 'center', justifyContent: 'center'},
   rowCopy: {flex: 1},
-  rowTitle: {fontSize: type.label, color: colors.ink, fontWeight: '700'},
+  rowTitle: {fontSize: type.label, color: colors.ink, fontFamily: fonts.bold},
   rowMeta: {fontSize: type.caption, color: colors.muted, marginTop: 3},
-  amount: {fontSize: type.label, color: colors.ink, fontWeight: '800'},
+  amount: {fontSize: type.label, color: colors.ink, fontFamily: fonts.bold},
   pill: {paddingHorizontal: 12, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: colors.blue100},
-  pillText: {fontSize: type.caption, color: colors.blue900, fontWeight: '800'},
+  pillText: {fontSize: type.caption, color: colors.blue900, fontFamily: fonts.bold},
   pressed: {opacity: 0.8},
   avatarBlock: {alignItems: 'center', marginBottom: 12},
+  photo: {width: 90, height: 90, borderRadius: 45},
   avatar: {width: 96, height: 96, borderRadius: 48, backgroundColor: colors.blue100, borderWidth: 3, borderColor: colors.white, alignItems: 'center', justifyContent: 'center'},
-  avatarText: {fontSize: type.title, color: colors.blue900, fontWeight: '800'},
+  avatarText: {fontSize: type.title, color: colors.blue900, fontFamily: fonts.bold},
   camera: {position: 'absolute', top: 64, left: '57%', width: 34, height: 34, borderRadius: 17, backgroundColor: colors.blue700, borderWidth: 3, borderColor: colors.cream, alignItems: 'center', justifyContent: 'center'},
-  avatarName: {fontSize: type.heading, color: colors.ink, fontWeight: '800', marginTop: 12},
+  avatarName: {fontSize: type.heading, color: colors.ink, fontFamily: fonts.bold, marginTop: 12},
   avatarMeta: {fontSize: type.small, color: colors.muted, marginTop: 4},
   fieldWrap: {marginTop: 14},
-  fieldLabel: {fontSize: type.small, color: colors.ink, fontWeight: '700', marginBottom: 8},
+  fieldLabel: {fontSize: type.small, color: colors.ink, fontFamily: fonts.bold, marginBottom: 8},
   field: {height: 52, borderRadius: radius.field, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, paddingHorizontal: 16, fontSize: type.body, color: colors.ink},
   fieldMulti: {height: 104, paddingTop: 14},
   fieldFocused: {borderColor: colors.blue700, borderWidth: 1.5},
   board: {backgroundColor: colors.chalk, borderRadius: radius.card, padding: 20, overflow: 'hidden'},
   swirl: {position: 'absolute', top: -40, right: -30, width: 140, height: 140, borderRadius: 70, borderWidth: 1.5, borderColor: 'rgba(254, 249, 242, 0.12)'},
   boardLabel: {fontSize: type.small, color: colors.chalkText, opacity: 0.8},
-  boardValue: {fontFamily: 'Caveat', fontSize: 44, lineHeight: 52, color: colors.chalkText, fontWeight: '700', marginTop: 4},
-  boardMeta: {fontSize: type.caption, color: colors.marigold, fontWeight: '700', marginTop: 2},
+  boardValue: {fontFamily: 'Caveat', fontSize: 44, lineHeight: 52, color: colors.chalkText, marginTop: 4},
+  boardMeta: {fontSize: type.caption, color: colors.marigold, fontFamily: fonts.bold, marginTop: 2},
   note: {flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, borderRadius: radius.card, backgroundColor: colors.blue50},
   noteText: {flex: 1, fontSize: type.small, color: colors.ink, lineHeight: 20},
   danger: {height: spacing.button, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', marginTop: 10},
-  dangerText: {fontSize: type.label, color: colors.danger, fontWeight: '800'},
+  dangerText: {fontSize: type.label, color: colors.danger, fontFamily: fonts.bold},
   linkButton: {paddingHorizontal: 14, height: 36, borderRadius: radius.pill, backgroundColor: colors.blue700, justifyContent: 'center'},
   linkButtonOn: {backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sandLine},
-  linkText: {fontSize: type.caption, color: colors.onAccent, fontWeight: '800'},
+  linkText: {fontSize: type.caption, color: colors.onAccent, fontFamily: fonts.bold},
   linkTextOn: {color: colors.ink},
 });

@@ -20,7 +20,7 @@ function Bubble({message, delay}: {message: Message; delay: number}) {
     {scale: t.interpolate({inputRange: [0, 1], outputRange: [0.92, 1]})},
   ]}]}>
     <View style={[styles.bubble, me ? styles.bubbleMe : styles.bubbleThem]}>
-      <Text style={[styles.bubbleText, font, me && styles.bubbleTextMe]}>{message.text}</Text>
+      <Text style={[font, styles.bubbleText, me && styles.bubbleTextMe]}>{message.text}</Text>
     </View>
   </Animated.View>;
 }
@@ -48,7 +48,7 @@ export function ConversationScreen({conversationId, onBack}: {conversationId: st
         <Icon name="back" size={24} color={colors.ink} />
       </Pressable>
       <View style={styles.titleRow}>
-        <Text style={[styles.title, font]} numberOfLines={1}>{conversation.name}</Text>
+        <Text style={[font, styles.title]} numberOfLines={1}>{conversation.name}</Text>
         {conversation.verified && <View accessibilityLabel="Verified"><Icon name="verified" size={19} color={colors.blue700} /></View>}
       </View>
       <Pressable hitSlop={12} style={styles.headerButton} accessibilityRole="button" accessibilityLabel="More options">
@@ -56,11 +56,11 @@ export function ConversationScreen({conversationId, onBack}: {conversationId: st
       </Pressable>
     </View>
     <ScrollView ref={scroll} contentContainerStyle={styles.thread} showsVerticalScrollIndicator={false} onContentSizeChange={() => scroll.current?.scrollToEnd({animated: true})}>
-      {messages.length === 0 && <Text style={[styles.empty, font]}>No messages yet. Say hello.</Text>}
+      {messages.length === 0 && <Text style={[font, styles.empty]}>No messages yet. Say hello.</Text>}
       {messages.map((m, i) => <Bubble key={i} message={m} delay={i < initial ? 100 + i * 90 : 0} />)}
     </ScrollView>
     <View style={styles.composer}>
-      <TextInput value={draft} onChangeText={setDraft} placeholder="Write a message" placeholderTextColor={colors.muted} onSubmitEditing={send} returnKeyType="send" style={[styles.input, font]} />
+      <TextInput value={draft} onChangeText={setDraft} placeholder="Write a message" placeholderTextColor={colors.muted} onSubmitEditing={send} returnKeyType="send" style={[font, styles.input]} />
       <Pressable onPress={send} disabled={!draft.trim()} style={({pressed}) => [styles.send, !draft.trim() && styles.dim, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Send message">
         <Icon name="send" size={20} color={colors.onAccent} />
       </Pressable>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   header: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 10, paddingBottom: 14},
   headerButton: {width: 40, height: 40, alignItems: 'center', justifyContent: 'center'},
   titleRow: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6},
-  title: {flexShrink: 1, fontSize: type.heading, color: colors.ink, fontWeight: '800', textAlign: 'center'},
+  title: {flexShrink: 1, fontSize: type.heading, color: colors.ink, fontFamily: fonts.display, textAlign: 'center'},
   thread: {paddingHorizontal: spacing.screen, paddingTop: 4, paddingBottom: 16, gap: 18, flexGrow: 1},
   empty: {fontSize: type.label, color: colors.muted, textAlign: 'center', marginTop: 40},
   bubbleRow: {flexDirection: 'row'},

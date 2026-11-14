@@ -15,6 +15,12 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		AA1234567890000000000001 /* Charmonman-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA1234567890000000000002 /* Charmonman-Regular.ttf */; };
 		AA1234567890000000000003 /* Caveat.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA1234567890000000000004 /* Caveat.ttf */; };
+		096CDBAF30E3439B9C406D7C /* Figtree_600SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 071248AC92CA4E87B8DFC2DC /* Figtree_600SemiBold.ttf */; };
+		21CF2AFD012A437987494AC7 /* Figtree_400Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EEE7163272914081AD83C368 /* Figtree_400Regular.ttf */; };
+		CE766D0DCC4540B1B0543770 /* BricolageGrotesque_600SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F40DA0AF3E644DD0B2D08457 /* BricolageGrotesque_600SemiBold.ttf */; };
+		240D753D289E4A3C89C1F0B1 /* BricolageGrotesque_700Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4B8EB30BBFA4B1FA0CF4B42 /* BricolageGrotesque_700Bold.ttf */; };
+		13CBE3469E114FD5ACE536F5 /* Figtree_700Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AB8B8B00B03F4A7D845350F5 /* Figtree_700Bold.ttf */; };
+		4B83A5723E624B37839B3FCD /* Figtree_500Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D39C75199F54216A0776F2B /* Figtree_500Medium.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +37,12 @@
 		AA1234567890000000000002 /* Charmonman-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Charmonman-Regular.ttf"; path = "Yizelearn/Fonts/Charmonman-Regular.ttf"; sourceTree = "<group>"; };
 		AA1234567890000000000004 /* Caveat.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Caveat.ttf; path = Yizelearn/Fonts/Caveat.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		071248AC92CA4E87B8DFC2DC /* Figtree_600SemiBold.ttf */ = {isa = PBXFileReference; name = "Figtree_600SemiBold.ttf"; path = "../src/assets/fonts/Figtree_600SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		EEE7163272914081AD83C368 /* Figtree_400Regular.ttf */ = {isa = PBXFileReference; name = "Figtree_400Regular.ttf"; path = "../src/assets/fonts/Figtree_400Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F40DA0AF3E644DD0B2D08457 /* BricolageGrotesque_600SemiBold.ttf */ = {isa = PBXFileReference; name = "BricolageGrotesque_600SemiBold.ttf"; path = "../src/assets/fonts/BricolageGrotesque_600SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D4B8EB30BBFA4B1FA0CF4B42 /* BricolageGrotesque_700Bold.ttf */ = {isa = PBXFileReference; name = "BricolageGrotesque_700Bold.ttf"; path = "../src/assets/fonts/BricolageGrotesque_700Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AB8B8B00B03F4A7D845350F5 /* Figtree_700Bold.ttf */ = {isa = PBXFileReference; name = "Figtree_700Bold.ttf"; path = "../src/assets/fonts/Figtree_700Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9D39C75199F54216A0776F2B /* Figtree_500Medium.ttf */ = {isa = PBXFileReference; name = "Figtree_500Medium.ttf"; path = "../src/assets/fonts/Figtree_500Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +96,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				209D8834104644CF87101C67 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -106,6 +119,20 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		209D8834104644CF87101C67 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				071248AC92CA4E87B8DFC2DC /* Figtree_600SemiBold.ttf */,
+				EEE7163272914081AD83C368 /* Figtree_400Regular.ttf */,
+				F40DA0AF3E644DD0B2D08457 /* BricolageGrotesque_600SemiBold.ttf */,
+				D4B8EB30BBFA4B1FA0CF4B42 /* BricolageGrotesque_700Bold.ttf */,
+				AB8B8B00B03F4A7D845350F5 /* Figtree_700Bold.ttf */,
+				9D39C75199F54216A0776F2B /* Figtree_500Medium.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -172,6 +199,12 @@
 				AA1234567890000000000001 /* Charmonman-Regular.ttf in Resources */,
 				AA1234567890000000000003 /* Caveat.ttf in Resources */,
 				7485E989C60ABA018AB0FB66 /* PrivacyInfo.xcprivacy in Resources */,
+				096CDBAF30E3439B9C406D7C /* Figtree_600SemiBold.ttf in Resources */,
+				21CF2AFD012A437987494AC7 /* Figtree_400Regular.ttf in Resources */,
+				CE766D0DCC4540B1B0543770 /* BricolageGrotesque_600SemiBold.ttf in Resources */,
+				240D753D289E4A3C89C1F0B1 /* BricolageGrotesque_700Bold.ttf in Resources */,
+				13CBE3469E114FD5ACE536F5 /* Figtree_700Bold.ttf in Resources */,
+				4B83A5723E624B37839B3FCD /* Figtree_500Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

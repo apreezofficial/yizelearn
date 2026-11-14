@@ -46,10 +46,10 @@ export function EmptyState({title, message, icon = 'book', tone = 'blue', action
       </>}
     </Animated.View>
     <Animated.View style={[styles.copy, fade]}>
-      <Text style={[styles.title, font]}>{title}</Text>
-      <Text style={[styles.message, font]}>{message}</Text>
-      {actionLabel && <Pressable onPress={onAction} style={({pressed}) => [styles.button, pressed && styles.pressed]} accessibilityRole="button"><Text style={[styles.buttonText, font]}>{actionLabel}</Text></Pressable>}
-      {secondaryLabel && <Pressable onPress={onSecondary} hitSlop={10} style={styles.secondary} accessibilityRole="button"><Text style={[styles.secondaryText, font]}>{secondaryLabel}</Text></Pressable>}
+      <Text style={[font, styles.title]}>{title}</Text>
+      <Text style={[font, styles.message]}>{message}</Text>
+      {actionLabel && <Pressable onPress={onAction} style={({pressed}) => [styles.button, pressed && styles.pressed]} accessibilityRole="button"><Text style={[font, styles.buttonText]}>{actionLabel}</Text></Pressable>}
+      {secondaryLabel && <Pressable onPress={onSecondary} hitSlop={10} style={styles.secondary} accessibilityRole="button"><Text style={[font, styles.secondaryText]}>{secondaryLabel}</Text></Pressable>}
     </Animated.View>
   </View>;
 }
@@ -74,8 +74,8 @@ export function Notice({tone, title, message, icon}: {tone: Tone; title: string;
   return <Animated.View accessibilityRole="alert" accessibilityLiveRegion="polite" style={[styles.notice, {backgroundColor: colors[t.bg as keyof typeof colors], borderLeftColor: bar, opacity: enter, transform: [{translateY: enter.interpolate({inputRange: [0, 1], outputRange: [-8, 0]})}]}]}>
     <Icon name={icon ?? t.icon} size={18} color={bar} />
     <View style={styles.noticeCopy}>
-      <Text style={[styles.noticeTitle, font]}>{title}</Text>
-      {!!message && <Text style={[styles.noticeText, font]}>{message}</Text>}
+      <Text style={[font, styles.noticeTitle]}>{title}</Text>
+      {!!message && <Text style={[font, styles.noticeText]}>{message}</Text>}
     </View>
   </Animated.View>;
 }
@@ -98,16 +98,16 @@ const styles = StyleSheet.create({
   ringGold: {borderColor: colors.warning},
   notice: {flexDirection: 'row', alignItems: 'flex-start', gap: 10, borderLeftWidth: 4, borderRadius: radius.field, paddingVertical: 12, paddingHorizontal: 14},
   noticeCopy: {flex: 1},
-  noticeTitle: {fontSize: type.small, color: colors.ink, fontWeight: '800'},
+  noticeTitle: {fontSize: type.small, color: colors.ink, fontFamily: fonts.bold},
   noticeText: {fontSize: type.caption, color: colors.muted, marginTop: 2, lineHeight: 18},
   copy: {alignItems: 'center', alignSelf: 'stretch'},
   spinner: {width: 64, height: 64, borderRadius: 32, backgroundColor: colors.blue100, alignItems: 'center', justifyContent: 'center', marginBottom: 16},
-  markText: {fontSize: 22, color: colors.blue700, fontWeight: '800'},
-  title: {fontSize: 20, color: colors.ink, fontWeight: '800', textAlign: 'center'},
+  markText: {fontSize: 22, color: colors.blue700, fontFamily: fonts.bold},
+  title: {fontSize: 20, color: colors.ink, fontFamily: fonts.display, textAlign: 'center'},
   message: {fontSize: 14, color: colors.muted, textAlign: 'center', marginTop: 8, lineHeight: 21, maxWidth: 300},
   button: {height: 48, alignSelf: 'stretch', marginHorizontal: 24, backgroundColor: colors.sky, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginTop: 24},
-  buttonText: {fontSize: 15, color: colors.onAccent, fontWeight: '700'},
+  buttonText: {fontSize: 15, color: colors.onAccent, fontFamily: fonts.bold},
   pressed: {opacity: 0.8},
   secondary: {marginTop: 14},
-  secondaryText: {fontSize: 14, color: colors.blue700, fontWeight: '700'},
+  secondaryText: {fontSize: 14, color: colors.blue700, fontFamily: fonts.bold},
 });
