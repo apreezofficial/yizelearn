@@ -22,25 +22,25 @@ export function HelpCentreScreen({onBack}: {onBack: () => void}) {
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
       <Rise style={styles.search}>
         <Icon name="search" size={20} color={colors.muted} />
-        <TextInput value={query} onChangeText={setQuery} placeholder="Search for help" placeholderTextColor={colors.muted} style={[styles.input, font]} />
+        <TextInput value={query} onChangeText={setQuery} placeholder="Search for help" placeholderTextColor={colors.muted} style={[font, styles.input]} />
       </Rise>
 
       <Rise delay={80} style={styles.topics}>
         {topics.map(t => <Pressable key={t.label} onPress={() => Alert.alert(t.label, 'Browse this topic is not set up yet.')} style={({pressed}) => [styles.topic, pressed && styles.pressed]} accessibilityRole="button">
           <View style={styles.topicIcon}><Icon name={t.icon} size={22} color={colors.blue700} /></View>
-          <Text style={[styles.topicText, font]}>{t.label}</Text>
+          <Text style={[font, styles.topicText]}>{t.label}</Text>
         </Pressable>)}
       </Rise>
 
-      <Rise delay={160}><Text style={[styles.section, font]}>Popular articles</Text></Rise>
+      <Rise delay={160}><Text style={[font, styles.section]}>Popular articles</Text></Rise>
       {articles.map(a => <Pressable key={a} onPress={() => Alert.alert('Help article', 'Articles are not published yet.')} style={({pressed}) => [styles.article, pressed && styles.pressed]} accessibilityRole="button">
-        <Text style={[styles.articleText, font]}>{a}</Text>
+        <Text style={[font, styles.articleText]}>{a}</Text>
         <Icon name="next" size={18} color={colors.muted} />
       </Pressable>)}
-      {articles.length === 0 && <Text style={[styles.empty, font]}>No articles match that search. Try contacting support.</Text>}
+      {articles.length === 0 && <Text style={[font, styles.empty]}>No articles match that search. Try contacting support.</Text>}
 
       <Pressable onPress={() => Alert.alert('Contact support', 'Support messages are not connected yet.')} style={({pressed}) => [styles.contact, pressed && styles.pressed]} accessibilityRole="button">
-        <Text style={[styles.contactText, font]}>Contact support</Text>
+        <Text style={[font, styles.contactText]}>Contact support</Text>
       </Pressable>
     </ScrollView>
   </View>;
@@ -54,12 +54,12 @@ const styles = StyleSheet.create({
   topics: {flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 12, marginTop: 18},
   topic: {width: '48%', minHeight: 96, borderRadius: radius.card, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, padding: 16, justifyContent: 'space-between'},
   topicIcon: {width: 42, height: 42, borderRadius: 21, backgroundColor: colors.blue100, alignItems: 'center', justifyContent: 'center'},
-  topicText: {fontSize: type.label, color: colors.ink, fontWeight: '700', marginTop: 10},
-  section: {fontSize: type.subheading, color: colors.ink, fontWeight: '800', marginTop: 26, marginBottom: 6},
+  topicText: {fontSize: type.label, color: colors.ink, fontFamily: fonts.bold, marginTop: 10},
+  section: {fontSize: type.subheading, color: colors.ink, fontFamily: fonts.display, marginTop: 26, marginBottom: 6},
   article: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 56, borderBottomWidth: 1, borderBottomColor: colors.line},
   articleText: {flex: 1, fontSize: type.label, color: colors.ink, paddingRight: 12},
   empty: {fontSize: type.label, color: colors.muted, marginTop: 16},
   contact: {height: spacing.button, borderRadius: radius.button, borderWidth: 1.5, borderColor: colors.blue700, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center', marginTop: 28},
-  contactText: {fontSize: type.subheading, color: colors.blue700, fontWeight: '700'},
+  contactText: {fontSize: type.subheading, color: colors.blue700, fontFamily: fonts.bold},
   pressed: {opacity: 0.8},
 });

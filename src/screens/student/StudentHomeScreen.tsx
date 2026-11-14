@@ -23,7 +23,7 @@ function ChalkProgress({value}: {value: number}) {
       <Animated.View style={[styles.progressFill, {width: grow.interpolate({inputRange: [0, 100], outputRange: ['0%', '100%']})}]} />
       <View style={[styles.dots, {left: `${value}%`}]}>{Array.from({length: dots}, (_, i) => <View key={i} style={styles.dot} />)}</View>
     </View>
-    <Text style={[styles.percent, font]}>{value}%</Text>
+    <Text style={[font, styles.percent]}>{value}%</Text>
   </View>;
 }
 
@@ -60,9 +60,9 @@ function CourseTile({course, index, onPress}: {course: Course; index: number; on
           {art.shapes.map((shape, i) => <View key={i} style={[styles.shape, shape]} />)}
         </View>
         <View style={styles.tileCopy}>
-          <Text style={[styles.tileTitle, font]} numberOfLines={2}>{course.title}</Text>
-          <Text style={[styles.tileMeta, font]} numberOfLines={1}>{course.instructorName}</Text>
-          <Text style={[styles.tilePrice, font]}>{formatNaira(course.price)}</Text>
+          <Text style={[font, styles.tileTitle]} numberOfLines={2}>{course.title}</Text>
+          <Text style={[font, styles.tileMeta]} numberOfLines={1}>{course.instructorName}</Text>
+          <Text style={[font, styles.tilePrice]}>{formatNaira(course.price)}</Text>
         </View>
       </Pressable>
     </Animated.View>
@@ -80,7 +80,7 @@ export function StudentHomeScreen({recommended: picks, categories, continueLearn
 
   return <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
     <Rise style={styles.header}>
-      <Text style={[styles.hello, font]}>Hi,  {learnerName}</Text>
+      <Text style={[font, styles.hello]}>Hi,  {learnerName}</Text>
       <Pressable onPress={onNotifications} hitSlop={12} style={styles.bell} accessibilityRole="button" accessibilityLabel="Notifications, unread">
         <Icon name="bell" size={26} color={colors.ink} strokeWidth={1.6} />
         {hasUnread && <View style={styles.unread} />}
@@ -89,7 +89,7 @@ export function StudentHomeScreen({recommended: picks, categories, continueLearn
     <Rise delay={60} style={styles.pad}><SearchField value={query} onChangeText={setQuery} placeholder="Search for courses" style={styles.search} /></Rise>
 
     <Rise delay={120} style={styles.pad}>
-      <Text style={[styles.section, font]}>Continue learning</Text>
+      <Text style={[font, styles.section]}>Continue learning</Text>
       {continueLearning ? (
       <Pressable onPress={onResume} style={styles.frame} accessibilityRole="button" accessibilityLabel={`Continue ${continueLearning.title}, ${continueLearning.progress}% done`}>
         <View style={styles.board}>
@@ -101,10 +101,10 @@ export function StudentHomeScreen({recommended: picks, categories, continueLearn
             <Svg width={150} height={10} viewBox="0 0 150 10" style={styles.squiggle}>
               <Path d="M2 6 C 14 1, 22 1, 34 5 S 56 9, 68 5 S 90 1, 102 5 S 124 9, 136 5 S 146 3, 148 4" stroke={palettes.light.chalkText} strokeWidth={2} fill="none" strokeLinecap="round" />
             </Svg>
-            <Text style={[styles.chalkMeta, font]} numberOfLines={1}>Lesson {continueLearning.lessonNumber} of {continueLearning.lessonsTotal}: {continueLearning.lesson}</Text>
+            <Text style={[font, styles.chalkMeta]} numberOfLines={1}>Lesson {continueLearning.lessonNumber} of {continueLearning.lessonsTotal}: {continueLearning.lesson}</Text>
             <ChalkProgress value={continueLearning.progress} />
             <Pressable onPress={onResume} style={({pressed}) => [styles.resume, pressed && styles.pressed]} accessibilityRole="button">
-              <Text style={[styles.resumeText, font]}>Resume</Text>
+              <Text style={[font, styles.resumeText]}>Resume</Text>
             </Pressable>
           </View>
           <View style={styles.eraser} />
@@ -118,8 +118,8 @@ export function StudentHomeScreen({recommended: picks, categories, continueLearn
             <BookArt />
             <View style={styles.boardCopy}>
               <Text style={styles.chalkTitle} numberOfLines={1} adjustsFontSizeToFit>{loading ? 'Loading…' : 'Start learning'}</Text>
-              <Text style={[styles.chalkMeta, font]} numberOfLines={2}>{loading ? ' ' : 'You have no course in progress. Pick one to begin.'}</Text>
-              <View style={styles.resume}><Text style={[styles.resumeText, font]}>Explore courses</Text></View>
+              <Text style={[font, styles.chalkMeta]} numberOfLines={2}>{loading ? ' ' : 'You have no course in progress. Pick one to begin.'}</Text>
+              <View style={styles.resume}><Text style={[font, styles.resumeText]}>Explore courses</Text></View>
             </View>
             <View style={styles.eraser} />
           </View>
@@ -141,12 +141,12 @@ export function StudentHomeScreen({recommended: picks, categories, continueLearn
 
     <Rise delay={320} style={[styles.pad, styles.sectionRow]}>
       <Text style={[styles.section, styles.flat, font]}>Recommended</Text>
-      <Pressable hitSlop={10} accessibilityRole="button"><Text style={[styles.link, font]}>See all</Text></Pressable>
+      <Pressable hitSlop={10} accessibilityRole="button"><Text style={[font, styles.link]}>See all</Text></Pressable>
     </Rise>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rail} decelerationRate="fast" snapToInterval={TILE + 14}>
       {recommended.map((course, i) => <CourseTile key={`${chip}-${course.id}`} course={course} index={i} onPress={() => onCourse(course)} />)}
     </ScrollView>
-    {recommended.length === 0 && <Text style={[styles.empty, font]}>No courses in this category yet.</Text>}
+    {recommended.length === 0 && <Text style={[font, styles.empty]}>No courses in this category yet.</Text>}
     <TabBarSpacer />
   </ScrollView>;
 }
@@ -159,14 +159,14 @@ const styles = StyleSheet.create({
   content: {paddingTop: 20, paddingBottom: 28},
   pad: {paddingHorizontal: spacing.screen},
   header: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.screen, marginBottom: 20},
-  hello: {fontSize: 28, color: colors.ink, fontWeight: '800'},
+  hello: {fontSize: 28, color: colors.ink, fontFamily: fonts.bold},
   bell: {width: 36, height: 36, alignItems: 'center', justifyContent: 'center'},
   unread: {position: 'absolute', top: 2, right: 3, width: 10, height: 10, borderRadius: 5, backgroundColor: '#E5483B'},
   search: {backgroundColor: colors.white, height: 58},
-  section: {fontSize: type.heading, color: colors.ink, fontWeight: '800', marginTop: 24, marginBottom: 12},
+  section: {fontSize: type.heading, color: colors.ink, fontFamily: fonts.display, marginTop: 24, marginBottom: 12},
   flat: {marginTop: 0, marginBottom: 0},
   sectionRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 28, marginBottom: 14},
-  link: {fontSize: type.label, color: colors.blue700, fontWeight: '700'},
+  link: {fontSize: type.label, color: colors.blue700, fontFamily: fonts.bold},
   frame: {borderRadius: 22, padding: 5, backgroundColor: '#E6DFD3'},
   board: {flexDirection: 'row', alignItems: 'center', gap: 18, borderRadius: 18, backgroundColor: colors.chalk, padding: 16, paddingRight: 14, overflow: 'hidden'},
   swirlA: {position: 'absolute', width: 320, height: 90, borderRadius: 60, backgroundColor: 'rgba(254, 249, 242, 0.05)', top: 4, right: -40, transform: [{rotate: '-8deg'}]},
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   bookB: {position: 'absolute', left: 40, top: 38, width: 48, height: 48, borderRadius: 24, backgroundColor: '#E8B85A'},
   bookC: {position: 'absolute', left: 50, top: 86, width: 28, height: 20, borderRadius: 4, backgroundColor: '#3E6FB0'},
   boardCopy: {flex: 1},
-  chalkTitle: {fontFamily: 'Caveat', fontSize: 36, lineHeight: 42, color: colors.chalkText, fontWeight: '700'},
+  chalkTitle: {fontFamily: 'Caveat', fontSize: 36, lineHeight: 42, color: colors.chalkText},
   squiggle: {marginTop: -2, marginBottom: 8},
   chalkMeta: {fontSize: type.small, color: chalkBlue, marginBottom: 12},
   progressRow: {flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14},
@@ -184,24 +184,24 @@ const styles = StyleSheet.create({
   progressFill: {position: 'absolute', left: 0, height: 6, borderRadius: 3, backgroundColor: chalkBlue, zIndex: 1},
   dots: {position: 'absolute', right: 0, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 6},
   dot: {width: 5, height: 5, borderRadius: 3, backgroundColor: 'rgba(254, 249, 242, 0.55)'},
-  percent: {fontSize: type.small, color: colors.chalkText, fontWeight: '700'},
+  percent: {fontSize: type.small, color: colors.chalkText, fontFamily: fonts.bold},
   resume: {alignSelf: 'flex-start', height: 42, minWidth: 140, paddingHorizontal: 26, borderRadius: 10, backgroundColor: '#F4F1EA', alignItems: 'center', justifyContent: 'center'},
-  resumeText: {fontSize: type.label, color: colors.ink, fontWeight: '800'},
+  resumeText: {fontSize: type.label, color: colors.ink, fontFamily: fonts.bold},
   eraser: {position: 'absolute', right: 18, bottom: 12, width: 38, height: 9, borderRadius: 5, backgroundColor: '#D9D6CC'},
   pressed: {opacity: 0.8},
   chips: {gap: 14, alignItems: 'center', paddingHorizontal: spacing.screen, paddingTop: 26},
   chip: {paddingVertical: 4},
   chipOn: {height: 44, paddingHorizontal: 22, borderRadius: 22, backgroundColor: '#3E6FB0', justifyContent: 'center'},
-  chipText: {fontSize: type.label, color: colors.ink, fontWeight: '700'},
-  chipTextOn: {fontSize: type.label, color: colors.onAccent, fontWeight: '700'},
+  chipText: {fontSize: type.label, color: colors.ink, fontFamily: fonts.bold},
+  chipTextOn: {fontSize: type.label, color: colors.onAccent, fontFamily: fonts.bold},
   chipLine: {height: 2, borderRadius: 1, backgroundColor: colors.marigold, marginTop: 2},
   rail: {gap: 14, paddingHorizontal: spacing.screen, paddingBottom: 6},
   tile: {width: TILE, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sandLine, borderRadius: 14, padding: 10},
   tileArt: {height: 148, borderRadius: 10, borderWidth: 1, overflow: 'hidden'},
   shape: {position: 'absolute'},
   tileCopy: {paddingHorizontal: 8, paddingTop: 14, paddingBottom: 6},
-  tileTitle: {fontSize: 17, lineHeight: 23, color: colors.ink, fontWeight: '800', minHeight: 46},
+  tileTitle: {fontSize: 17, lineHeight: 23, color: colors.ink, fontFamily: fonts.bold, minHeight: 46},
   tileMeta: {fontSize: type.small, color: colors.muted, marginTop: 8},
-  tilePrice: {fontSize: type.subheading, color: colors.ink, fontWeight: '800', marginTop: 14},
+  tilePrice: {fontSize: type.subheading, color: colors.ink, fontFamily: fonts.bold, marginTop: 14},
   empty: {fontSize: type.label, color: colors.muted, textAlign: 'center', marginTop: 24},
 });

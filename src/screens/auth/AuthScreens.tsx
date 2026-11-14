@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {BrandMark} from '../../components/BrandLogo';
 import {ActivityIndicator, Alert, Animated, Easing, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, type TextInputInstance, type TextInputProps, View} from 'react-native';
 import {ApiError} from '../../api/client';
 import {authApi, type Organisation} from '../../api/endpoints';
@@ -55,13 +56,13 @@ export function LoginScreen({onBack, onSignUp, onSso, onForgot, onSignedIn, onNe
   return <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
     {onBack && <View style={styles.backRow}><RoundButton icon="back" onPress={onBack} label="Back" /></View>}
     <BrandLogo />
-    <Text style={[styles.title, font]}>Welcome back</Text>
-    <Text style={[styles.subtitle, font]}>Log in to keep learning</Text>
+    <Text style={[font, styles.title]}>Welcome back</Text>
+    <Text style={[font, styles.subtitle]}>Log in to keep learning</Text>
 
     {!!error && <View style={styles.notice}><Notice tone="danger" title="We couldn't log you in" message={error} /></View>}
     <Field label="Email" value={email} onChangeText={v => { setEmail(v); setError(''); }} onBlur={() => setTouched(true)} error={emailError} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
     <Field label="Password" value={password} onChangeText={v => { setPassword(v); setError(''); }} onSubmitEditing={submit} placeholder="Your password" secureTextEntry autoCapitalize="none" autoComplete="current-password" textContentType="password" />
-    <Pressable onPress={onForgot} style={styles.forgot} accessibilityRole="button"><Text style={[styles.link, font]}>Forgot password?</Text></Pressable>
+    <Pressable onPress={onForgot} style={styles.forgot} accessibilityRole="button"><Text style={[font, styles.link]}>Forgot password?</Text></Pressable>
     <Primary label="Log in" disabled={!ready} busy={busy} onPress={submit} />
 
     <Divider label="or continue with" />
@@ -71,10 +72,10 @@ export function LoginScreen({onBack, onSignUp, onSso, onForgot, onSignedIn, onNe
     </View>
 
     <Pressable onPress={onSso} style={({pressed}) => [styles.sso, pressed && styles.pressed]} accessibilityRole="button">
-      <Text style={[styles.ssoText, font]}>Log in with school or work SSO</Text>
+      <Text style={[font, styles.ssoText]}>Log in with school or work SSO</Text>
     </Pressable>
 
-    <Text style={[styles.footer, font]}>New here? <Text onPress={onSignUp} style={styles.link}>Create an account</Text></Text>
+    <Text style={[font, styles.footer]}>New here? <Text onPress={onSignUp} style={styles.link}>Create an account</Text></Text>
   </ScrollView>;
 }
 
@@ -115,9 +116,9 @@ export function SignUpScreen({onBack, onLogin, onSent}: SignUpProps) {
       <Field label="Password" value={password} onChangeText={setPassword} placeholder="At least 8 characters" secureTextEntry autoCapitalize="none" autoComplete="new-password" textContentType="newPassword" error={fields.password?.[0] ?? (password && !passwordOk ? 'Use at least 8 characters, and not your email address.' : undefined)} />
       <Pressable onPress={() => setAgreed(v => !v)} style={styles.check} accessibilityRole="checkbox" accessibilityState={{checked: agreed}}>
         <View style={[styles.box, agreed && styles.boxOn]}>{agreed && <Icon name="check" size={16} color={colors.onSky} />}</View>
-        <Text style={[styles.checkText, font]}>I agree to the Terms and Privacy policy</Text>
+        <Text style={[font, styles.checkText]}>I agree to the Terms and Privacy policy</Text>
       </Pressable>
-      {!!error && <Text style={[styles.error, font]}>{error}</Text>}
+      {!!error && <Text style={[font, styles.error]}>{error}</Text>}
       <Primary label="Create account" disabled={!ready} busy={busy} onPress={submit} />
 
       <Divider label="or sign up with" />
@@ -126,7 +127,7 @@ export function SignUpScreen({onBack, onLogin, onSent}: SignUpProps) {
         {Platform.OS === 'ios' && <SocialButton label="Apple" logo={<AppleLogo color={colors.ink} />} onPress={() => notConnected('Apple')} />}
       </View>
 
-      <Text style={[styles.footer, font]}>Already have an account? <Text onPress={onLogin} style={styles.link}>Log in</Text></Text>
+      <Text style={[font, styles.footer]}>Already have an account? <Text onPress={onLogin} style={styles.link}>Log in</Text></Text>
     </ScrollView>
   </View>;
 }
@@ -178,14 +179,14 @@ export function VerifyCodeScreen({email, challengeToken, onBack, onVerified}: Ve
   return <View style={styles.screen}>
     <View style={styles.backRow}><RoundButton icon="back" onPress={onBack} label="Back" /></View>
     <View style={styles.codeWrap}>
-      <Text style={[styles.title, font]}>{twoStep ? 'Two-step check' : 'Check your email'}</Text>
-      <Text style={[styles.subtitle, font]}>{twoStep ? 'Open your authenticator app and\nenter the 6-digit code.' : <>We sent a 6-digit code to{'\n'}<Text style={styles.emailText}>{email}</Text></>}</Text>
+      <Text style={[font, styles.title]}>{twoStep ? 'Two-step check' : 'Check your email'}</Text>
+      <Text style={[font, styles.subtitle]}>{twoStep ? 'Open your authenticator app and\nenter the 6-digit code.' : <>We sent a 6-digit code to{'\n'}<Text style={styles.emailText}>{email}</Text></>}</Text>
       <CodeInput value={code} onChange={setCode} onComplete={verify} />
-      {!!notice && !error && <Text style={[styles.hint, font]}>{notice}</Text>}
-      {!!error && <Text style={[styles.error, font]}>{error}</Text>}
+      {!!notice && !error && <Text style={[font, styles.hint]}>{notice}</Text>}
+      {!!error && <Text style={[font, styles.error]}>{error}</Text>}
       <Primary label={twoStep ? 'Verify' : 'Confirm email'} disabled={code.length !== 6} busy={busy} onPress={() => verify(code)} />
       {!twoStep && <Pressable onPress={resend} disabled={wait > 0} style={styles.resend} accessibilityRole="button" accessibilityState={{disabled: wait > 0}}>
-        <Text style={[styles.resendText, font, wait > 0 && styles.muted]}>{wait > 0 ? `Resend code in ${wait}s` : 'Resend code'}</Text>
+        <Text style={[font, styles.resendText, wait > 0 && styles.muted]}>{wait > 0 ? `Resend code in ${wait}s` : 'Resend code'}</Text>
       </Pressable>}
     </View>
   </View>;
@@ -225,17 +226,17 @@ export function ForgotPasswordScreen({onBack, onDone}: {onBack: () => void; onDo
     <View style={styles.backRow}><RoundButton icon="back" onPress={step === 'reset' ? () => { setStep('email'); setError(''); } : onBack} label="Back" /></View>
     <BrandLogo />
     {step === 'email' ? <>
-      <Text style={[styles.title, font]}>Reset your password</Text>
-      <Text style={[styles.subtitle, font]}>Enter your email and we will send you a code.</Text>
+      <Text style={[font, styles.title]}>Reset your password</Text>
+      <Text style={[font, styles.subtitle]}>Enter your email and we will send you a code.</Text>
       <Field label="Email" value={email} onChangeText={v => { setEmail(v); setError(''); }} onSubmitEditing={send} placeholder="name@example.com" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
-      {!!error && <Text style={[styles.error, font]}>{error}</Text>}
+      {!!error && <Text style={[font, styles.error]}>{error}</Text>}
       <Primary label="Send code" disabled={!valid} busy={busy} onPress={send} />
     </> : <>
-      <Text style={[styles.title, font]}>Choose a new password</Text>
-      <Text style={[styles.subtitle, font]}>If that email has an account, we sent a code to{'\n'}<Text style={styles.emailText}>{email}</Text></Text>
+      <Text style={[font, styles.title]}>Choose a new password</Text>
+      <Text style={[font, styles.subtitle]}>If that email has an account, we sent a code to{'\n'}<Text style={styles.emailText}>{email}</Text></Text>
       <CodeInput value={code} onChange={setCode} onComplete={() => {}} />
       <Field label="New password" value={password} onChangeText={v => { setPassword(v); setError(''); }} onSubmitEditing={reset} placeholder="At least 8 characters" secureTextEntry autoCapitalize="none" autoComplete="new-password" textContentType="newPassword" />
-      {!!error && <Text style={[styles.error, font]}>{error}</Text>}
+      {!!error && <Text style={[font, styles.error]}>{error}</Text>}
       <Primary label="Change password" disabled={code.length !== 6 || password.length < 8} busy={busy} onPress={reset} />
     </>}
   </ScrollView>;
@@ -245,7 +246,7 @@ export function ForgotPasswordScreen({onBack, onDone}: {onBack: () => void; onDo
 function CodeInput({value, onChange, onComplete}: {value: string; onChange: (value: string) => void; onComplete: (value: string) => void}) {
   const input = useRef<TextInputInstance>(null);
   return <Pressable onPress={() => input.current?.focus()} style={styles.codeRow} accessibilityLabel="Enter the 6-digit code">
-    {Array.from({length: 6}, (_, i) => <View key={i} style={[styles.codeBox, i === value.length && styles.codeBoxActive]}><Text style={[styles.codeDigit, font]}>{value[i] ?? ''}</Text></View>)}
+    {Array.from({length: 6}, (_, i) => <View key={i} style={[styles.codeBox, i === value.length && styles.codeBoxActive]}><Text style={[font, styles.codeDigit]}>{value[i] ?? ''}</Text></View>)}
     <TextInput ref={input} value={value} autoFocus maxLength={6} keyboardType="number-pad" autoComplete="sms-otp" textContentType="oneTimeCode"
       onChangeText={text => { const digits = text.replace(/\D/g, '').slice(0, 6); onChange(digits); if (digits.length === 6) onComplete(digits); }}
       style={styles.hiddenInput} />
@@ -255,35 +256,35 @@ function CodeInput({value, onChange, onComplete}: {value: string; onChange: (val
 type FieldProps = Pick<TextInputProps, 'value' | 'onChangeText' | 'placeholder' | 'keyboardType' | 'autoCapitalize' | 'autoComplete' | 'textContentType' | 'onBlur' | 'onSubmitEditing' | 'secureTextEntry'> & {label: string};
 function Field({label, error, ...input}: FieldProps & {error?: string}) {
   return <View style={styles.field}>
-    <Text style={[styles.label, font]}>{label}</Text>
+    <Text style={[font, styles.label]}>{label}</Text>
     <View>
-      <TextInput {...input} placeholderTextColor={colors.muted} style={[styles.input, font, !!error && styles.inputError]} accessibilityHint={error} />
+      <TextInput {...input} placeholderTextColor={colors.muted} style={[font, styles.input, !!error && styles.inputError]} accessibilityHint={error} />
       {!!error && <View style={styles.inputIcon} pointerEvents="none"><Icon name="alert" size={18} color={colors.danger} /></View>}
     </View>
-    {!!error && <Text style={[styles.fieldError, font]}>{error}</Text>}
+    {!!error && <Text style={[font, styles.fieldError]}>{error}</Text>}
   </View>;
 }
 
 function Primary({label, onPress, disabled, busy}: {label: string; onPress: () => void; disabled?: boolean; busy?: boolean}) {
   return <Pressable onPress={onPress} disabled={disabled || busy} accessibilityRole="button" accessibilityState={{disabled: disabled || busy, busy}}
     style={({pressed}) => [styles.primary, (disabled && !busy) && styles.dim, pressed && styles.pressed]}>
-    {busy ? <ActivityIndicator color={colors.onAccent} /> : <Text style={[styles.primaryText, font]}>{label}</Text>}
+    {busy ? <ActivityIndicator color={colors.onAccent} /> : <Text style={[font, styles.primaryText]}>{label}</Text>}
   </Pressable>;
 }
 
 function SocialButton({label, logo, onPress}: {label: string; logo: React.ReactNode; onPress: () => void}) {
   return <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`Continue with ${label}`} style={({pressed}) => [styles.socialButton, pressed && styles.pressed]}>
     {logo}
-    <Text style={[styles.socialText, font]}>{label}</Text>
+    <Text style={[font, styles.socialText]}>{label}</Text>
   </Pressable>;
 }
 
 function BrandLogo() {
-  return <Image source={require('../../assets/brand/logo.png')} style={styles.logoImage} resizeMode="contain" accessibilityLabel="yizelearn" />;
+  return <BrandMark style={styles.logoImage} />;
 }
 
 function Divider({label}: {label: string}) {
-  return <View style={styles.divider}><View style={styles.rule} /><Text style={[styles.dividerText, font]}>{label}</Text><View style={styles.rule} /></View>;
+  return <View style={styles.divider}><View style={styles.rule} /><Text style={[font, styles.dividerText]}>{label}</Text><View style={styles.rule} /></View>;
 }
 
 type SsoProps = {onBack: () => void; onEmailLogin: () => void};
@@ -326,37 +327,37 @@ export function SsoScreen({onBack, onEmailLogin}: SsoProps) {
     {step !== 'signing' && <View style={styles.backRow}><RoundButton icon="back" onPress={back} label="Back" /></View>}
     {step === 'email' && <FadeIn key="email">
       <SsoArt icon="shield" />
-      <Text style={[styles.title, font]}>Log in with SSO</Text>
-      <Text style={[styles.subtitle, font]}>Use the email your school or employer gave you.{'\n'}We’ll find your organisation.</Text>
+      <Text style={[font, styles.title]}>Log in with SSO</Text>
+      <Text style={[font, styles.subtitle]}>Use the email your school or employer gave you.{'\n'}We’ll find your organisation.</Text>
       <Field label="School or work email" value={email} onChangeText={t => { setEmail(t); setError(''); }} placeholder="you@school.edu.ng" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
-      {!!error && <Text style={[styles.error, font]}>{error}</Text>}
+      {!!error && <Text style={[font, styles.error]}>{error}</Text>}
       <Primary label="Find my organisation" disabled={!valid} busy={busy} onPress={find} />
-      <Text style={[styles.footer, font]}>No SSO? <Text onPress={onEmailLogin} style={styles.link}>Log in with email and password</Text></Text>
+      <Text style={[font, styles.footer]}>No SSO? <Text onPress={onEmailLogin} style={styles.link}>Log in with email and password</Text></Text>
     </FadeIn>}
     {step === 'confirm' && org && <FadeIn key="confirm">
       <SsoArt icon={org.kind === 'school' ? 'school' : 'building'} />
-      <Text style={[styles.title, font]}>We found it</Text>
-      <Text style={[styles.subtitle, font]}>You’ll sign in on {org.name}’s page,{'\n'}then come straight back here.</Text>
+      <Text style={[font, styles.title]}>We found it</Text>
+      <Text style={[font, styles.subtitle]}>You’ll sign in on {org.name}’s page,{'\n'}then come straight back here.</Text>
       <View style={styles.orgCard}>
-        <View style={styles.orgBadge}><Text style={[styles.orgInitials, font]}>{initials(org.name)}</Text></View>
+        <View style={styles.orgBadge}><Text style={[font, styles.orgInitials]}>{initials(org.name)}</Text></View>
         <View style={styles.orgCopy}>
-          <Text style={[styles.orgName, font]} numberOfLines={1}>{org.name}</Text>
-          <Text style={[styles.orgMeta, font]} numberOfLines={1}>{org.domain} · {org.kind === 'school' ? 'School' : 'Work'}</Text>
+          <Text style={[font, styles.orgName]} numberOfLines={1}>{org.name}</Text>
+          <Text style={[font, styles.orgMeta]} numberOfLines={1}>{org.domain} · {org.kind === 'school' ? 'School' : 'Work'}</Text>
         </View>
         <Icon name="check" size={22} color={colors.blue700} />
       </View>
       <View style={styles.orgNote}>
         <Icon name="lock" size={18} color={colors.muted} />
-        <Text style={[styles.orgNoteText, font]}>{org.provider === 'your organisation' ? 'Your organisation handles sign-in' : `Signs in with ${org.provider}`}. yizelearn never sees your password.</Text>
+        <Text style={[font, styles.orgNoteText]}>{org.provider === 'your organisation' ? 'Your organisation handles sign-in' : `Signs in with ${org.provider}`}. yizelearn never sees your password.</Text>
       </View>
-      {!!error && <Text style={[styles.error, font]}>{error}</Text>}
+      {!!error && <Text style={[font, styles.error]}>{error}</Text>}
       <Primary label={`Continue to ${org.name}`} onPress={signIn} />
-      <Pressable onPress={back} style={styles.resend} accessibilityRole="button"><Text style={[styles.resendText, font]}>Not your organisation? Use another email</Text></Pressable>
+      <Pressable onPress={back} style={styles.resend} accessibilityRole="button"><Text style={[font, styles.resendText]}>Not your organisation? Use another email</Text></Pressable>
     </FadeIn>}
     {step === 'signing' && org && <FadeIn key="signing" style={styles.signing}>
       <SsoArt icon="shield" pulse />
-      <Text style={[styles.title, font]}>Signing you in</Text>
-      <Text style={[styles.subtitle, font]}>Connecting to {org.name}</Text>
+      <Text style={[font, styles.title]}>Signing you in</Text>
+      <Text style={[font, styles.subtitle]}>Connecting to {org.name}</Text>
       <SigningSteps />
     </FadeIn>}
   </ScrollView>;
@@ -406,7 +407,7 @@ function SigningSteps() {
     <View style={[styles.stepDot, i < done && styles.stepDotDone]}>
       {i < done ? <Icon name="check" size={14} color={colors.onAccent} /> : i === done ? <ActivityIndicator size="small" color={colors.blue700} /> : null}
     </View>
-    <Text style={[styles.stepText, font, i > done && styles.muted]}>{label}</Text>
+    <Text style={[font, styles.stepText, i > done && styles.muted]}>{label}</Text>
   </View>)}</View>;
 }
 
@@ -415,10 +416,10 @@ const styles = StyleSheet.create({
   content: {flexGrow: 1, paddingHorizontal: spacing.screen, paddingTop: 8, paddingBottom: 32},
   backRow: {alignItems: 'flex-start', marginBottom: 4},
   logoImage: {width: 154, height: 48, alignSelf: 'center', marginTop: 12, marginBottom: 24},
-  title: {fontSize: type.display - 2, color: colors.ink, fontWeight: '800', textAlign: 'center'},
+  title: {fontSize: type.display - 2, color: colors.ink, fontFamily: fonts.display, textAlign: 'center'},
   subtitle: {fontSize: type.label, color: colors.muted, textAlign: 'center', marginTop: 8, marginBottom: 28, lineHeight: 22},
   field: {marginBottom: 18},
-  label: {fontSize: type.small, color: colors.ink, fontWeight: '700', marginBottom: 8},
+  label: {fontSize: type.small, color: colors.ink, fontFamily: fonts.bold, marginBottom: 8},
   inputError: {borderColor: colors.danger, borderWidth: 1.5, backgroundColor: colors.dangerSoft, paddingRight: 46},
   inputIcon: {position: 'absolute', right: 16, top: 0, bottom: 0, justifyContent: 'center'},
   fieldError: {fontSize: type.caption, color: colors.danger, marginTop: 6},
@@ -426,7 +427,7 @@ const styles = StyleSheet.create({
   input: {height: 58, borderRadius: radius.field, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, paddingHorizontal: 18, fontSize: type.body, color: colors.ink},
   error: {fontSize: type.caption, color: colors.danger, marginBottom: 10, textAlign: 'center'},
   primary: {height: spacing.button, borderRadius: radius.button, backgroundColor: colors.sky, alignItems: 'center', justifyContent: 'center', marginTop: 4},
-  primaryText: {fontSize: type.subheading, color: colors.onSky, fontWeight: '700'},
+  primaryText: {fontSize: type.subheading, color: colors.onSky, fontFamily: fonts.bold},
   dim: {opacity: 0.5},
   pressed: {opacity: 0.8},
   divider: {flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 26},
@@ -434,11 +435,11 @@ const styles = StyleSheet.create({
   dividerText: {fontSize: type.caption, color: colors.muted},
   social: {flexDirection: 'row', gap: 12},
   socialButton: {flex: 1, height: spacing.button, borderRadius: radius.button, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10},
-  socialText: {fontSize: type.label, color: colors.ink, fontWeight: '700'},
+  socialText: {fontSize: type.label, color: colors.ink, fontFamily: fonts.bold},
   sso: {height: spacing.button, borderRadius: radius.button, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center', marginTop: 12},
-  ssoText: {fontSize: type.label, color: colors.ink, fontWeight: '700'},
+  ssoText: {fontSize: type.label, color: colors.ink, fontFamily: fonts.bold},
   footer: {fontSize: type.label, color: colors.muted, textAlign: 'center', marginTop: 26},
-  link: {color: colors.blue700, fontWeight: '700'},
+  link: {color: colors.blue700, fontFamily: fonts.bold},
   check: {flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 48, marginBottom: 8},
   box: {width: 26, height: 26, borderRadius: 7, borderWidth: 1.5, borderColor: colors.muted, alignItems: 'center', justifyContent: 'center'},
   boxOn: {backgroundColor: colors.sky, borderColor: colors.sky},
@@ -446,14 +447,14 @@ const styles = StyleSheet.create({
   forgot: {alignSelf: 'flex-end', marginTop: -6, marginBottom: 14, padding: 4},
   hint: {fontSize: type.caption, color: colors.muted, marginBottom: 10, textAlign: 'center'},
   codeWrap: {flex: 1, paddingHorizontal: spacing.screen, paddingTop: 24},
-  emailText: {color: colors.ink, fontWeight: '700'},
+  emailText: {color: colors.ink, fontFamily: fonts.bold},
   codeRow: {flexDirection: 'row', justifyContent: 'space-between', marginTop: 16, marginBottom: 24},
   codeBox: {width: 46, height: 58, borderRadius: radius.field, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center'},
   codeBoxActive: {borderColor: colors.sky, borderWidth: 2},
-  codeDigit: {fontSize: type.heading, color: colors.ink, fontWeight: '800'},
+  codeDigit: {fontSize: type.heading, color: colors.ink, fontFamily: fonts.bold},
   hiddenInput: {position: 'absolute', width: 1, height: 1, opacity: 0},
   resend: {alignSelf: 'center', marginTop: 22, padding: 8},
-  resendText: {fontSize: type.label, color: colors.blue700, fontWeight: '700'},
+  resendText: {fontSize: type.label, color: colors.blue700, fontFamily: fonts.bold},
   muted: {color: colors.muted},
   ssoArt: {width: 140, height: 130, alignSelf: 'center', alignItems: 'center', justifyContent: 'center', marginTop: 8, marginBottom: 18},
   ssoOuter: {width: 108, height: 108, borderRadius: 54, backgroundColor: colors.blue50, alignItems: 'center', justifyContent: 'center'},
@@ -464,9 +465,9 @@ const styles = StyleSheet.create({
   ssoRing: {position: 'absolute', bottom: 16, right: 10, width: 16, height: 16, borderRadius: 8, borderWidth: 2, borderColor: colors.blue700},
   orgCard: {flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, borderRadius: radius.card, borderWidth: 1.5, borderColor: colors.sky, backgroundColor: colors.white},
   orgBadge: {width: 48, height: 48, borderRadius: 12, backgroundColor: colors.blue900, alignItems: 'center', justifyContent: 'center'},
-  orgInitials: {fontSize: type.label, color: colors.onAccent, fontWeight: '800'},
+  orgInitials: {fontSize: type.label, color: colors.onAccent, fontFamily: fonts.bold},
   orgCopy: {flex: 1},
-  orgName: {fontSize: type.body, color: colors.ink, fontWeight: '800'},
+  orgName: {fontSize: type.body, color: colors.ink, fontFamily: fonts.bold},
   orgMeta: {fontSize: type.caption, color: colors.muted, marginTop: 3},
   orgNote: {flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14, marginBottom: 22, paddingHorizontal: 4},
   orgNoteText: {flex: 1, fontSize: type.caption, color: colors.muted, lineHeight: 18},

@@ -100,8 +100,8 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
             opacity: scrollX.interpolate({inputRange: r, outputRange: [0, 1, 0], extrapolate: 'clamp'}),
             transform: [{translateX: scrollX.interpolate({inputRange: r, outputRange: [width * 0.25, 0, -width * 0.25], extrapolate: 'clamp'})}],
           }]}>
-            <Text style={[styles.title, font]}>{item.title}</Text>
-            <Text style={[styles.body, font]}>{item.body}</Text>
+            <Text style={[font, styles.title]}>{item.title}</Text>
+            <Text style={[font, styles.body]}>{item.body}</Text>
           </Animated.View>
         </View>;
       }} />
@@ -120,9 +120,9 @@ export function OnboardingScreen({onBrowse, onLogin}: {onBrowse: () => void; onL
 
 function ActionBar({onBrowse, onLogin}: {onBrowse: () => void; onLogin: () => void}) {
   return <View style={styles.bar}>
-    <Pressable onPress={onBrowse} style={({pressed}) => [styles.action, pressed && styles.actionPressed]} accessibilityRole="button"><Text style={[styles.actionText, font]}>Browse</Text></Pressable>
+    <Pressable onPress={onBrowse} style={({pressed}) => [styles.action, pressed && styles.actionPressed]} accessibilityRole="button"><Text style={[font, styles.actionText]}>Browse</Text></Pressable>
     <View style={styles.divider} />
-    <Pressable onPress={onLogin} style={({pressed}) => [styles.action, styles.actionEnd, pressed && styles.actionPressed]} accessibilityRole="button"><Text style={[styles.actionText, font]}>Log in</Text></Pressable>
+    <Pressable onPress={onLogin} style={({pressed}) => [styles.action, styles.actionEnd, pressed && styles.actionPressed]} accessibilityRole="button"><Text style={[font, styles.actionText]}>Log in</Text></Pressable>
   </View>;
 }
 
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   card: {borderRadius: 28, backgroundColor: colors.white, overflow: 'hidden', elevation: 10, shadowColor: colors.blue900, shadowOpacity: 0.22, shadowRadius: 24, shadowOffset: {width: 0, height: 12}},
   art: {width: '100%', height: '100%'},
   copy: {alignItems: 'center', paddingHorizontal: 32, marginTop: 36},
-  title: {fontSize: type.title, color: colors.onSky, fontWeight: '600', textAlign: 'center', marginBottom: 10},
+  title: {fontSize: type.title, color: colors.onSky, fontFamily: fonts.display, textAlign: 'center', marginBottom: 10},
   body: {fontSize: type.body, lineHeight: 23, color: colors.onSky, textAlign: 'center', maxWidth: 320},
   footer: {paddingHorizontal: 20, paddingBottom: 24},
   dots: {flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginBottom: 44},
@@ -145,6 +145,6 @@ const styles = StyleSheet.create({
   action: {flex: 1, height: '100%', justifyContent: 'center', paddingHorizontal: 20},
   actionEnd: {alignItems: 'flex-end'},
   actionPressed: {backgroundColor: 'rgba(255, 255, 255, 0.18)'},
-  actionText: {fontSize: type.subheading + 2, color: colors.onSky, fontWeight: '500'},
+  actionText: {fontSize: type.subheading + 2, color: colors.onSky, fontFamily: fonts.bold},
   divider: {width: 1, height: 24, backgroundColor: 'rgba(255, 255, 255, 0.4)'},
 });

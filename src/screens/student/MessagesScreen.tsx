@@ -12,7 +12,7 @@ export function MessagesScreen({onOpen, onExplore}: {onOpen: (id: string) => voi
   const [query, setQuery] = useState('');
   const rows = useMemo(() => conversations.filter(c => c.name.toLowerCase().includes(query.trim().toLowerCase())), [query]);
   return <View style={styles.screen}>
-    <Text style={[styles.title, font]}>Messages</Text>
+    <Text style={[font, styles.title]}>Messages</Text>
     <View style={styles.search}><SearchField value={query} onChangeText={setQuery} placeholder="Search messages" /></View>
     <FlatList ListFooterComponent={<TabBarSpacer />} data={rows} keyExtractor={c => c.id} contentContainerStyle={styles.list}
       renderItem={({item}) => <Row conversation={item} onPress={() => onOpen(item.id)} />}
@@ -24,16 +24,16 @@ export function MessagesScreen({onOpen, onExplore}: {onOpen: (id: string) => voi
 
 function Row({conversation, onPress}: {conversation: Conversation; onPress: () => void}) {
   return <Pressable onPress={onPress} style={({pressed}) => [styles.row, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel={`${conversation.name}${conversation.unread ? ', unread' : ''}`}>
-    <View style={styles.avatar}><Text style={[styles.avatarText, font]}>{conversation.initials}</Text></View>
+    <View style={styles.avatar}><Text style={[font, styles.avatarText]}>{conversation.initials}</Text></View>
     <View style={styles.copy}>
       <View style={styles.nameRow}>
-        <Text style={[styles.name, font, conversation.unread && styles.bold]} numberOfLines={1}>{conversation.name}</Text>
+        <Text style={[font, styles.name, conversation.unread && styles.bold]} numberOfLines={1}>{conversation.name}</Text>
         {conversation.verified && <View accessibilityLabel="Verified"><Icon name="verified" size={17} color={colors.blue700} /></View>}
       </View>
-      <Text style={[styles.last, font, conversation.unread && styles.lastUnread]} numberOfLines={1}>{conversation.last}</Text>
+      <Text style={[font, styles.last, conversation.unread && styles.lastUnread]} numberOfLines={1}>{conversation.last}</Text>
     </View>
     <View style={styles.meta}>
-      <Text style={[styles.time, font]}>{conversation.time}</Text>
+      <Text style={[font, styles.time]}>{conversation.time}</Text>
       {conversation.unread && <View style={styles.dot} />}
     </View>
   </Pressable>;
@@ -41,19 +41,19 @@ function Row({conversation, onPress}: {conversation: Conversation; onPress: () =
 
 const styles = StyleSheet.create({
   screen: {flex: 1, backgroundColor: colors.cream, paddingTop: 12},
-  title: {fontSize: type.display, color: colors.ink, fontWeight: '800', paddingHorizontal: spacing.screen, marginBottom: 16},
+  title: {fontSize: type.display, color: colors.ink, fontFamily: fonts.display, paddingHorizontal: spacing.screen, marginBottom: 16},
   search: {paddingHorizontal: spacing.screen, marginBottom: 12},
   list: {paddingHorizontal: spacing.screen, paddingBottom: 24},
   row: {flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 72, borderBottomWidth: 1, borderBottomColor: colors.line},
   pressed: {opacity: 0.7},
   avatar: {width: 48, height: 48, borderRadius: 24, backgroundColor: colors.blue100, alignItems: 'center', justifyContent: 'center'},
-  avatarText: {fontSize: type.caption, color: colors.blue900, fontWeight: '800'},
+  avatarText: {fontSize: type.caption, color: colors.blue900, fontFamily: fonts.bold},
   copy: {flex: 1},
   nameRow: {flexDirection: 'row', alignItems: 'center', gap: 5},
-  name: {flexShrink: 1, fontSize: type.label, color: colors.ink, fontWeight: '600'},
-  bold: {fontWeight: '800'},
+  name: {flexShrink: 1, fontSize: type.label, color: colors.ink, fontFamily: fonts.semibold},
+  bold: {fontFamily: fonts.bold},
   last: {fontSize: type.small, color: colors.muted, marginTop: 4},
-  lastUnread: {color: colors.ink, fontWeight: '600'},
+  lastUnread: {color: colors.ink, fontFamily: fonts.semibold},
   meta: {alignItems: 'flex-end', gap: 8},
   time: {fontSize: type.caption, color: colors.muted},
   dot: {width: 10, height: 10, borderRadius: 5, backgroundColor: colors.blue700},

@@ -13,8 +13,8 @@ export function PaymentReceivedScreen({order, onStartLearning}: {order: Order; o
       <Icon name="close" size={24} color={colors.ink} />
     </Pressable>
     <View style={styles.ring}><View style={styles.badge}><Icon name="check" size={40} color={colors.onAccent} /></View></View>
-    <Text style={[styles.title, font]}>Payment received</Text>
-    <Text style={[styles.subtitle, font]}>A receipt was sent to your email</Text>
+    <Text style={[font, styles.title]}>Payment received</Text>
+    <Text style={[font, styles.subtitle]}>A receipt was sent to your email</Text>
     <View style={styles.card}>
       <Row label="Order" value={`#${order.id}`} />
       <Row label="Date" value={order.date} />
@@ -28,7 +28,7 @@ export function PaymentReceivedScreen({order, onStartLearning}: {order: Order; o
 }
 
 function Row({label, value}: {label: string; value: string}) {
-  return <View style={styles.row}><Text style={[styles.label, font]}>{label}</Text><Text style={[styles.value, font]}>{value}</Text></View>;
+  return <View style={styles.row}><Text style={[font, styles.label]}>{label}</Text><Text style={[font, styles.value]}>{value}</Text></View>;
 }
 
 const font = {fontFamily: fonts.family};
@@ -38,10 +38,10 @@ const styles = StyleSheet.create({
   content: {flexGrow: 1, justifyContent: 'center', paddingHorizontal: spacing.screen, paddingVertical: 24},
   ring: {alignSelf: 'center', width: 120, height: 120, borderRadius: 60, backgroundColor: '#D7EEE3', alignItems: 'center', justifyContent: 'center', marginBottom: 24},
   badge: {width: 88, height: 88, borderRadius: 44, backgroundColor: colors.success, alignItems: 'center', justifyContent: 'center'},
-  title: {fontSize: type.title + 2, color: colors.ink, fontWeight: '800', textAlign: 'center'},
+  title: {fontSize: type.title + 2, color: colors.ink, fontFamily: fonts.display, textAlign: 'center'},
   subtitle: {fontSize: type.label, color: colors.muted, textAlign: 'center', marginTop: 8, marginBottom: 28},
   card: {backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sandLine, borderRadius: radius.card, padding: 18, gap: 16, marginBottom: 14},
   row: {flexDirection: 'row', justifyContent: 'space-between'},
   label: {fontSize: type.label, color: colors.muted},
-  value: {fontSize: type.label, color: colors.ink, fontWeight: '800'},
+  value: {fontSize: type.label, color: colors.ink, fontFamily: fonts.bold},
 });

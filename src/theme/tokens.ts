@@ -90,15 +90,37 @@ export function resolveColor(color: ColorValue, scheme: 'light' | 'dark' | null 
   return name ? (scheme === 'dark' ? dark : light)[name] : (color as string);
 }
 
-// Brand font is Cavolini. Set `family` to 'Cavolini' once the font files are bundled.
-export const fonts = {family: undefined as string | undefined} as const;
+// Fonts from the Figma design system: Bricolage Grotesque for headings, Figtree for everything else.
+// PostScript names, as the font files register them.
+export const fonts = {
+  display: 'BricolageGrotesque-Bold',
+  heading: 'BricolageGrotesque-SemiBold',
+  body: 'Figtree-Regular',
+  medium: 'Figtree-Medium',
+  semibold: 'Figtree-SemiBold',
+  bold: 'Figtree-Bold',
+  family: 'Figtree-Regular',
+} as const;
 
-export const spacing = {screen: 20, card: 16, gap: 14, section: 28, target: 48, button: 56} as const;
+// Spacing and touch targets from the design system.
+export const spacing = {screen: 16, card: 12, gap: 12, section: 24, target: 44, button: 52, row: 64, topBar: 56} as const;
 
-// Type scale sized for phones held at arm's length; nothing smaller than 13 except tab labels.
-export const type = {display: 32, title: 26, heading: 20, subheading: 18, body: 16, label: 15, small: 14, caption: 13, tab: 12} as const;
+// Type scale from the design system (size / line height). Headings drop ~20% so two-line titles fit a 358px column.
+export const type = {
+  display: 34, displayLine: 40,
+  heading1: 28, heading1Line: 34,
+  heading2: 22, heading2Line: 28,
+  heading3: 18, heading3Line: 24,
+  heading4: 16, heading4Line: 22,
+  body: 16, bodyLine: 24,
+  small: 14, smallLine: 20,
+  caption: 12, captionLine: 16,
+  button: 16, buttonLine: 20,
+  // Legacy names the screens use; they now follow the scale above.
+  title: 28, subheading: 18, label: 14, tab: 12, heading: 22,
+} as const;
 
-export const radius = {card: 16, field: 14, pill: 999, button: 14} as const;
+export const radius = {card: 16, field: 12, pill: 999, button: 12} as const;
 
 // Motion shared with the launch intro, so every screen moves the same way.
 export const motion = {

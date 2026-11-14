@@ -25,14 +25,14 @@ export function FilterSheet({visible, courses, browse, onApply, onClose}: Props)
     <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Close filters" />
     <Animated.View style={[styles.sheet, {paddingBottom: 24 + insets.bottom, transform: [{translateY: rise.interpolate({inputRange: [0, 1], outputRange: [520, 0]})}]}]}>
       <View style={styles.grabber} />
-      <View style={styles.titleRow}><Text style={[styles.title, font]}>Filters</Text><Pressable onPress={() => setDraft(defaultFilters)} hitSlop={8}><Text style={[styles.clear, font]}>Clear all</Text></Pressable></View>
-      <Text style={[styles.label, font]}>Rating</Text>
-      <View style={styles.pills}>{ratings.map(r => <Pressable key={r.label} onPress={() => setDraft(d => ({...d, rating: r.value}))} style={[styles.pill, draft.rating === r.value && styles.pillActive]}><Text style={[styles.pillText, font, draft.rating === r.value && styles.pillTextActive]}>{r.label}</Text></Pressable>)}</View>
-      <Text style={[styles.label, font]}>Level</Text>
-      {levels.map(level => { const on = draft.levels.includes(level); return <Pressable key={level} onPress={() => toggleLevel(level)} style={styles.checkRow} accessibilityRole="checkbox" accessibilityState={{checked: on}}><View style={[styles.box, on && styles.boxOn]}>{on && <Icon name="check" size={18} color={colors.onSky} />}</View><Text style={[styles.checkText, font]}>{level} ({formatNumber(levelCount(level))})</Text></Pressable>; })}
-      <View style={styles.priceRow}><Text style={[styles.label, font]}>Price</Text><Text style={[styles.priceValue, font]}>{formatNaira(draft.price[0])} to {formatNaira(draft.price[1])}</Text></View>
+      <View style={styles.titleRow}><Text style={[font, styles.title]}>Filters</Text><Pressable onPress={() => setDraft(defaultFilters)} hitSlop={8}><Text style={[font, styles.clear]}>Clear all</Text></Pressable></View>
+      <Text style={[font, styles.label]}>Rating</Text>
+      <View style={styles.pills}>{ratings.map(r => <Pressable key={r.label} onPress={() => setDraft(d => ({...d, rating: r.value}))} style={[styles.pill, draft.rating === r.value && styles.pillActive]}><Text style={[font, styles.pillText, draft.rating === r.value && styles.pillTextActive]}>{r.label}</Text></Pressable>)}</View>
+      <Text style={[font, styles.label]}>Level</Text>
+      {levels.map(level => { const on = draft.levels.includes(level); return <Pressable key={level} onPress={() => toggleLevel(level)} style={styles.checkRow} accessibilityRole="checkbox" accessibilityState={{checked: on}}><View style={[styles.box, on && styles.boxOn]}>{on && <Icon name="check" size={18} color={colors.onSky} />}</View><Text style={[font, styles.checkText]}>{level} ({formatNumber(levelCount(level))})</Text></Pressable>; })}
+      <View style={styles.priceRow}><Text style={[font, styles.label]}>Price</Text><Text style={[font, styles.priceValue]}>{formatNaira(draft.price[0])} to {formatNaira(draft.price[1])}</Text></View>
       <RangeSlider min={PRICE_BOUNDS[0]} max={PRICE_BOUNDS[1]} step={1000} value={draft.price} onChange={price => setDraft(d => ({...d, price}))} />
-      <View style={styles.footer}><Pressable onPress={() => setDraft(defaultFilters)} style={({pressed}) => [styles.reset, pressed && styles.pressed]}><Text style={[styles.resetText, font]}>Reset</Text></Pressable><Pressable onPress={() => onApply(draft)} style={({pressed}) => [styles.show, pressed && styles.pressed]}><Text style={[styles.showText, font]}>Show {formatNumber(matches)} {matches === 1 ? 'course' : 'courses'}</Text></Pressable></View>
+      <View style={styles.footer}><Pressable onPress={() => setDraft(defaultFilters)} style={({pressed}) => [styles.reset, pressed && styles.pressed]}><Text style={[font, styles.resetText]}>Reset</Text></Pressable><Pressable onPress={() => onApply(draft)} style={({pressed}) => [styles.show, pressed && styles.pressed]}><Text style={[font, styles.showText]}>Show {formatNumber(matches)} {matches === 1 ? 'course' : 'courses'}</Text></Pressable></View>
     </Animated.View>
   </Modal>;
 }
@@ -69,20 +69,20 @@ const styles = StyleSheet.create({
   sheet: {backgroundColor: colors.cream, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: spacing.screen},
   grabber: {alignSelf: 'center', width: 48, height: 5, borderRadius: 3, backgroundColor: colors.sandLine, marginTop: 12, marginBottom: 14},
   titleRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6},
-  title: {fontSize: type.title, color: colors.ink, fontWeight: '800'},
-  clear: {fontSize: type.label, color: colors.blue700, fontWeight: '700'},
-  label: {fontSize: type.subheading, color: colors.ink, fontWeight: '800', marginTop: 18, marginBottom: 12},
+  title: {fontSize: type.title, color: colors.ink, fontFamily: fonts.display},
+  clear: {fontSize: type.label, color: colors.blue700, fontFamily: fonts.bold},
+  label: {fontSize: type.subheading, color: colors.ink, fontFamily: fonts.bold, marginTop: 18, marginBottom: 12},
   pills: {flexDirection: 'row', gap: 10},
   pill: {height: 46, minWidth: 76, paddingHorizontal: 20, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center'},
   pillActive: {backgroundColor: colors.sky, borderColor: colors.sky},
-  pillText: {fontSize: type.label, color: colors.ink, fontWeight: '600'},
+  pillText: {fontSize: type.label, color: colors.ink, fontFamily: fonts.semibold},
   pillTextActive: {color: colors.onSky},
   checkRow: {flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 48},
   box: {width: 26, height: 26, borderRadius: 7, borderWidth: 1.5, borderColor: colors.muted, alignItems: 'center', justifyContent: 'center'},
   boxOn: {backgroundColor: colors.sky, borderColor: colors.sky},
   checkText: {fontSize: type.body, color: colors.ink},
   priceRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end'},
-  priceValue: {fontSize: type.label, color: colors.ink, fontWeight: '700', marginBottom: 12},
+  priceValue: {fontSize: type.label, color: colors.ink, fontFamily: fonts.bold, marginBottom: 12},
   slider: {height: THUMB + 12, justifyContent: 'center', marginBottom: 28},
   track: {position: 'absolute', left: THUMB / 2, right: THUMB / 2, height: 6, borderRadius: 3, backgroundColor: colors.sandLine},
   trackOn: {position: 'absolute', height: 6, backgroundColor: colors.sky},
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   footer: {flexDirection: 'row', gap: 12},
   pressed: {opacity: 0.8},
   reset: {flex: 0.8, height: spacing.button, borderRadius: radius.button, borderWidth: 1, borderColor: colors.sandLine, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center'},
-  resetText: {fontSize: type.body, color: colors.ink, fontWeight: '700'},
+  resetText: {fontSize: type.body, color: colors.ink, fontFamily: fonts.bold},
   show: {flex: 1.4, height: spacing.button, borderRadius: radius.button, backgroundColor: colors.sky, alignItems: 'center', justifyContent: 'center'},
-  showText: {fontSize: type.body, color: colors.onSky, fontWeight: '700'},
+  showText: {fontSize: type.body, color: colors.onSky, fontFamily: fonts.bold},
 });
