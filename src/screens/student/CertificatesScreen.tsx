@@ -23,7 +23,7 @@ export function CertificatesScreen({onBack, onLearn}: {onBack: () => void; onLea
       </Rise>
 
       <Rise delay={100} style={styles.actions}>
-        <View style={styles.full}><PrimaryAction label="Share" onPress={() => Share.share({message: `I completed ${certificate.course} on yizelearn.`})} /></View>
+        <View style={styles.full}><PrimaryAction label="Share" onPress={() => Share.share({message: `I completed ${certificate?.course} on yizelearn.`})} /></View>
       </Rise>
 
       <Rise delay={180}><Text style={[font, styles.section]}>Badges</Text></Rise>
