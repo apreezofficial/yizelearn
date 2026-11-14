@@ -94,7 +94,9 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   try { body = raw ? JSON.parse(raw) : undefined; } catch { body = undefined; }
   if (!response.ok) {
     const problem = (body && typeof body === 'object' ? body : {}) as Problem;
-    const message = FRIENDLY[problem.code ?? ''] ?? (response.status === 429 ? FRIENDLY.rate_limited : problem.detail || problem.title || `Request failed (${response.status})`);
+    // A 404 on a route with no id in it means the server has not built that feature yet (a missing record would have an id in the path).
+    const routeMissing = response.status === 404 && problem.code === 'not_found' && !/[0-9a-f]{8}-[0-9a-f]{4}-/i.test(path);
+    const message = routeMissing ? 'This is not available on the server yet. It will work once the service is updated.' : FRIENDLY[problem.code ?? ''] ?? (response.status === 429 ? FRIENDLY.rate_limited : problem.detail || problem.title || `Request failed (${response.status})`);
     throw new ApiError(message, response.status, problem);
   }
   return body as T;
