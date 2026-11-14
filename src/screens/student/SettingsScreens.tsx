@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, type KeyboardTypeOptions} from 'react-native';
+import {ActivityIndicator, Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, type KeyboardTypeOptions} from 'react-native';
 import {Icon, type IconName} from '../../components/Icon';
 import {BottomButton, PrimaryAction, TitleBar} from '../../components/Layout';
 import {Rise} from '../../components/Motion';
 import {haptic} from '../../theme/system';
-import {accountApi, type OrderSummary} from '../../api/endpoints';
+import {errorCodes, isErrorWithCode, pick as pickFile, types} from '@react-native-documents/picker';
+import {accountApi, uploadsApi, type OrderSummary} from '../../api/endpoints';
 import {session} from '../../api/session';
 import {formatNaira} from '../../data/catalog';
 import {learner} from '../../data/learning';
@@ -37,12 +38,24 @@ export function ProfileScreen({onBack}: {onBack: () => void}) {
   const set = (key: keyof typeof form) => (v: string) => setForm(f => ({...f, [key]: v}));
   const changed = JSON.stringify(form) !== JSON.stringify(saved);
   const initials = form.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const [photo, setPhoto] = useState<string | undefined>();
+  const changePhoto = async () => {
+    if (!session.isSignedIn()) { Alert.alert('Log in first', 'Your photo is saved to your account.'); return; }
+    try {
+      const [res] = await pickFile({type: [types.images]});
+      const id = await uploadsApi.upload({uri: res.uri, name: res.name ?? 'photo.jpg', type: res.type ?? 'image/jpeg', size: res.size ?? 0}, 'avatar');
+      const me = await uploadsApi.setAvatar(id);
+      setPhoto(me.avatarUrl ?? res.uri);
+    } catch (e) {
+      if (!(isErrorWithCode(e) && e.code === errorCodes.OPERATION_CANCELED)) Alert.alert('Could not change your photo', e instanceof Error ? e.message : 'Try again.');
+    }
+  };
   return <View style={styles.screen}>
     <TitleBar title="Profile" onBack={onBack} />
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
       <Rise style={styles.avatarBlock}>
-        <View style={styles.avatar}><Text style={[font, styles.avatarText]}>{initials}</Text></View>
-        <Pressable onPress={() => Alert.alert('Change photo', 'Photo uploads are not connected yet.')} style={({pressed}) => [styles.camera, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Change photo">
+        <View style={styles.avatar}>{photo ? <Image source={{uri: photo}} style={styles.photo} /> : <Text style={[font, styles.avatarText]}>{initials}</Text>}</View>
+        <Pressable onPress={changePhoto} style={({pressed}) => [styles.camera, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Change photo">
           <Icon name="upload" size={16} color={colors.onAccent} />
         </Pressable>
         <Text style={[font, styles.avatarName]}>{form.name || 'Your name'}</Text>
@@ -221,6 +234,7 @@ const styles = StyleSheet.create({
   pillText: {fontSize: type.caption, color: colors.blue900, fontFamily: fonts.bold},
   pressed: {opacity: 0.8},
   avatarBlock: {alignItems: 'center', marginBottom: 12},
+  photo: {width: 90, height: 90, borderRadius: 45},
   avatar: {width: 96, height: 96, borderRadius: 48, backgroundColor: colors.blue100, borderWidth: 3, borderColor: colors.white, alignItems: 'center', justifyContent: 'center'},
   avatarText: {fontSize: type.title, color: colors.blue900, fontFamily: fonts.bold},
   camera: {position: 'absolute', top: 64, left: '57%', width: 34, height: 34, borderRadius: 17, backgroundColor: colors.blue700, borderWidth: 3, borderColor: colors.cream, alignItems: 'center', justifyContent: 'center'},

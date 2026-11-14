@@ -125,6 +125,21 @@ export const accountApi = {
   privacyRequest: (type: PrivacyRequest['type'], reason?: string) => request<PrivacyRequest>('/me/privacy-requests', {method: 'POST', idempotent: true, body: {type, reason}}),
 };
 
+// File uploads: ask for an upload slot, send the bytes to the signed address, then confirm. Files up to the single-upload limit.
+export type PickedFile = {uri: string; name: string; type: string; size: number};
+export const uploadsApi = {
+  upload: async (file: PickedFile, purpose: 'avatar' | 'assignment_submission' | 'ticket_attachment'): Promise<string> => {
+    const slot = await request<{id: string; mode: 'single' | 'multipart'; single?: {url: string; method: string; headers?: Record<string, string>}}>('/uploads', {method: 'POST', idempotent: true, body: {purpose, fileName: file.name, contentType: file.type, sizeBytes: file.size}});
+    if (slot.mode !== 'single' || !slot.single) throw new ApiError('That file is too large to send from the app.', 413);
+    const bytes = await (await fetch(file.uri)).blob();
+    const put = await fetch(slot.single.url, {method: slot.single.method || 'PUT', headers: {'Content-Type': file.type, ...(slot.single.headers ?? {})}, body: bytes});
+    if (!put.ok) throw new ApiError('The upload did not finish. Try again.', put.status);
+    await request<unknown>(`/uploads/${slot.id}/complete`, {method: 'POST', body: {}});
+    return slot.id;
+  },
+  setAvatar: (uploadId: string) => request<{avatarUrl: string | null}>('/me/avatar', {method: 'PUT', body: {uploadId}}),
+};
+
 // Instructor and admin placeholders, not wired to the new contract yet (they belong to the instructor and admin apps).
 export type Organisation = {id: string; name: string; domain: string; kind: 'school' | 'work'; provider: string};
 export const dashboardApi = { instructor: () => request<DashboardSummary>('/instructor/dashboard'), administrator: () => request<DashboardSummary>('/admin/dashboard') };
