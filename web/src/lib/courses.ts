@@ -1,6 +1,6 @@
 // Sample catalogue for the website until the courses API is connected. The categories and their topics are
 // the real ones; the individual courses, instructors, prices and ratings are placeholders.
-export type Category = string; // our own five marketing categories for the sample catalogue; the API can define others
+export type Category = string; // marketing categories for the sample catalogue; the API can define others
 export type Course = {id: string; title: string; instructor: string; rating: number; reviews: number; price: number; was?: number; hours: number; level: string; category: Category; topic: string; tone: 0 | 1 | 2 | 3 | 4; tag?: 'Bestseller' | 'New'; thumbnailUrl?: string; subtitle?: string | null};
 
 export const categories: {name: string; topics: string[]}[] = [
@@ -9,6 +9,11 @@ export const categories: {name: string; topics: string[]}[] = [
   {name: 'Digital marketing', topics: ['Intro to digital marketing', 'YouTube', 'SEO', 'Instagram', 'Facebook', 'TikTok', 'Snap', 'LinkedIn', 'X', 'WhatsApp']},
   {name: 'Database', topics: ['Intro to database', 'SQL', 'PostgreSQL', 'MySQL', 'MongoDB']},
   {name: 'IT tech skills', topics: ['Data annotator', 'AI promoter', 'Data clerk', 'Computer technician', 'Network technician', 'System support clerk', 'Office suite clerk']},
+  {"name": "Content Management", "topics": ["Content strategy", "Editorial planning", "Copywriting", "WordPress"]},
+  {"name": "Animation", "topics": ["2D animation", "3D animation", "Motion graphics", "Storyboarding"]},
+  {"name": "Communication", "topics": ["Public speaking", "Business writing", "Presentation skills"]},
+  {"name": "Business & Entrepreneurship", "topics": ["Starting a business", "Customer service", "Sales and negotiation"]},
+  {"name": "Personal Development", "topics": ["Time management", "Leadership", "Career planning"]},
 ];
 export const categoryNames = categories.map(c => c.name);
 
@@ -29,6 +34,16 @@ export const courses: Course[] = [
   {id: 'annotator', title: 'Become a data annotator', instructor: 'Ifeoma Nnaji', rating: 4.4, reviews: 406, price: 5000, hours: 2, level: 'Beginner', category: 'IT tech skills', topic: 'Data annotator', tone: 3, tag: 'New'},
   {id: 'technician', title: 'Computer technician: diagnose and repair', instructor: 'Ibrahim Sule', rating: 4.6, reviews: 698, price: 12000, hours: 6, level: 'Beginner', category: 'IT tech skills', topic: 'Computer technician', tone: 1},
   {id: 'office', title: 'Office suite clerk: Word, Excel and more', instructor: 'Kemi Adebayo', rating: 4.7, reviews: 1120, price: 8000, hours: 4, level: 'Beginner', category: 'IT tech skills', topic: 'Office suite clerk', tone: 4, tag: 'Bestseller'},
+  {"id": "sample-content-strategy", "title": "Content strategy: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 3, "level": "Beginner", "category": "Content Management", "topic": "Content strategy", "tone": 0, "tag": "New"},
+  {"id": "sample-editorial-planning", "title": "Editorial planning: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 4, "level": "Beginner", "category": "Content Management", "topic": "Editorial planning", "tone": 1, "tag": "New"},
+  {"id": "sample-2d-animation", "title": "2D animation: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 3, "level": "Beginner", "category": "Animation", "topic": "2D animation", "tone": 1, "tag": "New"},
+  {"id": "sample-3d-animation", "title": "3D animation: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 4, "level": "Beginner", "category": "Animation", "topic": "3D animation", "tone": 2, "tag": "New"},
+  {"id": "sample-public-speaking", "title": "Public speaking: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 3, "level": "Beginner", "category": "Communication", "topic": "Public speaking", "tone": 2, "tag": "New"},
+  {"id": "sample-business-writing", "title": "Business writing: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 4, "level": "Beginner", "category": "Communication", "topic": "Business writing", "tone": 3, "tag": "New"},
+  {"id": "sample-starting-a-business", "title": "Starting a business: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 3, "level": "Beginner", "category": "Business & Entrepreneurship", "topic": "Starting a business", "tone": 3, "tag": "New"},
+  {"id": "sample-customer-service", "title": "Customer service: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 4, "level": "Beginner", "category": "Business & Entrepreneurship", "topic": "Customer service", "tone": 4, "tag": "New"},
+  {"id": "sample-time-management", "title": "Time management: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 3, "level": "Beginner", "category": "Personal Development", "topic": "Time management", "tone": 4, "tag": "New"},
+  {"id": "sample-leadership", "title": "Leadership: practical foundations", "instructor": "yizelearn Demo Instructor", "rating": 0, "reviews": 0, "price": 8000, "hours": 4, "level": "Beginner", "category": "Personal Development", "topic": "Leadership", "tone": 0, "tag": "New"},
 ];
 
 // Prices are in naira here (the base) and converted for display with useMoney() in lib/prefs.ts.

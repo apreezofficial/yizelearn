@@ -2,7 +2,7 @@
 // which topics become full courses still need confirming. Titles are kept as supplied.
 export type Topic = {category: string; title: string};
 
-export const topicCategories = ['Programming', 'AI', 'Digital marketing', 'Database', 'IT tech skills'] as const;
+export const topicCategories = ['Programming', 'AI', 'Digital marketing', 'Database', 'IT tech skills', 'Content Management', 'Animation', 'Communication', 'Business & Entrepreneurship', 'Personal Development'] as const;
 
 export const topics: Topic[] = [
   {category: 'Programming', title: 'Intro to programming'},
@@ -33,6 +33,23 @@ export const topics: Topic[] = [
   {category: 'Database', title: 'PostgreSQL'},
   {category: 'Database', title: 'MySQL'},
   {category: 'Database', title: 'MongoDB'},
+  {"category": "Content Management", "title": "Content strategy"},
+  {"category": "Content Management", "title": "Editorial planning"},
+  {"category": "Content Management", "title": "Copywriting"},
+  {"category": "Content Management", "title": "WordPress"},
+  {"category": "Animation", "title": "2D animation"},
+  {"category": "Animation", "title": "3D animation"},
+  {"category": "Animation", "title": "Motion graphics"},
+  {"category": "Animation", "title": "Storyboarding"},
+  {"category": "Communication", "title": "Public speaking"},
+  {"category": "Communication", "title": "Business writing"},
+  {"category": "Communication", "title": "Presentation skills"},
+  {"category": "Business & Entrepreneurship", "title": "Starting a business"},
+  {"category": "Business & Entrepreneurship", "title": "Customer service"},
+  {"category": "Business & Entrepreneurship", "title": "Sales and negotiation"},
+  {"category": "Personal Development", "title": "Time management"},
+  {"category": "Personal Development", "title": "Leadership"},
+  {"category": "Personal Development", "title": "Career planning"},
 ];
 
 // Career tracks in the IT tech skills category; these are roles, not single courses.

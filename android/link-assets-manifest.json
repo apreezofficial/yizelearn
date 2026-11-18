@@ -1,0 +1,29 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/BricolageGrotesque_600SemiBold.ttf",
+      "sha1": "7e6ee4c288f2bfbc7b9ed02ea12b00159c1d81f5"
+    },
+    {
+      "path": "src/assets/fonts/BricolageGrotesque_700Bold.ttf",
+      "sha1": "b2aedef46f4671362d339ddbaeca111c7569b7b6"
+    },
+    {
+      "path": "src/assets/fonts/Figtree_400Regular.ttf",
+      "sha1": "b971ba6c123ca42604ae74840afd8e1ade6926ea"
+    },
+    {
+      "path": "src/assets/fonts/Figtree_500Medium.ttf",
+      "sha1": "e3688e24751e01c1bed1fb655fae79316735de2d"
+    },
+    {
+      "path": "src/assets/fonts/Figtree_600SemiBold.ttf",
+      "sha1": "17f9c71ec7a0e79fe74b6e0f14b64f3b55dae9cb"
+    },
+    {
+      "path": "src/assets/fonts/Figtree_700Bold.ttf",
+      "sha1": "82e096f1e69d1b880b3a0e7c28c03d54a56152c5"
+    }
+  ]
+}

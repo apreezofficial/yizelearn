@@ -1,12 +1,13 @@
 import React from 'react';
-import {Pressable, ScrollView, Share, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, Share, StyleSheet, Text, View} from 'react-native';
 import {Icon, type IconName} from '../../components/Icon';
 import {PrimaryAction, TitleBar} from '../../components/Layout';
+import {CertificateTemplate} from '../../components/CertificateTemplate';
 import {Rise} from '../../components/Motion';
 import {EmptyState} from '../../components/States';
 import {badges, certificate} from '../../data/learning';
 import {learner} from '../../data/learning';
-import {colors, fonts, radius, spacing, type} from '../../theme/tokens';
+import {colors, fonts, spacing, type} from '../../theme/tokens';
 
 const font = {fontFamily: fonts.family};
 
@@ -15,11 +16,8 @@ export function CertificatesScreen({onBack, onLearn}: {onBack: () => void; onLea
     <TitleBar title="Certificates" onBack={onBack} />
     {!certificate ? <EmptyState icon="award" title="No certificates yet" message="Complete a course to earn your first one." actionLabel="Continue learning" onAction={onLearn} /> :
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <Rise style={styles.certificate}>
-        <Text style={[font, styles.kicker]}>{certificate.title}</Text>
-        <Text style={[font, styles.name]}>{learner.fullName}</Text>
-        <Text style={[font, styles.course]}>has completed {certificate.course}</Text>
-        <View style={styles.seal}><Icon name="award" size={26} color={colors.onSky} /></View>
+      <Rise>
+        <CertificateTemplate learnerName={learner.fullName} course={certificate.course} />
       </Rise>
 
       <Rise delay={100} style={styles.actions}>
@@ -42,11 +40,6 @@ export function CertificatesScreen({onBack, onLearn}: {onBack: () => void; onLea
 const styles = StyleSheet.create({
   screen: {flex: 1, backgroundColor: colors.cream},
   content: {padding: spacing.screen, paddingBottom: 28},
-  certificate: {borderWidth: 1.5, borderColor: colors.sandLine, borderRadius: radius.card, backgroundColor: colors.white, padding: 24, alignItems: 'center'},
-  kicker: {fontSize: type.small, color: colors.muted, fontFamily: fonts.bold, letterSpacing: 0.5, textTransform: 'uppercase'},
-  name: {fontSize: type.title + 4, color: colors.ink, fontFamily: fonts.bold, marginTop: 14, textAlign: 'center'},
-  course: {fontSize: type.label, color: colors.ink, marginTop: 8, textAlign: 'center', lineHeight: 22},
-  seal: {width: 56, height: 56, borderRadius: 28, backgroundColor: colors.marigold, alignItems: 'center', justifyContent: 'center', marginTop: 18},
   actions: {flexDirection: 'row', gap: 12, marginTop: 16},
   full: {flex: 1},
   half: {flex: 1},
