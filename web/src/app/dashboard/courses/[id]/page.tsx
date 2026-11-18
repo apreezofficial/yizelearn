@@ -1,3 +1,4 @@
+import {pageMetadata} from '@/lib/metadata';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import {HugeiconsIcon} from '@hugeicons/react';
@@ -25,4 +26,10 @@ export default async function DashboardCoursePage({params}: {params: Promise<{id
       <button className={s.button}>{active ? 'Resume lesson' : 'Start course'} <HugeiconsIcon icon={PlayIcon} size={17} fill="currentColor" /></button>
     </div>
   </main>;
+}
+
+export async function generateMetadata({params}: {params: Promise<{id: string}>}) {
+  const {id} = await params;
+  const course = courses.find(c => c.id === id);
+  return pageMetadata(`/dashboard/courses/${id}`, {title: course ? `Your learning: ${course.title}` : 'Your course', description: 'Continue your course, review lessons and track your learning progress on yizelearn.', noindex: true});
 }

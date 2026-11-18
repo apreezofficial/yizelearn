@@ -1,1 +1,9 @@
+import {pageMetadata} from '@/lib/metadata';
 import {Suspense} from 'react';import {notFound} from 'next/navigation';import Link from 'next/link';import {guides} from '@/lib/guide-data';import {SiteNav} from '@/components/Chrome';import {Footer} from '@/components/Footer';import s from '@/components/PublicPages.module.css';async function Article({params}:{params:Promise<{slug:string}>}){const{slug}=await params;const g=guides.find(g=>g.slug===slug);if(!g)notFound();return <article className={s.article}><Link href="/guides">← All guides</Link><header className={s.hero}><h1>{g.title}</h1><p>{g.description}</p></header>{g.steps.map((t,i)=>i%2===0?<h2 key={i}>{t}</h2>:<p key={i}>{t}</p>)}<Link href="/contact">Still need help? Contact us →</Link></article>}export default function Page({params}:{params:Promise<{slug:string}>}){return <><SiteNav/><main className={s.wrap}><Suspense fallback={<p>Loading guide…</p>}><Article params={params}/></Suspense></main><Footer/></>}
+
+export function generateStaticParams() {return guides.map(g => ({slug: g.slug}));}
+export async function generateMetadata({params}: {params: Promise<{slug: string}>}) {
+  const {slug} = await params;
+  const guide = guides.find(g => g.slug === slug);
+  return guide ? pageMetadata(`/guides/${slug}`, {title: guide.title, description: guide.description}) : pageMetadata('/guides', {title: 'Guide not found', noindex: true});
+}

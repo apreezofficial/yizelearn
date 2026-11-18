@@ -1,7 +1,7 @@
-import type {Metadata} from 'next';
+import {pageMetadata} from '@/lib/metadata';
 import {Suspense} from 'react';
 import {StatusDashboard, type HealthSnapshot} from './StatusDashboard';
-export const metadata: Metadata = {title: 'System status', description: 'Live status of yizelearn services, maintenance and incidents.'};
+export const metadata = pageMetadata("/status");
 const BASE = process.env.API_URL ?? 'https://16-170-53-222.sslip.io';
 async function LiveStatus() {
   let health: HealthSnapshot = null;

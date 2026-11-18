@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import {pageMetadata} from '@/lib/metadata';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowRight01Icon} from '@hugeicons/core-free-icons';
@@ -8,7 +8,7 @@ import {TeachBand, TeachBar, TeachHero, TeachWays} from '@/components/Teach';
 import {categories} from '@/lib/courses';
 import s from './teach.module.css';
 
-export const metadata: Metadata = {title: 'Teach on yizelearn', description: 'Turn what you know into a short course and get paid in the currency you choose.'};
+export const metadata = pageMetadata("/teach");
 
 const steps = [
   {n: '01', title: 'Plan your course', text: 'Pick one skill and one clear result. Break it into short lessons that each take a few minutes to finish.'},

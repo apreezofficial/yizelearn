@@ -1,3 +1,4 @@
+import {pageMetadata} from '@/lib/metadata';
 import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
 import {Suspense} from 'react';
@@ -13,7 +14,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({params}: {params: Promise<{id: string}>}): Promise<Metadata> {
   const view = await getCourseView((await params).id);
-  return view ? {title: view.course.title, description: view.detail.sub || undefined} : {title: 'Course not found'};
+  return view ? pageMetadata(`/courses/${view.course.id}`, {title: view.course.title, description: view.detail.sub || `Explore ${view.course.topic} with a practical course on yizelearn.`}) : pageMetadata('/courses', {title: 'Course not found', noindex: true});
 }
 
 async function Course({params}: {params: Promise<{id: string}>}) {

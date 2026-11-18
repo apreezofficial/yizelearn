@@ -1,9 +1,9 @@
-import type {Metadata} from 'next';
+import {pageMetadata} from '@/lib/metadata';
 import {OfferBar, SiteNav} from '@/components/Chrome';
 import {Footer} from '@/components/Footer';
 import {SupportForm} from '@/components/SupportForm';
 
-export const metadata: Metadata = {title: 'Support form', description: 'Send a message to the yizelearn support team.'};
+export const metadata = pageMetadata("/contact/form");
 
 export default function ContactFormPage() {
   return <>

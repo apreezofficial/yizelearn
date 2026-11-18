@@ -1,10 +1,10 @@
-import type {Metadata} from 'next';
+import {pageMetadata} from '@/lib/metadata';
 import {OfferBar, SiteNav} from '@/components/Chrome';
 import {Faq} from '@/components/Faq';
 import {Footer} from '@/components/Footer';
 import s from './faq.module.css';
 
-export const metadata: Metadata = {title: 'FAQ', description: 'Answers to the questions people ask before they pay, learn and teach on yizelearn.'};
+export const metadata = pageMetadata("/faq");
 
 export default function FaqPage() {
   return <div className={s.page}>

@@ -1,3 +1,4 @@
+import {pageMetadata} from '@/lib/metadata';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowRight01Icon, BriefcaseBusinessIcon, ChartBarIncreasingIcon, CheckmarkCircle02Icon, CourseIcon, Presentation01Icon, ShieldUserIcon, UserGroupIcon} from '@hugeicons/core-free-icons';
@@ -34,3 +35,5 @@ export default function BusinessPage() { return <div className={s.page}>
     <section className={s.cta}><p className={s.eyebrow}>READY WHEN YOUR TEAM IS</p><h2>Give your people a better way to grow.</h2><p>Set up your first team learning space in minutes.</p><Link href="/signup" className={s.primary}>Talk to our team <HugeiconsIcon icon={ArrowRight01Icon} size={18} /></Link></section>
   </main><Footer />
 </div>; }
+
+export const metadata = pageMetadata("/business");

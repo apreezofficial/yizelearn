@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import {pageMetadata} from '@/lib/metadata';
 import Image from 'next/image';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
@@ -9,7 +9,7 @@ import {Swatches, type Swatch} from '@/components/Swatches';
 import {SUPPORT_EMAIL} from '@/lib/faq';
 import s from './brand.module.css';
 
-export const metadata: Metadata = {title: 'Brand', description: 'The yizelearn logo, colours and how to use them.'};
+export const metadata = pageMetadata("/brand");
 
 const colours: Swatch[] = [
   {name: 'Logo navy', hex: '#1C1F33', note: 'The logo plate'},

@@ -1,7 +1,7 @@
-import type {Metadata} from 'next';
+import {pageMetadata} from '@/lib/metadata';
 import {SupportTickets} from '@/components/SupportTickets';
 
-export const metadata: Metadata = {title: 'Support tickets', description: 'Open and follow your yizelearn support tickets.'};
+export const metadata = pageMetadata("/dashboard/support");
 
 export default function DashboardSupportPage() {
   return <SupportTickets />;

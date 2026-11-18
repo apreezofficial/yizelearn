@@ -1,6 +1,7 @@
 'use client';
 
 import {useState} from 'react';
+import Link from 'next/link';
 import s from './preview.module.css';
 
 export default function CertificatePreview() {
@@ -12,7 +13,7 @@ export default function CertificatePreview() {
   const formattedDate = date ? new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) : '';
   const lines = [`This is to certify that ${name}`, `successfully completed ${hours} total hours of`, `${course} online course on`, formattedDate];
   return <main className={s.main}>
-    <header className={s.header}><a href="/">yizelearn</a><span>Certificate preview · Sample details</span></header>
+    <header className={s.header}><Link href="/">yizelearn</Link><span>Certificate preview · Sample details</span></header>
     <div className={s.layout}>
       <aside className={s.controls}>
         <h1>Certificate templates</h1><p>Your gold and yellow ribbon designs.</p>

@@ -1,3 +1,4 @@
+import {pageMetadata} from '@/lib/metadata';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
 import {ArrowLeft01Icon, BookOpen01Icon, CheckmarkCircle02Icon, Notification01Icon} from '@hugeicons/core-free-icons';
@@ -14,3 +15,5 @@ export default function NotificationsPage() { return <main className={s.page}>
   <header className={s.top}><Link href="/dashboard" className={s.brand}><Logo alt="yizelearn dashboard" width={104} height={40} priority /></Link><Link href="/dashboard" className={s.back}><HugeiconsIcon icon={ArrowLeft01Icon} size={18} />Dashboard</Link></header>
   <div className={s.shell}><p className={s.eyebrow}>UPDATES</p><h1 className={s.title}>Notifications</h1><p className={s.sub}>Everything you need to pick up where you left off.</p><section className={s.list}>{notices.map(item => <article className={s.notice} key={item.title}><span className={s.noticeIcon}><HugeiconsIcon icon={item.icon} size={20} /></span><div><strong>{item.title}</strong><p>{item.text}</p><time>{item.time}</time></div></article>)}</section></div>
 </main>; }
+
+export const metadata = pageMetadata("/dashboard/notifications");

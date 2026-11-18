@@ -1,3 +1,4 @@
+import {pageMetadata} from '@/lib/metadata';
 import Image from 'next/image';
 import Link from 'next/link';
 import {HugeiconsIcon} from '@hugeicons/react';
@@ -116,3 +117,5 @@ export default function Home() {
   </div>;
 }
 
+
+export const metadata = pageMetadata("/");

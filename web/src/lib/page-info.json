@@ -1,0 +1,94 @@
+{
+  "/": {
+    "title": "Learn practical skills. Build your next chapter.",
+    "description": "Learn programming, AI, animation, content management and career skills with practical online courses, live classes and certificates on yizelearn."
+  },
+  "/about": {
+    "title": "About yizelearn | Practical learning for busy lives",
+    "description": "Discover how yizelearn helps learners build useful skills through short courses, hands-on practice and teaching from people who do the work."
+  },
+  "/business": {
+    "title": "Team training that builds practical skills",
+    "description": "Help your team grow with practical courses, clear learning pathways and progress tracking. Explore learning for business with yizelearn."
+  },
+  "/brand": {
+    "title": "yizelearn brand assets and guidelines",
+    "description": "Find the yizelearn logo, brand colors and usage guidelines for creating clear, consistent materials and sharing our story."
+  },
+  "/courses": {
+    "title": "Online courses in tech, creative and career skills",
+    "description": "Explore practical courses in programming, AI, animation, content management, communication and business. Find your next skill on yizelearn."
+  },
+  "/teach": {
+    "title": "Teach what you know. Help someone grow.",
+    "description": "Turn your experience into a practical online course. Explore teaching on yizelearn and help learners build skills they can use."
+  },
+  "/contact": {
+    "title": "Contact yizelearn | Learning and teaching support",
+    "description": "Need help with a course, account, payment or certificate? Find the right way to contact the yizelearn support team."
+  },
+  "/contact/form": {
+    "title": "Send a support inquiry",
+    "description": "Prepare a support message about your account, course, payment or certificate. Include the details our team needs to help you."
+  },
+  "/faq": {
+    "title": "Your questions about learning and teaching, answered",
+    "description": "Find answers about yizelearn courses, payments, certificates, account access and becoming an instructor."
+  },
+  "/guides": {
+    "title": "Practical guides for learning, teaching and certificates",
+    "description": "Find step-by-step guides to starting a course, earning a certificate, planning your first course and getting account support."
+  },
+  "/verify": {
+    "title": "Look up a yizelearn certificate",
+    "description": "Enter a certificate number to view the learning achievement, recipient and course details. Try the DEMO certificate to explore the experience."
+  },
+  "/verify/DEMO": {
+    "title": "Web design certificate | Sunday Nwachukwu",
+    "description": "View the DEMO Web design certificate for Sunday Nwachukwu, including course details, completion date and download options."
+  },
+  "/status": {
+    "title": "yizelearn system status | Service availability",
+    "description": "Check current availability of the yizelearn website, API, storage and background services, plus maintenance and incident updates."
+  },
+  "/privacy": {
+    "title": "Privacy policy | Your information on yizelearn",
+    "description": "Learn what information yizelearn collects, how it is used and protected, and the choices you have about your personal data."
+  },
+  "/terms": {
+    "title": "Terms of service | Using yizelearn",
+    "description": "Read the terms for learning and teaching on yizelearn, including course access, payments, certificates and account responsibilities."
+  },
+  "/login": {
+    "title": "Log in to your yizelearn account",
+    "description": "Sign in to continue your courses, manage your account and return to your learning on yizelearn."
+  },
+  "/signup": {
+    "title": "Start learning or teaching on yizelearn",
+    "description": "Create your yizelearn account to explore practical courses, build new skills or share your experience as an instructor."
+  },
+  "/certificates/preview": {
+    "title": "Certificate template preview",
+    "description": "Preview yizelearn certificate designs and explore the gold and yellow ribbon templates."
+  },
+  "/dashboard": {
+    "title": "Your learning dashboard",
+    "description": "Return to your yizelearn courses, track progress and manage your learning in one place."
+  },
+  "/dashboard/account": {
+    "title": "Your account settings",
+    "description": "Manage your yizelearn profile and account preferences."
+  },
+  "/dashboard/courses": {
+    "title": "Your courses and learning progress",
+    "description": "Find your enrolled courses and pick up where you left off on yizelearn."
+  },
+  "/dashboard/notifications": {
+    "title": "Your learning notifications",
+    "description": "See updates about your courses and account on yizelearn."
+  },
+  "/dashboard/support": {
+    "title": "Your support tickets",
+    "description": "Open and follow support requests about your yizelearn account, courses and payments."
+  }
+}

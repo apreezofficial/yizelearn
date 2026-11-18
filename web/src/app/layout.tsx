@@ -1,4 +1,5 @@
 import type {Metadata, Viewport} from 'next';
+import {siteUrl} from '@/lib/metadata';
 import {Fredoka, Inter} from 'next/font/google';
 import {CookieConsent} from '@/components/CookieConsent';
 import {PrefsHost} from '@/components/FooterPrefs';
@@ -11,8 +12,11 @@ const sans = Inter({subsets: ['latin'], variable: '--font-sans', display: 'swap'
 const logo = Fredoka({subsets: ['latin'], weight: ['600'], variable: '--font-logo', display: 'swap'});
 
 export const metadata: Metadata = {
-  title: {default: 'yizelearn: learn the skills that grow your career', template: '%s · yizelearn'},
-  description: 'Short, practical courses with live classes and certificates.',
+  metadataBase: siteUrl,
+  title: {default: 'Learn practical skills. Build your next chapter. · yizelearn', template: '%s · yizelearn'},
+  description: 'Build useful skills with practical online courses in tech, creativity and business on yizelearn.',
+  applicationName: 'yizelearn',
+  referrer: 'strict-origin-when-cross-origin',
 };
 
 export const viewport: Viewport = {

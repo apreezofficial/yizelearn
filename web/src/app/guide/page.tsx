@@ -1,1 +1,1 @@
-export {default} from '../guides/page';
+export {default, metadata} from '../guides/page';

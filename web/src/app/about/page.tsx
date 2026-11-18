@@ -1,11 +1,11 @@
-import type {Metadata} from 'next';
+import {pageMetadata} from '@/lib/metadata';
 import {OfferBar, SiteNav} from '@/components/Chrome';
 import {Footer} from '@/components/Footer';
 import {StackPanels, type Panel} from '@/components/Stack';
 import {team} from '@/lib/team';
 import s from './about.module.css';
 
-export const metadata: Metadata = {title: 'About', description: 'yizelearn makes short, practical courses for people with busy lives.'};
+export const metadata = pageMetadata("/about");
 
 // Layout after cencori.com/about: a dark intro, then stacked full-screen panels whose statements fill in on scroll.
 const panels: Panel[] = [

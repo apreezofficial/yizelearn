@@ -1,2 +1,5 @@
+import {pageMetadata} from '@/lib/metadata';
 import {SiteNav} from '@/components/Chrome';import {Footer} from '@/components/Footer';import {ContactPanel, ContactIcon} from '@/components/ContactPanel';import s from '@/components/PublicPages.module.css';
 export default function Contact(){return <><SiteNav/><main className={s.wrap}><section className={s.contactHero}><div className={s.art} aria-hidden="true"><ContactIcon/></div><div className={s.hero}><small>We are here to help</small><h1>Get in touch.</h1><p>Have a question about learning or teaching? Need a hand with your account? Drop us a message.</p></div></section><ContactPanel/></main><Footer/></>}
+
+export const metadata = pageMetadata("/contact");
