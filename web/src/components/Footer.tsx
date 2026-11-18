@@ -12,7 +12,7 @@ const columns: Col[] = [
   {title: 'Categories', links: [...categories.map(c => ({label: c.name, href: `/courses?category=${encodeURIComponent(c.name)}`})), {label: 'All courses', href: '/courses'}]},
   {title: 'For Learners', links: [{label: 'How yizelearn works', href: '/#how-it-works'}, {label: 'Courses', href: '/courses'}, {label: 'Create an account', href: '/signup'}, {label: 'Log in', href: '/login'}, {label: 'FAQ', href: '/faq'}]},
   {title: 'For Instructors', links: [{label: 'Become an instructor', href: '/teach'}, {label: 'Start teaching', href: '/signup?as=teach'}]},
-  {title: 'Support', links: [{label: 'Help and FAQ', href: '/faq'}, {label: 'Contact support', href: `mailto:${SUPPORT_EMAIL}`}]},
+  {title: 'Support', links: [{label: 'Help and FAQ', href: '/faq'}, {label: 'Contact us', href: '/contact'}, {label: 'Support form', href: '/contact/form'}, {label: 'Support tickets', href: '/dashboard/support'}, {label: `Email ${SUPPORT_EMAIL}`, href: `mailto:${SUPPORT_EMAIL}`}, {label: 'Verify a certificate', href: '/verify'}, {label: 'System status', href: '/status'}]},
   {title: 'Company', links: [{label: 'About yizelearn', href: '/about'}, {label: 'Brand', href: '/brand'}, {label: 'Terms of Service', href: '/terms'}, {label: 'Privacy Policy', href: '/privacy'}]},
 ];
 
